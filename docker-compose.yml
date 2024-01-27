@@ -1,0 +1,65 @@
+version: "1.0"
+
+services:
+  
+  mariadb_container:
+    image: mariadb:latest
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_ROOT_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mariadb_persist:/var/lib/mysql
+    restart: always
+    networks:
+      - wow_network
+
+  phpmyadmin_container:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "8080:80"
+    depends_on:
+      - mariadb_container
+    networks:
+      - wow_network
+
+  wowserver_container: # TODO: rename to trinitycore
+    container_name: wowserver
+    build:
+      context: 'docker/wowserver'
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8081
+      - 8085:8085
+      - 8086:8086
+      - 1119:1119
+    volumes:
+      - ./data:/wowdata
+      - ./wowclient:/wowclient
+      - ./docker/wowserver/scripts/:/usr/local/bin/
+      - ./docker/wowserver/config/etc/worldserver.conf:/usr/local/etc/worldserver.conf
+      - ./docker/wowserver/config/etc/authserver.conf:/usr/local/etc/authserver.conf
+      - ./docker/wowserver/sql/TDB_full_world_335.24011_2024_01_21.sql:/TrinityCore/TDB_full_world_335.24011_2024_01_21.sql
+    depends_on:
+      - mariadb_container
+    networks:
+      - wow_network
+    tty: true
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  wow_network:
+    driver: bridge
+
+volumes:
+  mariadb_persist:
+    driver: local
+
