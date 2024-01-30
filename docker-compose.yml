@@ -207,6 +207,22 @@ services:
       - ac-database
     restart: unless-stopped
 
+  ac-app:
+    container_name: yii2-gii
+    image: yiisoftware/yii2-php:7.4-apache
+    networks:
+      - ac-network
+    environment:
+      - YII_DEBUG=true
+      - YII_ENV=dev
+    volumes:
+      - ./apps/web-app:/app
+    ports:
+      - ${DOCKER_YII2_GII_EXTERNAL_PORT:-8081}:80
+    depends_on:
+      - ac-database
+    restart: unless-stopped
+
 volumes:
   ac-database:
   ac-client-data:
