@@ -208,7 +208,7 @@ services:
     restart: unless-stopped
 
   ac-app:
-    container_name: yii2-gii
+    container_name: ac-app
     image: yiisoftware/yii2-php:7.4-apache
     networks:
       - ac-network
