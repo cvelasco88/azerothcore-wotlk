@@ -209,14 +209,20 @@ services:
 
   ac-app:
     container_name: ac-app
-    image: yiisoftware/yii2-php:7.4-apache
+    build:
+      context: .
+      dockerfile: ./apps/web-app/docker/Dockerfile
     networks:
       - ac-network
     environment:
       - YII_DEBUG=true
       - YII_ENV=dev
+      - PHP_ENABLE_XDEBUG=1
+      #- XDEBUG_MODE: debug
+      #- XDEBUG_CONFIG: client_host=host.docker.internal client_port=9003
     volumes:
       - ./apps/web-app:/app
+      - ./apps/web-app/docker/php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     ports:
       - ${DOCKER_YII2_GII_EXTERNAL_PORT:-8081}:80
     depends_on:
