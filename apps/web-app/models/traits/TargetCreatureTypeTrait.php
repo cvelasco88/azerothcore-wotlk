@@ -27,7 +27,7 @@ trait TargetCreatureTypeTrait
      *
      * @return array
      */
-    public static function getTargetCreatureTypes()
+    public static function getTargetCreatureTypeOptions()
     {
         return [
             self::TYPE_NONE => 'None',
@@ -58,7 +58,7 @@ trait TargetCreatureTypeTrait
      */
     public static function getTargetCreatureTypeName($type)
     {
-        $targetCreatureTypes = self::getTargetCreatureTypes();
+        $targetCreatureTypes = self::getTargetCreatureTypeOptions();
         return isset($targetCreatureTypes[$type]) ? $targetCreatureTypes[$type] : null;
     }
 }

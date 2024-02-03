@@ -4,6 +4,14 @@ namespace app\models;
 
 use app\models\traits\DispelTypeTrait;
 use app\models\traits\PowerTypeTrait;
+use app\models\traits\SpellAttrsTrait;
+use app\models\traits\SpellAttrsEx1Trait;
+use app\models\traits\SpellAttrsEx2Trait;
+use app\models\traits\SpellAttrsEx3Trait;
+use app\models\traits\SpellAttrsEx4Trait;
+use app\models\traits\SpellAttrsEx5Trait;
+use app\models\traits\SpellAttrsEx6Trait;
+use app\models\traits\SpellAttrsEx7Trait;
 use app\models\traits\TargetFlagTrait;
 use app\models\traits\TargetCreatureTypeTrait;
 use Yii;
@@ -249,7 +257,9 @@ use Yii;
  */
 class SpellDbc extends \yii\db\ActiveRecord
 {
-    use PowerTypeTrait, DispelTypeTrait, TargetFlagTrait, TargetCreatureTypeTrait;
+    use PowerTypeTrait, DispelTypeTrait, TargetFlagTrait, TargetCreatureTypeTrait,
+        SpellAttrsTrait, SpellAttrsEx1Trait, SpellAttrsEx2Trait, SpellAttrsEx3Trait, SpellAttrsEx4Trait,
+        SpellAttrsEx5Trait, SpellAttrsEx6Trait, SpellAttrsEx7Trait;
 
 
     /**
@@ -551,9 +561,10 @@ class SpellDbc extends \yii\db\ActiveRecord
 
     // PUBLIC STATIC METHODS
 
-    public static function getDetailAttributes() {
+    public static function getDetailAttributes()
+    {
         $attributeGroups = self::getAttributeGroups();
-        $except = [];        
+        $except = [];
         foreach ($attributeGroups as $groupName => $attributes) {
             $except = array_merge($except, $attributes);
         }
@@ -561,13 +572,14 @@ class SpellDbc extends \yii\db\ActiveRecord
         return array_keys($tmp->getAttributes(null, $except));
     }
 
-    public static function getAttributeGroups() {
+    public static function getAttributeGroups()
+    {
         $groups = [];
         $groups["AttributesExt"] = self::getAttributesExtAttributes();
-        $groups["Recovery"] = self::getRecoveryAttributes();        
+        $groups["Recovery"] = self::getRecoveryAttributes();
         $groups["Aura"] = self::getAuraAttributes();
         $groups["Mana"] = self::getManaAttributes();
-        $groups["Totem"] = self::getTotemAttributes();          
+        $groups["Totem"] = self::getTotemAttributes();
         $groups["Reagent"] = self::getReagentAttributes();
         $groups["ReagentCount"] = self::getReagentCountAttributes();
         $groups["EquippedItem"] = self::getEquippedItemAttributes();
@@ -583,7 +595,8 @@ class SpellDbc extends \yii\db\ActiveRecord
 
     // PRIVATE STATIC METHODS
 
-    private static function getAttributesExtAttributes() {
+    private static function getAttributesExtAttributes()
+    {
         return [
             'AttributesEx',
             'AttributesEx2',
@@ -595,7 +608,8 @@ class SpellDbc extends \yii\db\ActiveRecord
         ];
     }
 
-    private static function getRecoveryAttributes() {
+    private static function getRecoveryAttributes()
+    {
         return [
             'RecoveryTime',
             'CategoryRecoveryTime',
@@ -604,7 +618,8 @@ class SpellDbc extends \yii\db\ActiveRecord
         ];
     }
 
-    private static function getAuraAttributes() {
+    private static function getAuraAttributes()
+    {
         return [
             'CasterAuraState',
             'TargetAuraState',
@@ -648,7 +663,8 @@ class SpellDbc extends \yii\db\ActiveRecord
         ];
     }
 
-    private static function getManaAttributes() {
+    private static function getManaAttributes()
+    {
         return [
             'ManaCost',
             'ManaCostPerLevel',
@@ -657,14 +673,16 @@ class SpellDbc extends \yii\db\ActiveRecord
         ];
     }
 
-    private static function getTotemAttributes() {
+    private static function getTotemAttributes()
+    {
         return [
             'Totem_1',
             'Totem_2',
         ];
     }
-    
-    private static function getReagentAttributes() {
+
+    private static function getReagentAttributes()
+    {
         return [
             'Reagent_1',
             'Reagent_2',
@@ -676,7 +694,8 @@ class SpellDbc extends \yii\db\ActiveRecord
             'Reagent_8',
         ];
     }
-    private static function getReagentCountAttributes() {
+    private static function getReagentCountAttributes()
+    {
         return [
             'ReagentCount_1',
             'ReagentCount_2',
@@ -688,14 +707,16 @@ class SpellDbc extends \yii\db\ActiveRecord
             'ReagentCount_8',
         ];
     }
-    private static function getEquippedItemAttributes() {
+    private static function getEquippedItemAttributes()
+    {
         return [
             'EquippedItemClass',
             'EquippedItemSubclass',
             'EquippedItemInvTypes',
         ];
     }
-    private static function getEffectAttributes() {
+    private static function getEffectAttributes()
+    {
         return [
             'Effect_1',
             'Effect_2',
@@ -763,7 +784,8 @@ class SpellDbc extends \yii\db\ActiveRecord
 
         ];
     }
-    private static function getImplicitTargetAttributes() {
+    private static function getImplicitTargetAttributes()
+    {
         return [
             'ImplicitTargetA_1',
             'ImplicitTargetA_2',
@@ -773,7 +795,8 @@ class SpellDbc extends \yii\db\ActiveRecord
             'ImplicitTargetB_3',
         ];
     }
-    private static function getNameAndDescriptionAttributes() {
+    private static function getNameAndDescriptionAttributes()
+    {
         return [
             'Name_Lang_enUS',
             'Name_Lang_enGB',
@@ -828,7 +851,8 @@ class SpellDbc extends \yii\db\ActiveRecord
             'Description_Lang_Mask',
         ];
     }
-    private static function getSpellClassAttributes() {
+    private static function getSpellClassAttributes()
+    {
         return [
             'SpellClassSet',
             'SpellClassMask_1',
@@ -837,7 +861,8 @@ class SpellDbc extends \yii\db\ActiveRecord
         ];
     }
 
-    private static function getRequiredAttributes() {
+    private static function getRequiredAttributes()
+    {
         return [
             'RequiredAuraVision',
             'RequiredTotemCategoryID_1',
@@ -846,7 +871,8 @@ class SpellDbc extends \yii\db\ActiveRecord
         ];
     }
 
-    private static function getInterruptAttributes() {
+    private static function getInterruptAttributes()
+    {
         return [
             'InterruptFlags',
             'AuraInterruptFlags',
@@ -854,7 +880,8 @@ class SpellDbc extends \yii\db\ActiveRecord
         ];
     }
 
-    private static function getOtherAttributes() {
+    private static function getOtherAttributes()
+    {
         return [
             'ShapeshiftMask',
             'unk_320_2',

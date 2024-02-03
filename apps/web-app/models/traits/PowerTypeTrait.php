@@ -24,7 +24,7 @@ trait PowerTypeTrait
      *
      * @return array
      */
-    public static function getPowerTypes()
+    public static function getPowerTypeOptions()
     {
         return [
             self::POWER_TYPE_HP => 'HP',
@@ -51,7 +51,7 @@ trait PowerTypeTrait
      */
     public static function getPowerTypeName(int $type = null)
     {
-        $powerTypes = self::getPowerTypes();
+        $powerTypes = self::getPowerTypeOptions();
         return isset($powerTypes[$type]) ? $powerTypes[$type] : null;
     }
 }

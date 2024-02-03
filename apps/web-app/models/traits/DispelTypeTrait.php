@@ -22,7 +22,7 @@ trait DispelTypeTrait
      *
      * @return array
      */
-    public static function getDispelTypes()
+    public static function getDispelTypeOptions()
     {
         return [
             self::DISPEL_TYPE_NONE => 'Can\'t be Dispelled',
@@ -48,7 +48,7 @@ trait DispelTypeTrait
      */
     public static function getDispelTypeName($type)
     {
-        $dispelTypes = self::getDispelTypes();
+        $dispelTypes = self::getDispelTypeOptions();
         return isset($dispelTypes[$type]) ? $dispelTypes[$type] : null;
     }
 }

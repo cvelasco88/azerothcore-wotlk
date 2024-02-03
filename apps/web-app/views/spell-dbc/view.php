@@ -20,9 +20,9 @@ $this->params['breadcrumbs'][] = $this->title;
     
     function handledAttributes(array $attributes) {
         $targetFlagOptions = SpellDbc::getTargetFlagOptions();
-        $targetCreatureTypes = SpellDbc::getTargetCreatureTypes();
+        $targetCreatureTypes = SpellDbc::getTargetCreatureTypeOptions();
+        $spellAttributesOptions = SpellDbc::getSpellAttributesOptions();
         
-
         $customAttributes = [];
 
         foreach ($attributes as $attribute) {
@@ -77,6 +77,27 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                     ];
                     break;
+                case 'Attributes':
+                    $customAttributes[] = [
+                        'attribute' => 'Attributes',
+                        'format' => 'raw',
+                        'value' => function ($model) use ($spellAttributesOptions) {
+                            /** @var SpellDbc $model */
+                            $selectedItems = SpellDbc::getPresentSpellAttributes($model->Attributes);                                    
+                            return \yii\helpers\Html::activeCheckboxList($model, 'Attributes', $spellAttributesOptions, [                                
+                                'item' => function ($index, $label, $name, $checked, $value) use ($selectedItems) {
+                                    $isChecked = in_array($value, $selectedItems);
+                                    return Html::checkbox($name, $isChecked, [
+                                        'value' => $value,
+                                        'label' => $label,
+                                        'disabled' => true
+                                    ]);
+                                }
+                            ]);
+                        },
+                    ];
+                    break;
+                    
                 // Add more customizations for other attributes as needed
                 default:
                     $customAttributes[] = $attribute;
