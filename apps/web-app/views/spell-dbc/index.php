@@ -10,6 +10,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 echo GridView::widget([
     'dataProvider' => $dataProvider,
+    'filterModel' => $searchModel,
     'columns' => array_merge(
         [
             [
@@ -33,9 +34,10 @@ echo GridView::widget([
         // array_keys((new SpellDbc())->attributes),
         [
             'ID',
+            'Name_Lang_enUS',
             'Category',
             'Attributes',
-            'Spell Level',
+            'SpellLevel',
         ]
         // Add more columns as needed
         // ['class' => 'yii\grid\ActionColumn'],

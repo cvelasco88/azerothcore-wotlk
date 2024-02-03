@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 use app\models\SpellDbc;
+use app\models\search\SpellDbcSearch;
 use \Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
@@ -10,14 +11,11 @@ class SpellDbcController extends \yii\web\Controller
 {
     public function actionIndex()
     {
-        $dataProvider = new ActiveDataProvider([
-            'query' => SpellDbc::find(),
-            'pagination' => [
-                'pageSize' => 10,
-            ],
-        ]);
+        $searchModel = new SpellDbcSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
+            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
     }

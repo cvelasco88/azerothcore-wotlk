@@ -2,11 +2,15 @@
 
 namespace app\models;
 
+use app\models\traits\DispelTypeTrait;
+use app\models\traits\PowerTypeTrait;
+use app\models\traits\TargetFlagTrait;
+use app\models\traits\TargetCreatureTypeTrait;
 use Yii;
-use yii\data\ActiveDataProvider;
 
 /**
  * This is the model class for table "spell_dbc".
+ * @see https://wowdev.wiki/DB/Spell
  *
  * @property int $ID
  * @property int $Category
@@ -245,6 +249,9 @@ use yii\data\ActiveDataProvider;
  */
 class SpellDbc extends \yii\db\ActiveRecord
 {
+    use PowerTypeTrait, DispelTypeTrait, TargetFlagTrait, TargetCreatureTypeTrait;
+
+
     /**
      * {@inheritdoc}
      */
@@ -512,6 +519,38 @@ class SpellDbc extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     * Get the human-readable power type name.
+     *
+     * @return string|null
+     */
+    public function getCurrentPowerTypeName(int $type = null)
+    {
+        return $this->getPowerTypeName($type ?? $this->PowerType);
+    }
+
+    /**
+     * Get the human-readable power type name.
+     *
+     * @return string|null
+     */
+    public function getCurrentDispelTypeName(int $type = null)
+    {
+        return $this->getDispelTypeName($type ?? $this->DispelType);
+    }
+
+    /**
+     * Get the human-readable power type name.
+     *
+     * @return string|null
+     */
+    public function getCurrentTargetCreatureTypeName(int $type = null)
+    {
+        return $this->getTargetCreatureTypeName($type ?? $this->TargetCreatureType);
+    }
+
+    // PUBLIC STATIC METHODS
+
     public static function getDetailAttributes() {
         $attributeGroups = self::getAttributeGroups();
         $except = [];        
@@ -525,7 +564,10 @@ class SpellDbc extends \yii\db\ActiveRecord
     public static function getAttributeGroups() {
         $groups = [];
         $groups["AttributesExt"] = self::getAttributesExtAttributes();
+        $groups["Recovery"] = self::getRecoveryAttributes();        
         $groups["Aura"] = self::getAuraAttributes();
+        $groups["Mana"] = self::getManaAttributes();
+        $groups["Totem"] = self::getTotemAttributes();          
         $groups["Reagent"] = self::getReagentAttributes();
         $groups["ReagentCount"] = self::getReagentCountAttributes();
         $groups["EquippedItem"] = self::getEquippedItemAttributes();
@@ -533,8 +575,13 @@ class SpellDbc extends \yii\db\ActiveRecord
         $groups["ImplicitTarget"] = self::getImplicitTargetAttributes();
         $groups["NameAndDescription"] = self::getNameAndDescriptionAttributes();
         $groups["SpellClass"] = self::getSpellClassAttributes();
+        $groups["Required"] = self::getRequiredAttributes();
+        $groups["Interrupt"] = self::getInterruptAttributes();
+        $groups["Other"] = self::getOtherAttributes();
         return $groups;
     }
+
+    // PRIVATE STATIC METHODS
 
     private static function getAttributesExtAttributes() {
         return [
@@ -547,6 +594,16 @@ class SpellDbc extends \yii\db\ActiveRecord
             'AttributesEx7',
         ];
     }
+
+    private static function getRecoveryAttributes() {
+        return [
+            'RecoveryTime',
+            'CategoryRecoveryTime',
+            'StartRecoveryCategory',
+            'StartRecoveryTime',
+        ];
+    }
+
     private static function getAuraAttributes() {
         return [
             'CasterAuraState',
@@ -558,7 +615,7 @@ class SpellDbc extends \yii\db\ActiveRecord
             'ExcludeCasterAuraSpell',
             'ExcludeTargetAuraSpell',
             //
-            'AuraInterruptFlags',
+            //'AuraInterruptFlags',
             //
             'CumulativeAura',
             //
@@ -587,9 +644,26 @@ class SpellDbc extends \yii\db\ActiveRecord
             'AuraDescription_Lang_Unk',
             'AuraDescription_Lang_Mask',
             //
-            'RequiredAuraVision',
+            //'RequiredAuraVision',
         ];
     }
+
+    private static function getManaAttributes() {
+        return [
+            'ManaCost',
+            'ManaCostPerLevel',
+            'ManaPerSecond',
+            'ManaPerSecondPerLevel',
+        ];
+    }
+
+    private static function getTotemAttributes() {
+        return [
+            'Totem_1',
+            'Totem_2',
+        ];
+    }
+    
     private static function getReagentAttributes() {
         return [
             'Reagent_1',
@@ -763,5 +837,48 @@ class SpellDbc extends \yii\db\ActiveRecord
         ];
     }
 
-    
+    private static function getRequiredAttributes() {
+        return [
+            'RequiredAuraVision',
+            'RequiredTotemCategoryID_1',
+            'RequiredTotemCategoryID_2',
+            'RequiredAreasID',
+        ];
+    }
+
+    private static function getInterruptAttributes() {
+        return [
+            'InterruptFlags',
+            'AuraInterruptFlags',
+            'ChannelInterruptFlags',
+        ];
+    }
+
+    private static function getOtherAttributes() {
+        return [
+            'ShapeshiftMask',
+            'unk_320_2',
+            'ShapeshiftExclude',
+            'unk_320_3',
+            'CastingTimeIndex',
+            'ProcTypeMask',
+            'ProcChance',
+            'ProcCharges',
+            'ModalNextSpell',
+            'SpellVisualID_1',
+            'SpellVisualID_2',
+            'SpellIconID',
+            'ActiveIconID',
+            'ManaCostPct',
+            'DefenseType',
+            'PreventionType',
+            'StanceBarOrder',
+            'MinFactionID',
+            'MinReputation',
+            'SpellMissileID',
+            'PowerDisplayID',
+            'SpellDescriptionVariableID',
+        ];
+    }
+
 }
