@@ -4,7 +4,6 @@ namespace app\controllers;
 use app\models\PlayerCreateInfoSkill;
 use app\models\search\PlayerCreateInfoSkillSearch;
 use \Yii;
-use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
 
 class PlayerCreateInfoSkillController extends \yii\web\Controller
@@ -20,9 +19,13 @@ class PlayerCreateInfoSkillController extends \yii\web\Controller
         ]);
     }
 
-    public function actionView($id)
+    public function actionView($raceMask, $classMask, $skill)
     {
-        $model = PlayerCreateInfoSkill::findOne($id);
+        $model = PlayerCreateInfoSkill::findOne([
+            'raceMask' => $raceMask,
+            'classMask' => $classMask,
+            'skill' => $skill,
+        ]);
 
         if ($model === null) {
             // Spell not found
@@ -34,9 +37,13 @@ class PlayerCreateInfoSkillController extends \yii\web\Controller
         ]);
     }
 
-    public function actionUpdate($id)
+    public function actionUpdate($raceMask, $classMask, $skill)
     {
-        $model = PlayerCreateInfoSkill::findOne($id);
+        $model = PlayerCreateInfoSkill::findOne([
+            'raceMask' => $raceMask,
+            'classMask' => $classMask,
+            'skill' => $skill,
+        ]);
 
         if ($model === null) {
             // Spell not found
@@ -45,10 +52,24 @@ class PlayerCreateInfoSkillController extends \yii\web\Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             // Successfully updated, redirect to view action
-            return $this->redirect(['view', 'id' => $model->ID]);
+            return $this->redirect(['view', 'raceMask' => $model->raceMask, 'classMask' => $model->classMask, 'skill' => $model->skill]);
         }
 
         return $this->render('update', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionCreate()
+    {
+        $model = new PlayerCreateInfoSkill();
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            // Successfully created, redirect to view action
+            return $this->redirect(['view', 'raceMask' => $model->raceMask, 'classMask' => $model->classMask, 'skill' => $model->skill]);
+        }
+
+        return $this->render('create', [
             'model' => $model,
         ]);
     }

@@ -6,19 +6,13 @@ use yii\helpers\Html;
 
 $this->title = 'Index Page';
 $this->params['breadcrumbs'][] = $this->title;
+?>
 
-// Function to map raceMask values to class names
-function mapRaceMask(PlayerCreateInfoSkill $model)
-{
-    return $model->getRaceMaskName($model->raceMask) ?? $model->raceMask;
-}
+<?php echo Html::a('Create Player Create Info Skill', ['create'], ['class' => 'btn btn-success']); ?>
 
-// Function to map classMask values to class names
-function mapClassMask(PlayerCreateInfoSkill $model)
-{
-    return $model->getClassMaskName($model->classMask) ?? $model->classMask;
-}
+<div class="mb-3"></div>
 
+<?php
 echo GridView::widget([
     'dataProvider' => $dataProvider,
     'filterModel' => $searchModel,
