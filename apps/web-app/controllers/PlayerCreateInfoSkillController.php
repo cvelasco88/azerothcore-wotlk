@@ -1,6 +1,8 @@
 <?php
 
 namespace app\controllers;
+
+use app\models\forms\PlayerCreateInfoSkillForm;
 use app\models\PlayerCreateInfoSkill;
 use app\models\search\PlayerCreateInfoSkillSearch;
 use \Yii;
@@ -30,62 +32,39 @@ class PlayerCreateInfoSkillController extends \yii\web\Controller
 
     public function actionUpdate($raceMask, $classMask, $skill)
     {
+        $formModel = new PlayerCreateInfoSkillForm();
         $model = $this->findModel($raceMask, $classMask, $skill);
+        $formModel->initModelAttributes($model);
 
-        $body = Yii::$app->request->post();
-        if(isset($body["raceMask"])) {
-            $raceMask = 0;
-            foreach($body["raceMask"] as $opt) {
-                $raceMask |= $opt;
-            }
-            $body["PlayerCreateInfoSkill"]["raceMask"] = "".$raceMask;
-        }
-        if(isset($body["classMask"])) {
-            $classMask = 0;
-            foreach($body["classMask"] as $opt) {
-                $classMask |= $opt;
-            }
-            $body["PlayerCreateInfoSkill"]["classMask"] = "".$classMask;
-        }
-
-        if ($model->load($body) && $model->save()) {
+        // Check if data is submitted
+        if ($formModel->processForm($model, Yii::$app->request->post())) {
             // Successfully updated, redirect to view action
             return $this->redirect(['view', 'raceMask' => $model->raceMask, 'classMask' => $model->classMask, 'skill' => $model->skill]);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'formModel' => $formModel,
         ]);
     }
 
     public function actionCreate()
     {
+        $formModel = new PlayerCreateInfoSkillForm();
         $model = new PlayerCreateInfoSkill();
-        $body = Yii::$app->request->post();
-        if(isset($body["raceMask"])) {
-            $raceMask = 0;
-            foreach($body["raceMask"] as $opt) {
-                $raceMask |= $opt;
-            }
-            $body["PlayerCreateInfoSkill"]["raceMask"] = "".$raceMask;
-        }
-        if(isset($body["classMask"])) {
-            $classMask = 0;
-            foreach($body["classMask"] as $opt) {
-                $classMask |= $opt;
-            }
-            $body["PlayerCreateInfoSkill"]["classMask"] = "".$classMask;
-        }
+        $formModel->initModelAttributes($model);        
 
-        if ($model->load($body) && $model->save()) {
+        if ($formModel->processForm($model, Yii::$app->request->post())) {
             // Successfully created, redirect to view action
             return $this->redirect(['view', 'raceMask' => $model->raceMask, 'classMask' => $model->classMask, 'skill' => $model->skill]);
         }
 
         return $this->render('create', [
             'model' => $model,
+            'formModel' => $formModel,
         ]);
     }
+
 
     /**
      * Deletes an existing PlayerCreateInfoSkill model.

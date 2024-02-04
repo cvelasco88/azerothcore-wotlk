@@ -32,39 +32,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= '' //$form->field($model, 'raceMask') ?>
     <?= '' //$form->field($model, 'classMask') ?>
 
-    <?php
-    // Generating checkbox list for raceMask
-    $raceOptions = PlayerCreateInfoSkill::getRaceMaskOptions();
-    $selectedRaceMask = $model->raceMask;
-
-    echo $form->field($model, 'raceMask')->checkboxList($raceOptions, [
-        'item' => function ($index, $label, $name, $checked, $value) use ($selectedRaceMask) {
-            $checked = ($selectedRaceMask & $value) || ($selectedRaceMask === 0 && $value === 0);
-            $checkbox = Html::checkbox('raceMask[]', $checked, [
-                'value' => $value,
-                'label' => $label,
-            ]);
-            return "<div class='checkbox-inline mx-2'>{$checkbox}</div>";
-        },
-    ]);
-    ?>
-
-    <?php
-    // Generating checkbox list for classMask
-    $classOptions = PlayerCreateInfoSkill::getClassMaskOptions();
-    $selectedClassMask = $model->classMask;
-
-    echo $form->field($model, 'classMask')->checkboxList($classOptions, [
-        'item' => function ($index, $label, $name, $checked, $value) use ($selectedClassMask) {
-            $checked = ($selectedClassMask & $value) || ($selectedClassMask === 0 && $value === 0);
-            $checkbox = Html::checkbox('classMask[]', $checked, [
-                'value' => $value,
-                'label' => $label,
-            ]);
-            return "<div class='checkbox-inline mx-2'>{$checkbox}</div>";
-        },
-    ]);
-    ?>
+    <?= $form->field($formModel, 'raceMask')->checkboxList(PlayerCreateInfoSkill::getRaceMaskOptions()); ?>
+    <?= $form->field($formModel, 'classMask')->checkboxList(PlayerCreateInfoSkill::getClassMaskOptions()); ?>
+    
     <?= $form->field($model, 'skill') ?>
     <?= $form->field($model, 'rank') ?>
     <?= $form->field($model, 'comment') ?>
