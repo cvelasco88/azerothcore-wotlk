@@ -2,18 +2,18 @@
 
 namespace app\models;
 
-use app\models\traits\DispelTypeTrait;
-use app\models\traits\PowerTypeTrait;
-use app\models\traits\SpellAttrsTrait;
-use app\models\traits\SpellAttrsEx1Trait;
-use app\models\traits\SpellAttrsEx2Trait;
-use app\models\traits\SpellAttrsEx3Trait;
-use app\models\traits\SpellAttrsEx4Trait;
-use app\models\traits\SpellAttrsEx5Trait;
-use app\models\traits\SpellAttrsEx6Trait;
-use app\models\traits\SpellAttrsEx7Trait;
-use app\models\traits\TargetFlagTrait;
-use app\models\traits\TargetCreatureTypeTrait;
+use app\models\traits\spell\DispelTypeTrait;
+use app\models\traits\spell\PowerTypeTrait;
+use app\models\traits\spell\SpellAttrsTrait;
+use app\models\traits\spell\SpellAttrsEx1Trait;
+use app\models\traits\spell\SpellAttrsEx2Trait;
+use app\models\traits\spell\SpellAttrsEx3Trait;
+use app\models\traits\spell\SpellAttrsEx4Trait;
+use app\models\traits\spell\SpellAttrsEx5Trait;
+use app\models\traits\spell\SpellAttrsEx6Trait;
+use app\models\traits\spell\SpellAttrsEx7Trait;
+use app\models\traits\spell\TargetFlagTrait;
+use app\models\traits\spell\TargetCreatureTypeTrait;
 use Yii;
 
 /**

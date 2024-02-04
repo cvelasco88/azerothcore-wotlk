@@ -4,21 +4,22 @@ namespace app\models\search;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\SpellDbc;
+use app\models\PlayerCreateInfoSkill;
 
 /**
- * SpellDbcSearch represents the model behind the search form of `app\models\SpellDbc`.
+ * PlayerCreateInfoSkillSearch represents the model behind the search form of `app\models\PlayerCreateInfoSkill`.
  */
-class SpellDbcSearch extends SpellDbc
+class PlayerCreateInfoSkillSearch extends PlayerCreateInfoSkill
 {
+            
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['ID'], 'integer'],
-            [['Name_Lang_enUS', 'Category', 'SpellClassSet', 'SpellLevel'], 'safe'],
+            [['raceMask', 'classMask', 'skill'], 'integer'],
+            [['rank', 'comment'], 'safe'],
         ];
     }
 
@@ -40,7 +41,7 @@ class SpellDbcSearch extends SpellDbc
      */
     public function search($params)
     {
-        $query = SpellDbc::find();
+        $query = PlayerCreateInfoSkill::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -59,13 +60,14 @@ class SpellDbcSearch extends SpellDbc
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'ID' => $this->ID,
-            'SpellClassSet' => $this->SpellClassSet,
-            'SpellLevel' => $this->SpellLevel,
+            'raceMask' => $this->raceMask,
+            'classMask' => $this->classMask,
+            'skill' => $this->skill,
         ]);
 
-        $query->andFilterWhere(['like', 'Name_Lang_enUS', $this->Name_Lang_enUS])
-            ->andFilterWhere(['like', 'Category', $this->Category]);
+        $query->andFilterWhere(['like', 'skill', $this->skill])
+            ->andFilterWhere(['like', 'SpellrankClassSet', $this->rank])
+            ->andFilterWhere(['like', 'comment', $this->comment]);
 
         return $dataProvider;
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models\traits;
+namespace app\models\traits\spell;
 
 trait SpellAttrsEx4Trait
 {

@@ -51,6 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                         'value' => function ($model) use ($targetFlagOptions) {
                             /** @var SpellDbc $model */
+                            // TODO: fixme like "Attributes"
                             // return \yii\helpers\Html::activeDropDownList($model, 'Targets', $targetFlagOptions, ['multiple' => true]);
                             // If you want to use checkboxes, use the following instead:
                             return \yii\helpers\Html::activeCheckboxList($model, 'Targets', $targetFlagOptions, [
@@ -67,6 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                         'value' => function ($model) use ($targetCreatureTypes) {
                             /** @var SpellDbc $model */
+                            // TODO: fixme like "Attributes"
                             // return \yii\helpers\Html::activeDropDownList($model, 'TargetCreatureType', $targetCreatureTypes, ['multiple' => true]);
                             // If you want to use checkboxes, use the following instead:
                             return \yii\helpers\Html::activeCheckboxList($model, 'TargetCreatureType', $targetCreatureTypes, [

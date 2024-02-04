@@ -2,8 +2,6 @@
 /** @var yii\web\View $this */
 use app\models\SpellDbc;
 use yii\grid\GridView;
-use yii\helpers\Html;
-use yii\widgets\LinkPager;
 
 $this->title = 'Index Page';
 $this->params['breadcrumbs'][] = $this->title;
@@ -36,8 +34,9 @@ echo GridView::widget([
             'ID',
             'Name_Lang_enUS',
             'Category',
-            'Attributes',
+            'SpellClassSet',
             'SpellLevel',
+            'RangeIndex',
         ]
         // Add more columns as needed
         // ['class' => 'yii\grid\ActionColumn'],
