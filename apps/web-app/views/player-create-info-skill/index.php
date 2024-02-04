@@ -30,17 +30,10 @@ echo GridView::widget([
                 'template' => '{view} {update}',
             ]
         ],
-        [
+        [ 
             [
                 'attribute' => 'raceMask',
                 'label' => 'Race Mask',
-                'value' => function ($model) {
-                    return mapRaceMask($model);
-                },
-            ],
-            [
-                'attribute' => 'raceMask',
-                'label' => 'Race Mask 2',
                 'format' => 'raw',
                 'value' => function ($model) {
                     $raceOptions = PlayerCreateInfoSkill::getRaceMaskOptions();
@@ -53,9 +46,9 @@ echo GridView::widget([
                             'value' => $value,
                             'label' => $label,
                             // 'disabled' => true,
-                            'onclick' => 'return false', // Disabled click
+                            'onclick' => 'return false;', // Disabled click
                         ]);
-                        $checkboxes[] = "<div class='checkbox-inline'>{$checkbox}</div>";
+                        $checkboxes[] = "<div class='checkbox-inline mx-2'>{$checkbox}</div>";
                     }
 
                     return implode('', $checkboxes);
@@ -75,8 +68,24 @@ echo GridView::widget([
             [
                 'attribute' => 'classMask',
                 'label' => 'Class Mask',
+                'format' => 'raw',
                 'value' => function ($model) {
-                    return mapClassMask($model);
+                    $classOptions = PlayerCreateInfoSkill::getClassMaskOptions();
+                    $selectedClassMask = $model->classMask;
+
+                    $checkboxes = [];
+                    foreach ($classOptions as $value => $label) {
+                        $checked = ($selectedClassMask & $value) || ($selectedClassMask === 0 && $value === 0);
+                        $checkbox = Html::checkbox('classMask[]', $checked, [
+                            'value' => $value,
+                            'label' => $label,
+                            // 'disabled' => true,
+                            'onclick' => 'return false;', // Disabled click
+                        ]);
+                        $checkboxes[] = "<div class='checkbox-inline mx-2'>{$checkbox}</div>";
+                    }
+
+                    return implode('', $checkboxes);
                 },
             ],
             'skill',
