@@ -2,70 +2,52 @@
 
 namespace app\helpers;
 
-use yii\helpers\BaseFileHelper;
 
 class DbcReader
 {
-    private const HeaderSize = 20;
-    private const WDBCFmtSig = 0x43424457; // WDBC
+    const HEADER_SIZE = 20;
+    const WDBC_FMT_SIG = 0x43424457; // WDBC
 
     public $recordsCount;
     public $fieldsCount;
     public $recordSize;
     public $stringTableSize;
-    public $tableHash;
-    public $layoutHash;
-    public $minIndex;
-    public $maxIndex;
-    public $idFieldIndex;
-    public $flags;
 
-    // ... (other public properties and methods as needed)
-
-    private $meta;
-    private $indexData;
-    private $columnMeta;
-    private $palletData;
-    private $commonData;
+    public $recordsData;
     private $stringsTable;
-    private $copyData;
-    private $recordsData;
     private $_records;
-    private $sparseEntries;
-    private $foreignKeyData;
 
-    public function __construct($dbcFile)
+
+    public function __construct(string $dbcFile)
     {
         $stream = fopen($dbcFile, 'rb');
 
         if ($stream === false) {
             throw new \Exception('Failed to open WDBC file.');
-        }
-
-        $headerData = fread($stream, self::HeaderSize);
-        if ($headerData === false) {
+        }  
+        
+        $fileInfo = fstat($stream);
+        if ($fileInfo['size'] < self::HEADER_SIZE) {
             throw new \Exception('Failed to read WDBC file header.');
         }
 
-        $unpackData = unpack('V', substr($headerData, 0, 4));
-        $magic = $unpackData[1];
+        $magic = $this->readUInt32($stream);
 
-        if ($magic != self::WDBCFmtSig) {
-            throw new \Exception('Invalid WDBC file format.');
+        if ($magic != self::WDBC_FMT_SIG) {
+            throw new \Exception("WDBC file is corrupted!");
         }
 
-        $this->recordsCount = unpack('V', fread($stream, 4))[1];
-        $this->fieldsCount = unpack('V', fread($stream, 4))[1];
-        $this->recordSize = unpack('V', fread($stream, 4))[1];
-        $this->stringTableSize = unpack('V', fread($stream, 4))[1];
+        $this->recordsCount = $this->readUInt32($stream);
+        $this->fieldsCount = $this->readUInt32($stream);
+        $this->recordSize = $this->readUInt32($stream);
+        $this->stringTableSize = $this->readUInt32($stream);
 
-        if ($this->recordsCount == 0 || $this->recordSize == 0) {
-            fclose($stream);
+        if ($this->recordsCount == 0) {
             return;
         }
 
         $this->recordsData = fread($stream, $this->recordsCount * $this->recordSize);
-        $this->recordsData .= str_repeat("\x00", 8); // pad with extra zeros
+        $this->recordsData = array_pad(unpack('C*', $this->recordsData), count($this->recordsData) + 8, 0); // pad with extra zeros so we don't crash when reading
 
         for ($i = 0; $i < $this->recordsCount; $i++) {
             $bitReader = new BitReader($this->recordsData);
@@ -77,21 +59,28 @@ class DbcReader
         $this->stringsTable = [];
         for ($i = 0; $i < $this->stringTableSize;) {
             $oldPos = ftell($stream);
-            $this->stringsTable[$i] = fread($stream, 32); // Assuming strings are 32 bytes long, adjust as needed
-            // $i += strlen($this->stringsTable[$i]);
-            $i += ftell($stream) - $oldPos;
+            $this->stringsTable[$i] = $this->readCString($stream);
+            $i += (int)(ftell($stream) - $oldPos);
         }
-
-        fclose($stream);
     }
 
-    public function getRecords()
-    {
-        return $this->_records;
+    private function readUInt32($stream) {
+        $magicBytes = fread($stream, 4); // Read 4 bytes
+        $magicArray = unpack('V', $magicBytes); // 'V' represents an unsigned long (32-bit)
+        return $magicArray[1];
     }
 
-    public function printRecord($record)
-    {
-        printf("Record %u: %u, %s\n", $record['id'], $record['name']);
+    private function readInt32($stream) {
+        $recordsCountBytes = fread($stream, 4); // Read 4 bytes
+        $recordsCountArray = unpack('l', $recordsCountBytes); // 'l' represents a signed long (32-bit)
+        return $recordsCountArray[1];
+    }
+
+    private function readCString($stream) {
+        $value = '';
+        while (($char = fgetc($stream)) !== false && $char !== "\0") {
+            $value .= $char;
+        }
+        return $value;
     }
 }
