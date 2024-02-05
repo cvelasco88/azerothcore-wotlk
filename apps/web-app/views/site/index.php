@@ -18,6 +18,7 @@ $this->title = 'My Yii Application';
             <?php
 
                 $menuItems = [
+                    ['label' => 'List DBC', 'url' => ['/site/list-dbcs']],
                     ['label' => 'SpellDbc', 'url' => ['/spell-dbc/index']],
                     ['label' => 'PlayerCreateInfoSkill', 'url' => ['/player-create-info-skill/index']],
                 ];

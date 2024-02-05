@@ -2,7 +2,9 @@
 
 namespace app\controllers;
 
+use app\helpers\DbcReader;
 use Yii;
+use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -124,5 +126,47 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    public function actionListDbcs()
+    {
+        $dataPath = Yii::getAlias('@app/data');
+        $dbcFiles = $this->findDbcFiles($dataPath);
+
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $dbcFiles,
+        ]);
+
+        return $this->render('list-dbcs', [
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+    public function actionViewDbc($fileName)
+    {
+        $dataPath = Yii::getAlias('@app/data');
+        $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
+
+        $dbcReader = new DbcReader($filePath);
+        $records = $dbcReader->getRecords();
+
+        return $this->render('view-dbc', [
+            'fileName' => $fileName,
+            'records' => $records,
+        ]);
+    }
+
+    private function findDbcFiles($directory)
+    {
+        $files = scandir($directory);
+        $dbcFiles = [];
+
+        foreach ($files as $file) {
+            if (pathinfo($file, PATHINFO_EXTENSION) === 'dbc') {
+                $dbcFiles[] = ['name' => $file];
+            }
+        }
+
+        return $dbcFiles;
     }
 }
