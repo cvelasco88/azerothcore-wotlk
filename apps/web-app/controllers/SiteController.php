@@ -2,8 +2,9 @@
 
 namespace app\controllers;
 
-use app\helpers\ChatProfanityRecord;
+use app\helpers\structures\ChatProfanityRecord;
 use app\helpers\DbcReader;
+use app\helpers\structures\TalentRecord;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
@@ -151,7 +152,7 @@ class SiteController extends Controller
         // Open the DBC file
         $storage = fopen($filePath, 'rb');
         // Create a DbcReader instance
-        $dbcReader = new DbcReader(ChatProfanityRecord::class, $storage);
+        $dbcReader = new DbcReader(TalentRecord::class, $storage);
         $records = [];
         // Iterate over records
         foreach ($dbcReader as $record) {
