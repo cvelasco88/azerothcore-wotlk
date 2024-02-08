@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\helpers\ChatProfanityRecord;
 use app\helpers\DbcReader;
 use Yii;
 use yii\data\ArrayDataProvider;
@@ -147,8 +148,18 @@ class SiteController extends Controller
         $dataPath = Yii::getAlias('@app/data');
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
-        $dbcReader = new DbcReader($filePath);
-        $records = $dbcReader->getRecords();
+        // Open the DBC file
+        $storage = fopen($filePath, 'rb');
+        // Create a DbcReader instance
+        $dbcReader = new DbcReader(ChatProfanityRecord::class, $storage);
+        $records = [];
+        // Iterate over records
+        foreach ($dbcReader as $record) {
+            // Process each record
+            $records[] = $record;
+        }
+        // Close the DBC file
+        // Note: closed on DbcReader _destruct => fclose($storage);
 
         return $this->render('view-dbc', [
             'fileName' => $fileName,

@@ -22,7 +22,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <ul>
         <?php foreach ($records as $record): ?>
-            <li><?= Html::encode("Record {$record['id']}: {$record['name']}") ?></li>
+            <li><?= Html::encode(json_encode($record)) ?></li>
+            <li><?php /*Html::encode("Record {$record)$record['id']}: {$record['name']}")*/ ?></li>
         <?php endforeach; ?>
     </ul>
 </div>
