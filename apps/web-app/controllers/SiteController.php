@@ -2,13 +2,10 @@
 
 namespace app\controllers;
 
+use app\helpers\DbcArrayDataProvider;
 use app\helpers\DbcDefinition;
 use app\helpers\DbcRecord;
-use app\helpers\structures\ChatProfanityRecord;
 use app\helpers\DbcReader;
-use app\helpers\structures\TalentRecord;
-use app\models\SpellDbc;
-use app\models\TalentDbc;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
@@ -164,31 +161,16 @@ class SiteController extends Controller
         // Close the DBC file
         // Note: closed on DbcReader _destruct => fclose($storage);
 
-        foreach($dbcReader->getRecords() as $record) {
+        foreach ($dbcReader->getRecords() as $record) {
             $records[] = $record;
         }
 
-        // Calculate the total count
-        $totalCount = count($records);
-
-        // Calculate the offset
-        $offset = ($page - 1) * $pageSize;
-        // Extract the portion of records for the current page
-        // $records = array_slice($records, $offset, $pageSize);
-        $models = array_map(function ($index, $record) use ($offset, $pageSize) {
-            if ($index >= $offset && $index < $offset + $pageSize) {
-                return $record->value();
-            }
-            return $record;
-        }, array_keys($records), $records);
-
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => $models,
+        $dataProvider = new DbcArrayDataProvider([
+            'allModels' => $records,
             'pagination' => [
                 'pageSize' => $pageSize,
             ],
         ]);
-        $dataProvider->setTotalCount($totalCount);
 
         return $this->render('view-dbc', [
             'dataProvider' => $dataProvider,
