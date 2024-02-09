@@ -200,19 +200,28 @@ class DbcReader implements \IteratorAggregate, \Countable
         // Seek to the position of the record
         // fseek($this->store, $this->perRecord * $index + $this->headerLength, SEEK_SET);
 
+        return $record;
+    }
+
+    public function count(): int
+    {
+        return $this->count;
+    }
+
+    /**
+     * pre: stream open
+     * @param DbcRecord $record
+     * @return object
+     */
+    public function getRecordInfo(DbcRecord $record)
+    {
         // Create a new instance of ChatProfanityRecord
         $target = new $this->targetClass();
 
         // Populate the target using the ConvertSlow method
         self::ConvertSlow($this, $record, $target);
         // self::ConvertSlowOld($this, $this->recordLength, $target, $index);
-
         return $target;
-    }
-
-    public function count(): int
-    {
-        return $this->count;
     }
 
     /**

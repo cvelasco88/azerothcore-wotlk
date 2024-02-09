@@ -21,15 +21,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h2>Records:</h2>
     <?php 
-    $reflectionClass = new \ReflectionClass($modelClass);
+    $reflectionClass = new \ReflectionClass($targetClass);
     // Get all properties of the target class
     $properties = $reflectionClass->getProperties();
     $columns = array_map(function($prop) { return $prop->name; }, $properties);
     echo GridView::widget([
-            'dataProvider' => new \yii\data\ArrayDataProvider([
-                'allModels' => $records,
-                'pagination' => false,
-            ]),
+            'dataProvider' => $dataProvider,
             'columns' => $columns,
         ]); 
     ?>

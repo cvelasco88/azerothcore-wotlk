@@ -2,9 +2,12 @@
 
 namespace app\controllers;
 
+use app\helpers\DbcDefinition;
+use app\helpers\DbcRecord;
 use app\helpers\structures\ChatProfanityRecord;
 use app\helpers\DbcReader;
 use app\helpers\structures\TalentRecord;
+use app\models\SpellDbc;
 use app\models\TalentDbc;
 use Yii;
 use yii\data\ArrayDataProvider;
@@ -150,23 +153,35 @@ class SiteController extends Controller
         $dataPath = Yii::getAlias('@app/data');
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
+        $targetClass = DbcDefinition::getTargetClass($fileName);
+
         // Open the DBC file
         $storage = fopen($filePath, 'rb');
         // Create a DbcReader instance
-        $dbcReader = new DbcReader(TalentDbc::class, $storage);
+        $dbcReader = new DbcReader($targetClass, $storage);
         $records = [];
         // Iterate over records
         foreach ($dbcReader as $record) {
+        }
+        foreach ($dbcReader->getRecords() as $record) {
+            /** @var DbcRecord $record */
             // Process each record
-            $records[] = $record;
+            $records[] = $record->value();
         }
         // Close the DBC file
         // Note: closed on DbcReader _destruct => fclose($storage);
 
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $records,
+            'pagination' => [
+                'pageSize' => 100, // Set the number of items per page
+            ],
+        ]);
+
         return $this->render('view-dbc', [
+            'dataProvider' => $dataProvider,
             'fileName' => $fileName,
-            'modelClass' => TalentDbc::class,
-            'records' => $records,
+            'targetClass' => $targetClass,
         ]);
     }
 

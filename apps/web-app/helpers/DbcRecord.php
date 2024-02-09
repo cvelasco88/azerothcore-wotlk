@@ -44,4 +44,14 @@ class DbcRecord
 
         return $owner->getStringValue($this->index, $column);
     }
+
+    public function value()
+    {
+        /** @var DbcReader $owner */
+        $owner = null;
+        if (!$this->owner->tryGetTarget($owner))
+            throw new \RuntimeException();
+
+        return $owner->getRecordInfo($this);
+    }
 }
