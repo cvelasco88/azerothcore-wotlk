@@ -3,6 +3,7 @@
 namespace app\helpers;
 use Generator;
 use Traversable;
+use yii\db\ActiveRecord;
 
 /**
  * Adaptation from https://github.com/robpaveza/dbcexplorer/tree/master/src/DbcReader
@@ -219,7 +220,7 @@ class DbcReader implements \IteratorAggregate, \Countable
      * @param DbcRecord $record
      * @param object $target
      */
-    private static function ConvertSlow(DbcReader $reader, DbcRecord $record, object $target)
+    private static function ConvertSlow(DbcReader $reader, DbcRecord $record, ActiveRecord $target)
     {
         $values = [];
         
@@ -228,15 +229,16 @@ class DbcReader implements \IteratorAggregate, \Countable
             $values[$i] = $record->getInt32Value($i);
         }
 
-        $reflectionClass = new \ReflectionClass(get_class($target));
         // Get all properties of the target class
-        $properties = $reflectionClass->getProperties();
+        $properties = array_keys($target->getAttributes());
 
         foreach ($properties as $position => $property) {
-            // Get the property name
-            $propertyName = $property->getName();
-            // Set the value to the property of the target object
-            $target->$propertyName = $values[$position];
+            if($position < count($values)) {
+                // Get the property name
+                $propertyName = $property;
+                // Set the value to the property of the target object
+                $target->$propertyName = $values[$position];
+            }
         }
     }
 
