@@ -148,7 +148,7 @@ class SiteController extends Controller
         ]);
     }
 
-    public function actionViewDbc($fileName)
+    public function actionViewDbc($fileName, $page = 1, $pageSize = 100)
     {
         $dataPath = Yii::getAlias('@app/data');
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
@@ -159,24 +159,36 @@ class SiteController extends Controller
         $storage = fopen($filePath, 'rb');
         // Create a DbcReader instance
         $dbcReader = new DbcReader($targetClass, $storage);
+        /** @var DbcRecord[] $records */
         $records = [];
-        // Iterate over records
-        foreach ($dbcReader as $record) {
-        }
-        foreach ($dbcReader->getRecords() as $record) {
-            /** @var DbcRecord $record */
-            // Process each record
-            $records[] = $record->value();
-        }
         // Close the DBC file
         // Note: closed on DbcReader _destruct => fclose($storage);
 
+        foreach($dbcReader->getRecords() as $record) {
+            $records[] = $record;
+        }
+
+        // Calculate the total count
+        $totalCount = count($records);
+
+        // Calculate the offset
+        $offset = ($page - 1) * $pageSize;
+        // Extract the portion of records for the current page
+        // $records = array_slice($records, $offset, $pageSize);
+        $models = array_map(function ($index, $record) use ($offset, $pageSize) {
+            if ($index >= $offset && $index < $offset + $pageSize) {
+                return $record->value();
+            }
+            return $record;
+        }, array_keys($records), $records);
+
         $dataProvider = new ArrayDataProvider([
-            'allModels' => $records,
+            'allModels' => $models,
             'pagination' => [
-                'pageSize' => 100, // Set the number of items per page
+                'pageSize' => $pageSize,
             ],
         ]);
+        $dataProvider->setTotalCount($totalCount);
 
         return $this->render('view-dbc', [
             'dataProvider' => $dataProvider,
@@ -184,6 +196,7 @@ class SiteController extends Controller
             'targetClass' => $targetClass,
         ]);
     }
+
 
     private function findDbcFiles($directory)
     {
