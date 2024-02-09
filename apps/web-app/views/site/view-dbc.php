@@ -23,9 +23,16 @@ $this->registerJsFile('@web/js/site-ajax-functions.js', ['depends' => [\yii\web\
         <?= Html::a('Back to List', ['list-dbcs'], ['class' => 'btn btn-primary']) ?>
     </p>
 
-    <?= Html::button('Validate Records', ['class' => 'btn btn-primary', 'onclick' => 'validateRecords(this, "' . $fileName . '")']) ?>
-    <?= Html::button('Import Data', ['class' => 'btn btn-primary', 'onclick' => 'importData(this, "' . $fileName . '")']) ?>
-
+    <?= Html::button('Validate Records', [
+            'class' => 'btn btn-primary',
+            'onclick' => 'validateRecords(this, "' . $fileName . '")'
+        ]) ?>
+    <?= Html::button('Import Data', [
+        'class' => 'btn btn-primary',
+        'onclick' => 'importData(this, "' . $fileName . '")',
+        'confirm' => 'Are you sure you want to import data?'
+    ]) ?>
+    
     <h2>Records:</h2>
     <?php
     $reflectionClass = new \ReflectionClass($targetClass);

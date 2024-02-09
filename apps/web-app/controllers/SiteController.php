@@ -179,7 +179,7 @@ class SiteController extends Controller
         ]);
     }
 
-    public function actionValidateRecords($fileName)
+    public function actionValidateRecords(string $fileName)
     {
         $dataPath = Yii::getAlias('@app/data');
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
@@ -193,27 +193,30 @@ class SiteController extends Controller
         // Close the DBC file
         // Note: closed on DbcReader _destruct => fclose($storage);
 
-        $idValues = [];
+        $records = [];
         foreach ($dbcReader->getRecords() as $record) {
-            /** @var \yii\db\ActiveRecord $item */
-            $item = $record->value();
-            $idValues[] = $item->getPrimaryKey();
-            $item = null;
+            $records[] = $record;
         }
 
+        // Process records in batches
+        $batchSize = 100; // Adjust as needed
         // Calculate counts
         $insertCount = 0;
         $updateCount = 0;
 
-        // Check existence of records
-        foreach ($idValues as $primaryKeyValues) {
-            $exists = call_user_func_array([$targetClass::find(), 'where'], [$primaryKeyValues])->exists();
-            if ($exists) {
-                $updateCount++;
-            } else {
-                $insertCount++;
+        $this->processRecordsInBatches($records, $batchSize, function ($batchRecords) use ($targetClass, &$insertCount, &$updateCount) {
+            // Check existence of records and update counts
+            foreach ($batchRecords as $record) {
+                $item = $record->value();
+                $exists = call_user_func_array([$targetClass::find(), 'where'], [$item->getPrimaryKey()])->exists();
+                if ($exists) {
+                    $updateCount++;
+                } else {
+                    $insertCount++;
+                }
+                $item = null;
             }
-        }
+        });
 
         // Return the results
         return json_encode([
@@ -222,9 +225,43 @@ class SiteController extends Controller
         ]);
     }
 
-    public function actionImport()
+    public function actionImport(string $fileName)
     {
         // Your import logic goes here
+        $dataPath = Yii::getAlias('@app/data');
+        $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
+
+        $targetClass = DbcDefinition::getTargetClass($fileName);
+
+        // Open the DBC file
+        $storage = fopen($filePath, 'rb');
+        // Create a DbcReader instance
+        $dbcReader = new DbcReader($targetClass, $storage);
+        // Close the DBC file
+        // Note: closed on DbcReader _destruct => fclose($storage);
+
+        $records = [];
+        foreach ($dbcReader->getRecords() as $record) {
+            $records[] = $record;
+        }
+
+        // Process records in batches
+        $batchSize = 1000; // Adjust as needed
+
+        $this->processRecordsInBatches($records, $batchSize, function ($batchRecords) use ($targetClass, &$insertCount, &$updateCount) {
+            // Check existence of records and update counts
+            foreach ($batchRecords as $record) {
+                $item = $record->value();
+                $exists = call_user_func_array([$targetClass::find(), 'where'], [$item->getPrimaryKey()])->exists();
+                // TODO: wip
+                /*if ($exists) {
+                    $updateCount++;
+                } else {
+                    $insertCount++;
+                }*/
+                $item = null;
+            }
+        });
 
         // Return success or failure message
         return json_encode(['success' => true]);
@@ -243,4 +280,22 @@ class SiteController extends Controller
 
         return $dbcFiles;
     }
+
+    public function processRecordsInBatches($records, $batchSize, $callback)
+    {
+        // Calculate total number of batches
+        $totalRecords = count($records);
+        $totalBatches = ceil($totalRecords / $batchSize);
+
+        // Process records in batches
+        for ($batchIndex = 0; $batchIndex < $totalBatches; $batchIndex++) {
+            // Get records for the current batch
+            $startIndex = $batchIndex * $batchSize;
+            $batchRecords = array_slice($records, $startIndex, $batchSize);
+
+            // Process records in batch using callback
+            call_user_func($callback, $batchRecords);
+        }
+    }
+
 }
