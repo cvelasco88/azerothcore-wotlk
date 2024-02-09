@@ -1,6 +1,7 @@
 <?php
 
 namespace app\helpers;
+
 use Generator;
 use Traversable;
 use yii\db\ActiveRecord;
@@ -136,10 +137,15 @@ class DbcReader implements \IteratorAggregate, \Countable
             $len++;
         }
 
-        fseek($this->store, $this->stringBlockOffset + $stringTablePosition, SEEK_SET);
-        $temp = fread($this->store, $len);
-        fseek($this->store, $curPos, SEEK_SET);
-        return mb_convert_encoding($temp, "UTF-8", mb_detect_encoding($temp));
+        if ($len > 0) {
+            $temp = fread($this->store, $len);
+            fseek($this->store, $curPos, SEEK_SET);
+            return mb_convert_encoding($temp, "UTF-8", mb_detect_encoding($temp));
+        } else {
+            // Return an empty string or handle the case as appropriate
+            fseek($this->store, $curPos, SEEK_SET);
+            return "";
+        }
     }
 
     public function getInt32Value($record, $column)
@@ -215,7 +221,7 @@ class DbcReader implements \IteratorAggregate, \Countable
      */
     public function getRecordInfo(DbcRecord $record)
     {
-        // Create a new instance of ChatProfanityRecord
+        // Create a new instance of $targetClass
         $target = new $this->targetClass();
 
         // Populate the target using the ConvertSlow method
@@ -232,17 +238,17 @@ class DbcReader implements \IteratorAggregate, \Countable
     private static function ConvertSlow(DbcReader $reader, DbcRecord $record, ActiveRecord $target)
     {
         $values = [];
-        
+
         for ($i = 0; $i < $reader->recordLength; $i++) {
-            // Read integer value from the reader
-            $values[$i] = $record->getInt32Value($i);
+            // Read value based on the type of the attribute
+            $values[$i] = self::readAttributeValue($record, $i, $target);
         }
 
         // Get all properties of the target class
         $properties = array_keys($target->getAttributes());
 
         foreach ($properties as $position => $property) {
-            if($position < count($values)) {
+            if ($position < count($values)) {
                 // Get the property name
                 $propertyName = $property;
                 // Set the value to the property of the target object
@@ -272,6 +278,38 @@ class DbcReader implements \IteratorAggregate, \Countable
             // Set the value to the property of the target object
             $target->$propertyName = $values[$position];
         }
+    }
+
+    /**
+     * Read attribute value based on the type of the attribute in the ActiveRecord model.
+     *
+     * @param DbcRecord $record
+     * @param int $column
+     * @param ActiveRecord $target
+     * @return mixed
+     */
+    private static function readAttributeValue( DbcRecord $record, int $column, ActiveRecord $target)
+    {
+        $attribute = $target->attributes()[$column]; // Get the attribute by its position
+
+        // Determine the type of the attribute
+        $columnType = $target->getTableSchema()->getColumn($attribute)->type;
+        switch ($columnType) {
+            case 'integer':
+            case 'bigint':            
+                $value = $record->getInt32Value($column);
+                break;
+            case 'float': 
+                $value = $record->getSingleValue($column);
+                break;
+            case 'string':
+                $value = $record->getStringValue($column);
+                break;
+            default:
+                $value = $record->getInt32Value($column);
+                break;
+        }
+        return $value;
     }
 
 }
