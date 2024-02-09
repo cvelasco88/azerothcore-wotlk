@@ -156,11 +156,11 @@ class SiteController extends Controller
         $storage = fopen($filePath, 'rb');
         // Create a DbcReader instance
         $dbcReader = new DbcReader($targetClass, $storage);
-        /** @var DbcRecord[] $records */
-        $records = [];
         // Close the DBC file
         // Note: closed on DbcReader _destruct => fclose($storage);
 
+        /** @var DbcRecord[] $records */
+        $records = [];
         foreach ($dbcReader->getRecords() as $record) {
             $records[] = $record;
         }
@@ -179,6 +179,56 @@ class SiteController extends Controller
         ]);
     }
 
+    public function actionValidateRecords($fileName)
+    {
+        $dataPath = Yii::getAlias('@app/data');
+        $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
+
+        $targetClass = DbcDefinition::getTargetClass($fileName);
+
+        // Open the DBC file
+        $storage = fopen($filePath, 'rb');
+        // Create a DbcReader instance
+        $dbcReader = new DbcReader($targetClass, $storage);
+        // Close the DBC file
+        // Note: closed on DbcReader _destruct => fclose($storage);
+
+        $idValues = [];
+        foreach ($dbcReader->getRecords() as $record) {
+            /** @var \yii\db\ActiveRecord $item */
+            $item = $record->value();
+            $idValues[] = $item->getPrimaryKey();
+            $item = null;
+        }
+
+        // Calculate counts
+        $insertCount = 0;
+        $updateCount = 0;
+
+        // Check existence of records
+        foreach ($idValues as $primaryKeyValues) {
+            $exists = call_user_func_array([$targetClass::find(), 'where'], [$primaryKeyValues])->exists();
+            if ($exists) {
+                $updateCount++;
+            } else {
+                $insertCount++;
+            }
+        }
+
+        // Return the results
+        return json_encode([
+            'insertCount' => $insertCount,
+            'updateCount' => $updateCount,
+        ]);
+    }
+
+    public function actionImport()
+    {
+        // Your import logic goes here
+
+        // Return success or failure message
+        return json_encode(['success' => true]);
+    }
 
     private function findDbcFiles($directory)
     {

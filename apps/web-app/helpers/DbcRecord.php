@@ -45,6 +45,9 @@ class DbcRecord
         return $owner->getStringValue($this->index, $column);
     }
 
+    /**
+     * @return \yii\db\ActiveRecord
+     */
     public function value()
     {
         /** @var DbcReader $owner */

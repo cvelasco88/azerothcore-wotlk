@@ -37,8 +37,16 @@ class DbcReader implements \IteratorAggregate, \Countable
     protected $maxId;
     protected $locale;
 
-    public function __construct(string $targetClass, $storage, $ownsStorage = true)
+    /**
+     * @param string $targetClass
+     * @param mixed $storage
+     * @param bool $ownsStorage
+     */
+    public function __construct(string $targetClass, $storage, bool $ownsStorage = true)
     {
+        if (!is_subclass_of($targetClass, ActiveRecord::class)) {
+            throw new \InvalidArgumentException("$targetClass must inherit from \yii\db\ActiveRecord");
+        }
         $this->targetClass = $targetClass;
 
         if (!is_resource($storage) || get_resource_type($storage) !== 'stream')
@@ -217,11 +225,11 @@ class DbcReader implements \IteratorAggregate, \Countable
     /**
      * pre: stream open
      * @param DbcRecord $record
-     * @return object
+     * @return \yii\db\ActiveRecord
      */
     public function getRecordInfo(DbcRecord $record)
     {
-        // Create a new instance of $targetClass
+        // Create a new instance of $targetClass (\yii\db\ActiveRecord)
         $target = new $this->targetClass();
 
         // Populate the target using the ConvertSlow method
