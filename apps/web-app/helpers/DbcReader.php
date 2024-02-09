@@ -4,7 +4,10 @@ namespace app\helpers;
 use Generator;
 use Traversable;
 
-
+/**
+ * Adaptation from https://github.com/robpaveza/dbcexplorer/tree/master/src/DbcReader
+ * It contains modifications from the source
+ */
 class DbcReader implements \IteratorAggregate, \Countable
 {
     protected const HEADER_LENGTH_DBC = 20;
@@ -190,14 +193,18 @@ class DbcReader implements \IteratorAggregate, \Countable
 
     private function getAt($index)
     {
+        $curPos = $this->headerLength + ($index * ($this->recordLength * 4));
+        $record = new DbcRecord($curPos, $index, $this);
+
         // Seek to the position of the record
-        fseek($this->store, $this->perRecord * $index + $this->headerLength, SEEK_SET);
+        // fseek($this->store, $this->perRecord * $index + $this->headerLength, SEEK_SET);
 
         // Create a new instance of ChatProfanityRecord
         $target = new $this->targetClass();
 
         // Populate the target using the ConvertSlow method
-        self::ConvertSlow($this, $this->recordLength, $target, $index);
+        self::ConvertSlow($this, $record, $target);
+        // self::ConvertSlowOld($this, $this->recordLength, $target, $index);
 
         return $target;
     }
@@ -209,8 +216,34 @@ class DbcReader implements \IteratorAggregate, \Countable
 
     /**
      * @param DbcReader $reader
+     * @param DbcRecord $record
+     * @param object $target
      */
-    private static function ConvertSlow(DbcReader $reader, $fieldsPerRecord, $target, $record)
+    private static function ConvertSlow(DbcReader $reader, DbcRecord $record, object $target)
+    {
+        $values = [];
+        
+        for ($i = 0; $i < $reader->recordLength; $i++) {
+            // Read integer value from the reader
+            $values[$i] = $record->getInt32Value($i);
+        }
+
+        $reflectionClass = new \ReflectionClass(get_class($target));
+        // Get all properties of the target class
+        $properties = $reflectionClass->getProperties();
+
+        foreach ($properties as $position => $property) {
+            // Get the property name
+            $propertyName = $property->getName();
+            // Set the value to the property of the target object
+            $target->$propertyName = $values[$position];
+        }
+    }
+
+    /**
+     * @param DbcReader $reader
+     */
+    private static function ConvertSlowOld(DbcReader $reader, $fieldsPerRecord, $target, $record)
     {
         $values = [];
         for ($i = 0; $i < $fieldsPerRecord; $i++) {
