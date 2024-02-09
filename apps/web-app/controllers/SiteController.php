@@ -199,24 +199,37 @@ class SiteController extends Controller
         }
 
         // Process records in batches
-        $batchSize = 100; // Adjust as needed
+        $batchSize = 1000; // Adjust as needed
         // Calculate counts
         $insertCount = 0;
         $updateCount = 0;
 
-        $this->processRecordsInBatches($records, $batchSize, function ($batchRecords) use ($targetClass, &$insertCount, &$updateCount) {
-            // Check existence of records and update counts
-            foreach ($batchRecords as $record) {
-                $item = $record->value();
-                $exists = call_user_func_array([$targetClass::find(), 'where'], [$item->getPrimaryKey()])->exists();
-                if ($exists) {
-                    $updateCount++;
-                } else {
-                    $insertCount++;
+        $this->processRecordsInBatches(
+            $records,
+            $batchSize,
+            function ($batchRecords) use ($targetClass, &$updateCount) {
+                // Get primary key names
+                $primaryKeyNames = $targetClass::primaryKey(); // Array of primary key names
+    
+                foreach ($batchRecords as $record) {
+                    /** @var DbcRecord $record */
+                    $primaryKeyValues = $record->value()->getPrimaryKey();
+                    // Construct condition for composite primary keys
+                    if (count($primaryKeyNames) === 1) {
+                        $primaryKeyValues = [$primaryKeyValues]; // Wrap single primary key value into an array
+                    }
+                    $condition = array_combine($primaryKeyNames, $primaryKeyValues);
+                    /** @var \yii\db\ActiveQuery $query */
+                    $query = $targetClass::find()->andWhere($condition);
+                    if($query->exists()) {
+                        $updateCount++;
+                    }
+                    unset($query);
                 }
-                $item = null;
             }
-        });
+        );
+
+        $insertCount = count($records) - $updateCount;
 
         // Return the results
         return json_encode([
@@ -248,20 +261,45 @@ class SiteController extends Controller
         // Process records in batches
         $batchSize = 1000; // Adjust as needed
 
-        $this->processRecordsInBatches($records, $batchSize, function ($batchRecords) use ($targetClass, &$insertCount, &$updateCount) {
-            // Check existence of records and update counts
-            foreach ($batchRecords as $record) {
-                $item = $record->value();
-                $exists = call_user_func_array([$targetClass::find(), 'where'], [$item->getPrimaryKey()])->exists();
-                // TODO: wip
-                /*if ($exists) {
-                    $updateCount++;
-                } else {
-                    $insertCount++;
-                }*/
-                $item = null;
+        $this->processRecordsInBatches(
+            $records,
+            $batchSize,
+            function ($batchRecords) use ($targetClass) {
+                // Check existence of records and update counts
+                foreach ($batchRecords as $record) {
+                    // Get primary key names
+                    $primaryKeyNames = $targetClass::primaryKey(); // Array of primary key names
+    
+                    /** @var \yii\db\ActiveRecord $item */
+                    $item = $record->value();
+
+                    // Check existence of records and update counts
+                    /** @var DbcRecord $record */
+                    $primaryKeyValues[] = $item->getPrimaryKey();
+
+                    // Construct condition for composite primary keys
+                    $condition = [];
+                    foreach ($primaryKeyNames as $primaryKeyName) {
+                        $condition[$primaryKeyName] = array_column($primaryKeyValues, $primaryKeyName);
+                    }
+
+                    // Fetch existing records count in batches
+                    $query = $targetClass::find()->where($condition);
+
+                    $exists = $query->exists();
+                    if ($exists) {
+                        // TODO: implementar
+                        // $model = $query->one();
+                    } else {
+                        // TODO: implementar
+                        if (!$item->save()) {
+                            throw new \yii\db\Exception('Error saving model', $item->getErrors());
+                        }
+                    }
+                    unset($item);
+                }
             }
-        });
+        );
 
         // Return success or failure message
         return json_encode(['success' => true]);
@@ -295,6 +333,11 @@ class SiteController extends Controller
 
             // Process records in batch using callback
             call_user_func($callback, $batchRecords);
+
+            unset($batchRecords);
+            // release memory
+            gc_collect_cycles();
+            // gc_mem_caches();
         }
     }
 
