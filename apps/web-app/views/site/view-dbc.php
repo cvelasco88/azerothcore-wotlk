@@ -1,5 +1,6 @@
 <?php
 
+use yii\grid\GridView;
 use yii\helpers\Html;
 
 /** @var yii\web\View $this */
@@ -19,11 +20,17 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <h2>Records:</h2>
-
-    <ul>
-        <?php foreach ($records as $record): ?>
-            <li><?= Html::encode(json_encode($record)) ?></li>
-            <li><?php /*Html::encode("Record {$record)$record['id']}: {$record['name']}")*/ ?></li>
-        <?php endforeach; ?>
-    </ul>
+    <?php 
+    $reflectionClass = new \ReflectionClass($modelClass);
+    // Get all properties of the target class
+    $properties = $reflectionClass->getProperties();
+    $columns = array_map(function($prop) { return $prop->name; }, $properties);
+    echo GridView::widget([
+            'dataProvider' => new \yii\data\ArrayDataProvider([
+                'allModels' => $records,
+                'pagination' => false,
+            ]),
+            'columns' => $columns,
+        ]); 
+    ?>
 </div>

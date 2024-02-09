@@ -164,6 +164,7 @@ class SiteController extends Controller
 
         return $this->render('view-dbc', [
             'fileName' => $fileName,
+            'modelClass' => TalentRecord::class,
             'records' => $records,
         ]);
     }
