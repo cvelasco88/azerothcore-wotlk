@@ -224,8 +224,14 @@ class SiteController extends Controller
                     if($query->exists()) {
                         $updateCount++;
                     }
+                    $query = null;
+                    $condition = null;
+                    $primaryKeyValues = null;
                     unset($query);
+                    unset($condition);
+                    unset($primaryKeyValues);
                 }
+                unset($primaryKeyNames);
             }
         );
 
@@ -328,16 +334,24 @@ class SiteController extends Controller
         // Process records in batches
         for ($batchIndex = 0; $batchIndex < $totalBatches; $batchIndex++) {
             // Get records for the current batch
+            $mmu1 = memory_get_usage();
             $startIndex = $batchIndex * $batchSize;
+            $mmu2 = memory_get_usage();
             $batchRecords = array_slice($records, $startIndex, $batchSize);
 
             // Process records in batch using callback
             call_user_func($callback, $batchRecords);
-
+            $mmu3 = memory_get_usage();
+            $startIndex = null;
+            $batchRecords = null;
+            unset($startIndex);
             unset($batchRecords);
+            $mmu4 = memory_get_usage();
             // release memory
+            Yii::getLogger()->flush();
             gc_collect_cycles();
-            // gc_mem_caches();
+            $mmu5 = memory_get_usage();
+            sleep(1);
         }
     }
 
