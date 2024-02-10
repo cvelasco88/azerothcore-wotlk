@@ -208,12 +208,16 @@ class SiteController extends Controller
             $records,
             $batchSize,
             function ($batchRecords) use ($targetClass, &$updateCount) {
+                $mmu1 = memory_get_usage();
                 // Get primary key names
                 $primaryKeyNames = $targetClass::primaryKey(); // Array of primary key names
-    
+                $mmu2 = memory_get_usage();
+
                 foreach ($batchRecords as $record) {
+                    $mmu2_2 = memory_get_usage();
                     /** @var DbcRecord $record */
-                    $primaryKeyValues = $record->value()->getPrimaryKey();
+                    $item = $record->value();
+                    $primaryKeyValues = $item->getPrimaryKey();
                     // Construct condition for composite primary keys
                     if (count($primaryKeyNames) === 1) {
                         $primaryKeyValues = [$primaryKeyValues]; // Wrap single primary key value into an array
@@ -221,17 +225,26 @@ class SiteController extends Controller
                     $condition = array_combine($primaryKeyNames, $primaryKeyValues);
                     /** @var \yii\db\ActiveQuery $query */
                     $query = $targetClass::find()->andWhere($condition);
-                    if($query->exists()) {
+                    if ($query->exists()) {
                         $updateCount++;
                     }
+                    $mmu2_3 = memory_get_usage();
+                    $item = null;
                     $query = null;
                     $condition = null;
                     $primaryKeyValues = null;
+                    unset($item);
                     unset($query);
                     unset($condition);
                     unset($primaryKeyValues);
+                    $mmu2_4 = memory_get_usage();
                 }
+                $mmu3 = memory_get_usage();
+                $primaryKeyNames = null;
+                $batchRecords = null;
                 unset($primaryKeyNames);
+                unset($batchRecords);
+                $mmu4 = memory_get_usage();
             }
         );
 
@@ -271,26 +284,26 @@ class SiteController extends Controller
             $records,
             $batchSize,
             function ($batchRecords) use ($targetClass) {
+                // Get primary key names
+                $primaryKeyNames = $targetClass::primaryKey(); // Array of primary key names
+
                 // Check existence of records and update counts
                 foreach ($batchRecords as $record) {
-                    // Get primary key names
-                    $primaryKeyNames = $targetClass::primaryKey(); // Array of primary key names
-    
+                    /** @var DbcRecord $record */
+
                     /** @var \yii\db\ActiveRecord $item */
                     $item = $record->value();
-
-                    // Check existence of records and update counts
-                    /** @var DbcRecord $record */
-                    $primaryKeyValues[] = $item->getPrimaryKey();
-
+                    $primaryKeyValues = $item->getPrimaryKey();
                     // Construct condition for composite primary keys
-                    $condition = [];
-                    foreach ($primaryKeyNames as $primaryKeyName) {
-                        $condition[$primaryKeyName] = array_column($primaryKeyValues, $primaryKeyName);
+                    if (count($primaryKeyNames) === 1) {
+                        $primaryKeyValues = [$primaryKeyValues]; // Wrap single primary key value into an array
                     }
-
+                    // Construct condition for composite primary keys
+                    $condition = array_combine($primaryKeyNames, $primaryKeyValues);
+                    
                     // Fetch existing records count in batches
-                    $query = $targetClass::find()->where($condition);
+                    /** @var \yii\db\ActiveQuery $query */
+                    $query = $targetClass::find()->andWhere($condition);
 
                     $exists = $query->exists();
                     if ($exists) {
@@ -298,9 +311,14 @@ class SiteController extends Controller
                         // $model = $query->one();
                     } else {
                         // TODO: implementar
-                        if (!$item->save()) {
-                            throw new \yii\db\Exception('Error saving model', $item->getErrors());
+                        try {
+                            if (!$item->save()) {
+                                throw new \yii\db\Exception('Error saving model', $item->getErrors());
+                            }    
+                        } catch (\yii\base\Exception|\yii\db\Exception $e) {
+                            throw $e;
                         }
+                        
                     }
                     unset($item);
                 }
@@ -348,10 +366,7 @@ class SiteController extends Controller
             unset($batchRecords);
             $mmu4 = memory_get_usage();
             // release memory
-            Yii::getLogger()->flush();
-            gc_collect_cycles();
             $mmu5 = memory_get_usage();
-            sleep(1);
         }
     }
 

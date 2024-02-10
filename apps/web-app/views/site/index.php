@@ -21,6 +21,7 @@ $this->title = 'My Yii Application';
                     ['label' => 'List DBC', 'url' => ['/site/list-dbcs']],
                     ['label' => 'SpellDbc', 'url' => ['/spell-dbc/index']],
                     ['label' => 'PlayerCreateInfoSkill', 'url' => ['/player-create-info-skill/index']],
+                    ['label' => 'TalentDbc', 'url' => ['/talent-dbc/index']],
                 ];
                 ?>
 
