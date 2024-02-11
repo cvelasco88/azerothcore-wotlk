@@ -14,6 +14,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 echo GridView::widget([
+    'pager' => [
+        'class' => yii\bootstrap5\LinkPager::class,
+    ],
     'dataProvider' => $dataProvider,
     'filterModel' => $searchModel,
     'columns' => array_merge(
