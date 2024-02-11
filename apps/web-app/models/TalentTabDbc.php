@@ -90,15 +90,6 @@ class TalentTabDbc extends DbcActiveRecord
     }
 
     /**
-     * @inheritdoc
-     */
-    protected function mapImportedDbcValues(array $values)
-    {
-        $data = parent::mapImportedDbcValues($values);
-        // TODO: fix data for TalentTab.dbc
-        return $data;
-    }
-    /**
      * {@inheritdoc}
      * @return TalentTabDbcQuery the active query used by this AR class.
      */

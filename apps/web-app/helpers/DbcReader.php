@@ -314,6 +314,7 @@ class DbcReader implements \IteratorAggregate, \Countable
                 $value = $record->getSingleValue($column);
                 break;
             case 'string':
+            case 'text':
                 $value = $record->getStringValue($column);
                 break;
             default:

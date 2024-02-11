@@ -58,31 +58,12 @@ abstract class DbcActiveRecord extends \yii\db\ActiveRecord
      */
     protected function mapImportedDbcValues(array $values)
     {
-        return $this->mapDbcValuesV1($values);
-    }
-
-    /**
-     * @param array $data
-     * @return array // values
-     */
-    protected function mapExportedDbcValues(array $data)
-    {
-        return array_values($data);
-    }
-
-    /**
-     * @param array $values
-     */
-    private function mapDbcValuesV1(array $values)
-    {
         // Get all properties of the target class
-        $properties = array_keys($this->getAttributes());
+        $properties = array_keys($this->getDefinition());
 
         $data = [];
-        foreach ($properties as $position => $property) {
+        foreach ($properties as $position => $propertyName) {
             if ($position < count($values)) {
-                // Get the property name
-                $propertyName = $property;
                 // Set the value to the property of the target object
                 $data[$propertyName] = $values[$position];
             }
@@ -91,21 +72,19 @@ abstract class DbcActiveRecord extends \yii\db\ActiveRecord
     }
 
     /**
-     * @param array $values
+     * @param array $data
+     * @return array // values
      */
-    private function mapDbcValuesV2(array $values)
+    protected function mapExportedDbcValues(array $data)
     {
-        $reflectionClass = new \ReflectionClass(get_class($this));
         // Get all properties of the target class
-        $properties = $reflectionClass->getProperties();
+        $properties = array_keys($this->getDefinition());
 
-        $data = [];
-        foreach ($properties as $position => $property) {
-            // Get the property name
-            $propertyName = $property->getName();
-            // Set the value to the property of the target object
-            $data[$propertyName] = $values[$position];
+        $values = [];
+        foreach ($properties as $propertyName) {
+            // Set the value from the property of the target object
+            $values[] = $data[$propertyName] ?? null; // test if to use "??" or "?:"
         }
-        return $data;
+        return $values;
     }
 }

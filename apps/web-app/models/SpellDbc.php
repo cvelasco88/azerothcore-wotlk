@@ -909,4 +909,13 @@ class SpellDbc extends DbcActiveRecord
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getDefinition()
+    {
+        $definition = parent::getDefinition();
+        // TODO: fix definition for Spell.dbc
+        return $definition;
+    }
 }
