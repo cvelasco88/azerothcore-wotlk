@@ -43,6 +43,9 @@ $this->registerJsFile('@web/js/client-dbc-ajax-functions.js', ['depends' => [\yi
     }, $properties);
 
     echo GridView::widget([
+        'pager' => [
+            'class' => yii\bootstrap5\LinkPager::class,
+        ],
         'dataProvider' => $dataProvider,
         'columns' => $columns,
     ]);

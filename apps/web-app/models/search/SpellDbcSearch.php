@@ -2,7 +2,6 @@
 
 namespace app\models\search;
 
-use app\helpers\DbcActiveDataProvider;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\SpellDbc;
@@ -43,7 +42,7 @@ class SpellDbcSearch extends SpellDbc
     {
         $query = SpellDbc::find();
 
-        $dataProvider = new DbcActiveDataProvider([
+        $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
                 'pageSize' => 10,

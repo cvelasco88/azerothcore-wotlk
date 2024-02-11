@@ -43,6 +43,9 @@ $this->registerJsFile('@web/js/site-ajax-functions.js', ['depends' => [\yii\web\
     }, $properties);
 
     echo GridView::widget([
+        'pager' => [
+            'class' => yii\bootstrap5\LinkPager::class,
+        ],
         'dataProvider' => $dataProvider,
         'columns' => $columns,
     ]);

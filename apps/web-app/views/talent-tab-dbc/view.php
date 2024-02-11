@@ -71,6 +71,9 @@ $this->params['breadcrumbs'][] = $this->title;
     $tabs[] = [
         'label' => 'Talents',
         'content' => GridView::widget([
+            'pager' => [
+                'class' => yii\bootstrap5\LinkPager::class,
+            ],
             'dataProvider' => new \yii\data\ActiveDataProvider([
                 'query' => TalentDbc::find()->where(['TabID' => $model->ID]),
             ]),
