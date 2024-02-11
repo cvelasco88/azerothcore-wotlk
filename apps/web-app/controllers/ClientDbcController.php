@@ -139,13 +139,10 @@ class ClientDbcController extends Controller
             $records,
             $batchSize,
             function ($batchRecords) use ($targetClass, &$updateCount) {
-                $mmu1 = memory_get_usage();
                 // Get primary key names
                 $primaryKeyNames = $targetClass::primaryKey(); // Array of primary key names
-                $mmu2 = memory_get_usage();
 
                 foreach ($batchRecords as $record) {
-                    $mmu2_2 = memory_get_usage();
                     /** @var DbcRecord $record */
                     $item = $record->value();
                     $primaryKeyValues = $item->getPrimaryKey();
@@ -159,7 +156,6 @@ class ClientDbcController extends Controller
                     if ($query->exists()) {
                         $updateCount++;
                     }
-                    $mmu2_3 = memory_get_usage();
                     $item = null;
                     $query = null;
                     $condition = null;
@@ -168,14 +164,11 @@ class ClientDbcController extends Controller
                     unset($query);
                     unset($condition);
                     unset($primaryKeyValues);
-                    $mmu2_4 = memory_get_usage();
                 }
-                $mmu3 = memory_get_usage();
                 $primaryKeyNames = null;
                 $batchRecords = null;
                 unset($primaryKeyNames);
                 unset($batchRecords);
-                $mmu4 = memory_get_usage();
             }
         );
 
@@ -283,21 +276,15 @@ class ClientDbcController extends Controller
         // Process records in batches
         for ($batchIndex = 0; $batchIndex < $totalBatches; $batchIndex++) {
             // Get records for the current batch
-            $mmu1 = memory_get_usage();
             $startIndex = $batchIndex * $batchSize;
-            $mmu2 = memory_get_usage();
             $batchRecords = array_slice($records, $startIndex, $batchSize);
 
             // Process records in batch using callback
             call_user_func($callback, $batchRecords);
-            $mmu3 = memory_get_usage();
             $startIndex = null;
             $batchRecords = null;
             unset($startIndex);
             unset($batchRecords);
-            $mmu4 = memory_get_usage();
-            // release memory
-            $mmu5 = memory_get_usage();
         }
     }
 
