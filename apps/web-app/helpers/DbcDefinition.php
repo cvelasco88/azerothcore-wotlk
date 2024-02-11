@@ -4,6 +4,7 @@ namespace app\helpers;
 use app\models\ItemDbc;
 use app\models\SpellDbc;
 use app\models\TalentDbc;
+use app\models\TalentTabDbc;
 
 /**
  */
@@ -24,6 +25,8 @@ class DbcDefinition
                 return SpellDbc::class;
             case "Talent.dbc":
                 return TalentDbc::class;
+            case "TalentTab.dbc":
+                return TalentTabDbc::class;
             default:
                 throw new \Exception("Definition not found for {$filename}");
         }

@@ -2,6 +2,7 @@
 
 namespace app\helpers;
 
+use app\models\base\DbcActiveRecord;
 use Generator;
 use Traversable;
 use yii\db\ActiveRecord;
@@ -37,8 +38,16 @@ class DbcReader implements \IteratorAggregate, \Countable
     protected $maxId;
     protected $locale;
 
-    public function __construct(string $targetClass, $storage, $ownsStorage = true)
+    /**
+     * @param string $targetClass
+     * @param mixed $storage
+     * @param bool $ownsStorage
+     */
+    public function __construct(string $targetClass, $storage, bool $ownsStorage = true)
     {
+        if (!is_subclass_of($targetClass, ActiveRecord::class)) {
+            throw new \InvalidArgumentException("$targetClass must inherit from \yii\db\ActiveRecord");
+        }
         $this->targetClass = $targetClass;
 
         if (!is_resource($storage) || get_resource_type($storage) !== 'stream')
@@ -126,32 +135,38 @@ class DbcReader implements \IteratorAggregate, \Countable
 
     public function getString($stringTablePosition)
     {
-        if ($this->store === null)
+        if ($this->store === null) {
             throw new \Exception("DbcReader");
+        }
 
         $curPos = ftell($this->store);
-
         fseek($this->store, $this->stringBlockOffset + $stringTablePosition, SEEK_SET);
-        $len = 0;
-        while (($byte = fread($this->store, 1)) !== false && $byte !== chr(0)) {
-            $len++;
+
+        $string = '';
+        while (($char = fgetc($this->store)) !== chr(0)) {
+            $string .= $char;
         }
 
-        if ($len > 0) {
-            $temp = fread($this->store, $len);
-            fseek($this->store, $curPos, SEEK_SET);
-            return mb_convert_encoding($temp, "UTF-8", mb_detect_encoding($temp));
-        } else {
-            // Return an empty string or handle the case as appropriate
-            fseek($this->store, $curPos, SEEK_SET);
-            return "";
+        fseek($this->store, $curPos, SEEK_SET);
+
+        if (strlen($string) > 0) {
+            // Convert encoding if necessary
+            $string = mb_convert_encoding($string, "UTF-8", mb_detect_encoding($string));
         }
+
+        return $string;
+    }
+
+    public function getUInt32Value($record, $column)
+    {
+        fseek($this->store, $record * $this->perRecord + $this->headerLength + $column * 4, SEEK_SET);
+        return unpack("V", fread($this->store, 4))[1];
     }
 
     public function getInt32Value($record, $column)
     {
         fseek($this->store, $record * $this->perRecord + $this->headerLength + $column * 4, SEEK_SET);
-        return unpack("V", fread($this->store, 4))[1];
+        return unpack("l", fread($this->store, 4))[1];
     }
 
     public function getSingleValue($record, $column)
@@ -217,11 +232,11 @@ class DbcReader implements \IteratorAggregate, \Countable
     /**
      * pre: stream open
      * @param DbcRecord $record
-     * @return object
+     * @return \yii\db\ActiveRecord
      */
     public function getRecordInfo(DbcRecord $record)
     {
-        // Create a new instance of $targetClass
+        // Create a new instance of $targetClass (\yii\db\ActiveRecord)
         $target = new $this->targetClass();
 
         // Populate the target using the ConvertSlow method
@@ -235,32 +250,28 @@ class DbcReader implements \IteratorAggregate, \Countable
      * @param DbcRecord $record
      * @param object $target
      */
-    private static function ConvertSlow(DbcReader $reader, DbcRecord $record, ActiveRecord $target)
+    private static function ConvertSlow(DbcReader $reader, DbcRecord $record, DbcActiveRecord $target)
     {
         $values = [];
+        $definition = $target->getDefinition();
+        $definitionKeys = array_keys($definition);
 
         for ($i = 0; $i < $reader->recordLength; $i++) {
+            $columnDefinition = $definition[$definitionKeys[$i]]; // Get the attribute by its position
             // Read value based on the type of the attribute
-            $values[$i] = self::readAttributeValue($record, $i, $target);
+            $values[$i] = self::readAttributeValue($record, $i, $columnDefinition);
         }
 
-        // Get all properties of the target class
-        $properties = array_keys($target->getAttributes());
-
-        foreach ($properties as $position => $property) {
-            if ($position < count($values)) {
-                // Get the property name
-                $propertyName = $property;
-                // Set the value to the property of the target object
-                $target->$propertyName = $values[$position];
-            }
-        }
+        $target->importFromDbc($values);
     }
 
     /**
      * @param DbcReader $reader
+     * @param int $fieldsPerRecord
+     * @param object $target // generic case
+     * @param int $record // Record index (row)
      */
-    private static function ConvertSlowOld(DbcReader $reader, $fieldsPerRecord, $target, $record)
+    private static function ConvertSlowOld(DbcReader $reader, $fieldsPerRecord, $target, int $record)
     {
         $values = [];
         for ($i = 0; $i < $fieldsPerRecord; $i++) {
@@ -285,21 +296,21 @@ class DbcReader implements \IteratorAggregate, \Countable
      *
      * @param DbcRecord $record
      * @param int $column
-     * @param ActiveRecord $target
+     * @param array $columnDefinition // ['type' => $columnType, 'unsigned' => $isUnsigned,]
      * @return mixed
      */
-    private static function readAttributeValue( DbcRecord $record, int $column, ActiveRecord $target)
+    private static function readAttributeValue(DbcRecord $record, int $column, array $columnDefinition)
     {
-        $attribute = $target->attributes()[$column]; // Get the attribute by its position
-
-        // Determine the type of the attribute
-        $columnType = $target->getTableSchema()->getColumn($attribute)->type;
-        switch ($columnType) {
+        switch ($columnDefinition['type']) {
+            case 'bigint':
             case 'integer':
-            case 'bigint':            
-                $value = $record->getInt32Value($column);
+                if($columnDefinition['unsigned']) {
+                    $value = $record->getUInt32Value($column);
+                } else {
+                    $value = $record->getInt32Value($column);
+                }
                 break;
-            case 'float': 
+            case 'float':
                 $value = $record->getSingleValue($column);
                 break;
             case 'string':

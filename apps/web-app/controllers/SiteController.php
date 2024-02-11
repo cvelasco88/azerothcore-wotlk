@@ -2,12 +2,7 @@
 
 namespace app\controllers;
 
-use app\helpers\DbcArrayDataProvider;
-use app\helpers\DbcDefinition;
-use app\helpers\DbcRecord;
-use app\helpers\DbcReader;
 use Yii;
-use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -129,68 +124,5 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
-    }
-
-    public function actionListDbcs()
-    {
-        $dataPath = Yii::getAlias('@app/data');
-        $dbcFiles = $this->findDbcFiles($dataPath);
-
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => $dbcFiles,
-        ]);
-
-        return $this->render('list-dbcs', [
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    public function actionViewDbc($fileName, $page = 1, $pageSize = 100)
-    {
-        $dataPath = Yii::getAlias('@app/data');
-        $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
-
-        $targetClass = DbcDefinition::getTargetClass($fileName);
-
-        // Open the DBC file
-        $storage = fopen($filePath, 'rb');
-        // Create a DbcReader instance
-        $dbcReader = new DbcReader($targetClass, $storage);
-        /** @var DbcRecord[] $records */
-        $records = [];
-        // Close the DBC file
-        // Note: closed on DbcReader _destruct => fclose($storage);
-
-        foreach ($dbcReader->getRecords() as $record) {
-            $records[] = $record;
-        }
-
-        $dataProvider = new DbcArrayDataProvider([
-            'allModels' => $records,
-            'pagination' => [
-                'pageSize' => $pageSize,
-            ],
-        ]);
-
-        return $this->render('view-dbc', [
-            'dataProvider' => $dataProvider,
-            'fileName' => $fileName,
-            'targetClass' => $targetClass,
-        ]);
-    }
-
-
-    private function findDbcFiles($directory)
-    {
-        $files = scandir($directory);
-        $dbcFiles = [];
-
-        foreach ($files as $file) {
-            if (pathinfo($file, PATHINFO_EXTENSION) === 'dbc') {
-                $dbcFiles[] = ['name' => $file];
-            }
-        }
-
-        return $dbcFiles;
     }
 }
