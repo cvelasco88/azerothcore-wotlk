@@ -7,14 +7,33 @@ use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\widgets\DetailView;
+use yii\web\View;
 
-/** @var yii\web\View $this */
+/** @var View $this */
 /** @var app\models\TalentTabDbc $model */
 /** @var ActiveForm $form */
 
 $this->title = 'View TalentTabDbc: ' . $model->ID;
 $this->params['breadcrumbs'][] = ['label' => 'Index Page', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
+$script = <<< JS
+$(document).ready(function(){
+    // Retrieve active tab index from session storage
+    var activeTab = sessionStorage.getItem('activeTab');
+    if(activeTab){
+        $('.nav-tabs a[href="#'+activeTab+'"]').tab('show');
+    }
+
+    // Store active tab index to session storage when tab is changed
+    $('.nav-tabs a').on('shown.bs.tab', function (e) {
+        var tabName = $(e.target).attr('href').substr(1);
+        sessionStorage.setItem('activeTab', tabName);
+    });
+});
+JS;
+
+$this->registerJs($script, View::POS_READY);
 
 ?>
 <div class="talent-dbc-view">
