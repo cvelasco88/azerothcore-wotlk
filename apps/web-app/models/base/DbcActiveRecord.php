@@ -29,7 +29,7 @@ abstract class DbcActiveRecord extends \yii\db\ActiveRecord
     public function importFromDbc(array $values)
     {
         $data = $this->mapImportedDbcValues($values);
-        $this->load($data);
+        $this->load($data, '');
     }
 
     /**

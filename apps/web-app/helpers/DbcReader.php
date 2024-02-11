@@ -135,26 +135,26 @@ class DbcReader implements \IteratorAggregate, \Countable
 
     public function getString($stringTablePosition)
     {
-        if ($this->store === null)
+        if ($this->store === null) {
             throw new \Exception("DbcReader");
+        }
 
         $curPos = ftell($this->store);
-
         fseek($this->store, $this->stringBlockOffset + $stringTablePosition, SEEK_SET);
-        $len = 0;
-        while (($byte = fread($this->store, 1)) !== false && $byte !== chr(0)) {
-            $len++;
+
+        $string = '';
+        while (($char = fgetc($this->store)) !== chr(0)) {
+            $string .= $char;
         }
 
-        if ($len > 0) {
-            $temp = fread($this->store, $len);
-            fseek($this->store, $curPos, SEEK_SET);
-            return mb_convert_encoding($temp, "UTF-8", mb_detect_encoding($temp));
-        } else {
-            // Return an empty string or handle the case as appropriate
-            fseek($this->store, $curPos, SEEK_SET);
-            return "";
+        fseek($this->store, $curPos, SEEK_SET);
+
+        if (strlen($string) > 0) {
+            // Convert encoding if necessary
+            $string = mb_convert_encoding($string, "UTF-8", mb_detect_encoding($string));
         }
+
+        return $string;
     }
 
     public function getInt32Value($record, $column)
@@ -250,7 +250,7 @@ class DbcReader implements \IteratorAggregate, \Countable
         $columnTypes = $target->getDefinition();
 
         for ($i = 0; $i < $reader->recordLength; $i++) {
-            $columnType = $columnTypes; // Get the attribute by its position
+            $columnType = $columnTypes[$i]; // Get the attribute by its position
             // Read value based on the type of the attribute
             $values[$i] = self::readAttributeValue($record, $i, $columnType);
         }
@@ -293,13 +293,13 @@ class DbcReader implements \IteratorAggregate, \Countable
      * @return mixed
      */
     private static function readAttributeValue(DbcRecord $record, int $column, string $columnType)
-    {        
+    {
         switch ($columnType) {
             case 'integer':
-            case 'bigint':            
+            case 'bigint':
                 $value = $record->getInt32Value($column);
                 break;
-            case 'float': 
+            case 'float':
                 $value = $record->getSingleValue($column);
                 break;
             case 'string':
