@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\base\DbcActiveRecord;
 use Yii;
 
 /**
@@ -31,7 +32,7 @@ use Yii;
  * @property int $CategoryMask_1
  * @property int $CategoryMask_2
  */
-class TalentDbc extends \yii\db\ActiveRecord
+class TalentDbc extends DbcActiveRecord
 {
     /**
      * {@inheritdoc}

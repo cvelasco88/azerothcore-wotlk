@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\base\DbcActiveRecord;
 use app\models\traits\playerCreateInfo\ClassMaskTrait;
 use app\models\traits\playerCreateInfo\RaceMaskTrait;
 use Yii;
@@ -15,7 +16,7 @@ use Yii;
  * @property int $rank
  * @property string|null $comment
  */
-class PlayerCreateInfoSkill extends \yii\db\ActiveRecord
+class PlayerCreateInfoSkill extends DbcActiveRecord
 {
     use ClassMaskTrait, RaceMaskTrait;
 

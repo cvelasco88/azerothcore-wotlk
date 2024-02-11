@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\base\DbcActiveRecord;
 use app\models\traits\spell\DispelTypeTrait;
 use app\models\traits\spell\PowerTypeTrait;
 use app\models\traits\spell\SpellAttrsTrait;
@@ -255,7 +256,7 @@ use Yii;
  * @property int $SpellDescriptionVariableID
  * @property int $SpellDifficultyID
  */
-class SpellDbc extends \yii\db\ActiveRecord
+class SpellDbc extends DbcActiveRecord
 {
     use PowerTypeTrait, DispelTypeTrait, TargetFlagTrait, TargetCreatureTypeTrait,
         SpellAttrsTrait, SpellAttrsEx1Trait, SpellAttrsEx2Trait, SpellAttrsEx3Trait, SpellAttrsEx4Trait,

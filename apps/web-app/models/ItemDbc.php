@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\models\base\DbcActiveRecord;
 use Yii;
 
 /**
@@ -16,7 +17,7 @@ use Yii;
  * @property int $InventoryType
  * @property int $SheatheType
  */
-class ItemDbc extends \yii\db\ActiveRecord
+class ItemDbc extends DbcActiveRecord
 {
     /**
      * {@inheritdoc}

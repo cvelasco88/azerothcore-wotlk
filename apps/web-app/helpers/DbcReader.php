@@ -2,6 +2,7 @@
 
 namespace app\helpers;
 
+use app\models\base\DbcActiveRecord;
 use Generator;
 use Traversable;
 use yii\db\ActiveRecord;
@@ -243,32 +244,27 @@ class DbcReader implements \IteratorAggregate, \Countable
      * @param DbcRecord $record
      * @param object $target
      */
-    private static function ConvertSlow(DbcReader $reader, DbcRecord $record, ActiveRecord $target)
+    private static function ConvertSlow(DbcReader $reader, DbcRecord $record, DbcActiveRecord $target)
     {
         $values = [];
+        $columnTypes = $target->getDefinition();
 
         for ($i = 0; $i < $reader->recordLength; $i++) {
+            $columnType = $columnTypes; // Get the attribute by its position
             // Read value based on the type of the attribute
-            $values[$i] = self::readAttributeValue($record, $i, $target);
+            $values[$i] = self::readAttributeValue($record, $i, $columnType);
         }
 
-        // Get all properties of the target class
-        $properties = array_keys($target->getAttributes());
-
-        foreach ($properties as $position => $property) {
-            if ($position < count($values)) {
-                // Get the property name
-                $propertyName = $property;
-                // Set the value to the property of the target object
-                $target->$propertyName = $values[$position];
-            }
-        }
+        $target->importFromDbc($values);
     }
 
     /**
      * @param DbcReader $reader
+     * @param int $fieldsPerRecord
+     * @param object $target // generic case
+     * @param int $record // Record index (row)
      */
-    private static function ConvertSlowOld(DbcReader $reader, $fieldsPerRecord, $target, $record)
+    private static function ConvertSlowOld(DbcReader $reader, $fieldsPerRecord, $target, int $record)
     {
         $values = [];
         for ($i = 0; $i < $fieldsPerRecord; $i++) {
@@ -293,15 +289,11 @@ class DbcReader implements \IteratorAggregate, \Countable
      *
      * @param DbcRecord $record
      * @param int $column
-     * @param ActiveRecord $target
+     * @param string $columnType
      * @return mixed
      */
-    private static function readAttributeValue( DbcRecord $record, int $column, ActiveRecord $target)
-    {
-        $attribute = $target->attributes()[$column]; // Get the attribute by its position
-
-        // Determine the type of the attribute
-        $columnType = $target->getTableSchema()->getColumn($attribute)->type;
+    private static function readAttributeValue(DbcRecord $record, int $column, string $columnType)
+    {        
         switch ($columnType) {
             case 'integer':
             case 'bigint':            
