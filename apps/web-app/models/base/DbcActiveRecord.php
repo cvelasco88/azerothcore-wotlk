@@ -9,19 +9,31 @@ use Yii;
 abstract class DbcActiveRecord extends \yii\db\ActiveRecord
 {
 
-    /**
-     * @return array
-     */
     public function getDefinition()
     {
-        $columnTypes = [];
+        $columnDefinitions = [];
+        $tableSchema = $this->getTableSchema();
+
         foreach ($this->attributes() as $attribute) {
+            // Get the column schema
+            $columnSchema = $tableSchema->getColumn($attribute);
+
             // Determine the type of the attribute
-            $columnType = $this->getTableSchema()->getColumn($attribute)->type;
-            $columnTypes[] = $columnType;
+            $columnType = $columnSchema->type;
+
+            // Check if the column is unsigned
+            $isUnsigned = stripos($columnSchema->dbType, 'unsigned') !== false;
+
+            // Add column type to the definitions array
+            $columnDefinitions[$attribute] = [
+                'type' => $columnType,
+                'unsigned' => $isUnsigned,
+            ];
         }
-        return $columnTypes;
+
+        return $columnDefinitions;
     }
+
 
     /**
      * @param array $values

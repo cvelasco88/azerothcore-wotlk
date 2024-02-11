@@ -15,6 +15,16 @@ class DbcRecord
         $this->owner = new WeakReference($owner);
     }
 
+    public function getUInt32Value($column)
+    {
+        /** @var DbcReader $owner */
+        $owner = null;
+        if (!$this->owner->tryGetTarget($owner))
+            throw new \RuntimeException();
+
+        return $owner->getUInt32Value($this->index, $column);
+    }
+
     public function getInt32Value($column)
     {
         /** @var DbcReader $owner */

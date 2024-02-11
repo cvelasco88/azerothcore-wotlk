@@ -18,10 +18,11 @@ $this->title = 'My Yii Application';
             <?php
 
                 $menuItems = [
-                    ['label' => 'List DBC', 'url' => ['/site/list-dbcs']],
+                    ['label' => 'Client DBC', 'url' => ['/client-dbc/index']],
                     ['label' => 'SpellDbc', 'url' => ['/spell-dbc/index']],
                     ['label' => 'PlayerCreateInfoSkill', 'url' => ['/player-create-info-skill/index']],
                     ['label' => 'TalentDbc', 'url' => ['/talent-dbc/index']],
+                    ['label' => 'TalentTabDbc', 'url' => ['/talent-tab-dbc/index']],
                 ];
                 ?>
 

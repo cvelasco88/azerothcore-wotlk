@@ -157,10 +157,16 @@ class DbcReader implements \IteratorAggregate, \Countable
         return $string;
     }
 
-    public function getInt32Value($record, $column)
+    public function getUInt32Value($record, $column)
     {
         fseek($this->store, $record * $this->perRecord + $this->headerLength + $column * 4, SEEK_SET);
         return unpack("V", fread($this->store, 4))[1];
+    }
+
+    public function getInt32Value($record, $column)
+    {
+        fseek($this->store, $record * $this->perRecord + $this->headerLength + $column * 4, SEEK_SET);
+        return unpack("l", fread($this->store, 4))[1];
     }
 
     public function getSingleValue($record, $column)
@@ -247,12 +253,13 @@ class DbcReader implements \IteratorAggregate, \Countable
     private static function ConvertSlow(DbcReader $reader, DbcRecord $record, DbcActiveRecord $target)
     {
         $values = [];
-        $columnTypes = $target->getDefinition();
+        $definition = $target->getDefinition();
+        $definitionKeys = array_keys($definition);
 
         for ($i = 0; $i < $reader->recordLength; $i++) {
-            $columnType = $columnTypes[$i]; // Get the attribute by its position
+            $columnDefinition = $definition[$definitionKeys[$i]]; // Get the attribute by its position
             // Read value based on the type of the attribute
-            $values[$i] = self::readAttributeValue($record, $i, $columnType);
+            $values[$i] = self::readAttributeValue($record, $i, $columnDefinition);
         }
 
         $target->importFromDbc($values);
@@ -289,15 +296,19 @@ class DbcReader implements \IteratorAggregate, \Countable
      *
      * @param DbcRecord $record
      * @param int $column
-     * @param string $columnType
+     * @param array $columnDefinition // ['type' => $columnType, 'unsigned' => $isUnsigned,]
      * @return mixed
      */
-    private static function readAttributeValue(DbcRecord $record, int $column, string $columnType)
+    private static function readAttributeValue(DbcRecord $record, int $column, array $columnDefinition)
     {
-        switch ($columnType) {
-            case 'integer':
+        switch ($columnDefinition['type']) {
             case 'bigint':
-                $value = $record->getInt32Value($column);
+            case 'integer':
+                if($columnDefinition['unsigned']) {
+                    $value = $record->getUInt32Value($column);
+                } else {
+                    $value = $record->getInt32Value($column);
+                }
                 break;
             case 'float':
                 $value = $record->getSingleValue($column);
