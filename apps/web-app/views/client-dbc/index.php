@@ -14,9 +14,13 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="client-dbc-index">
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <?= ListView::widget([
-        'dataProvider' => $dataProvider,
-        'itemView' => '_indexItem',
-        'summary' => false,
-    ]) ?>
+    <?php if ($dataProvider->totalCount > 0): ?>
+        <?= ListView::widget([
+            'dataProvider' => $dataProvider,
+            'itemView' => '_indexItem',
+            'summary' => false,
+        ]) ?>
+    <?php else: ?>
+        <p>No DBC files found. Please make sure to place the ".dbc" files in the "<code>@app/data</code>" folder.</p>
+    <?php endif; ?>
 </div>
