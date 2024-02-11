@@ -1,6 +1,9 @@
 <?php
 
+use app\models\TalentDbc;
 use app\models\TalentTabDbc;
+use yii\bootstrap5\Tabs;
+use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\widgets\DetailView;
@@ -28,34 +31,57 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="mb-3"></div>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'ID',
-            'Name_Lang_enUS',
-            'Name_Lang_enGB',
-            'Name_Lang_koKR',
-            'Name_Lang_frFR',
-            'Name_Lang_deDE',
-            'Name_Lang_enCN',
-            'Name_Lang_zhCN',
-            'Name_Lang_enTW',
-            'Name_Lang_zhTW',
-            'Name_Lang_esES',
-            'Name_Lang_esMX',
-            'Name_Lang_ruRU',
-            'Name_Lang_ptPT',
-            'Name_Lang_ptBR',
-            'Name_Lang_itIT',
-            'Name_Lang_Unk',
-            'Name_Lang_Mask',
-            'SpellIconID',
-            'RaceMask',
-            'ClassMask',
-            'PetTalentMask',
-            'OrderIndex',
-            'BackgroundFile',
-        ],
-    ]) ?>
+    <?php
+    function handledAttributes(array $attributes) {
+        $customAttributes = [];
+
+        foreach ($attributes as $attribute) {
+            switch ($attribute) {
+                // Add more customizations for other attributes as needed
+                default:
+                    $customAttributes[] = $attribute;
+                    break;
+            }
+        }
+
+        return $customAttributes;
+    }
+
+    $tabs = [
+        [
+            'label' => "Detail",
+            'content' => DetailView::widget([
+                'model' => $model,
+                'attributes' => handledAttributes(TalentTabDbc::getDetailAttributes()),
+            ]),
+        ]
+    ];
+    $attributeGroups = TalentTabDbc::getAttributeGroups();
+    // Create tabs with DetailView for each attribute group
+    foreach ($attributeGroups as $groupName => $attributes) {
+        $tabs[] = [
+            'label' => $groupName,
+            'content' => DetailView::widget([
+                'model' => $model,
+                'attributes' => $attributes,
+            ]),
+        ];
+    }
+
+    $tabs[] = [
+        'label' => 'Talents',
+        'content' => GridView::widget([
+            'dataProvider' => new \yii\data\ActiveDataProvider([
+                'query' => TalentDbc::find()->where(['TabID' => $model->ID]),
+            ]),
+            'columns' => (new TalentDbc())->attributes(),
+        ]),
+    ];
+
+    // Display tabs
+    echo Tabs::widget([
+        'items' => $tabs,
+    ]);
+    ?>
 
 </div><!-- talent-dbc-view -->

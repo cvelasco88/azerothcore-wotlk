@@ -106,4 +106,47 @@ class TalentTabDbc extends DbcActiveRecord
     {
         return new TalentTabDbcQuery(get_called_class());
     }
+
+    // PUBLIC STATIC METHODS
+
+    public static function getDetailAttributes()
+    {
+        $attributeGroups = self::getAttributeGroups();
+        $except = [];
+        foreach ($attributeGroups as $groupName => $attributes) {
+            $except = array_merge($except, $attributes);
+        }
+        $tmp = new static();
+        return array_keys($tmp->getAttributes(null, $except));
+    }
+
+    public static function getAttributeGroups()
+    {
+        $groups = [];
+        $groups["Name"] = self::getNameAttributes();
+        return $groups;
+    }
+
+    // PRIVATE STATIC METHODS
+
+    private static function getNameAttributes()
+    {
+        return [
+            'Name_Lang_enUS',
+            'Name_Lang_enGB',
+            'Name_Lang_koKR',
+            'Name_Lang_frFR',
+            'Name_Lang_deDE',
+            'Name_Lang_enCN',
+            'Name_Lang_zhCN',
+            'Name_Lang_enTW',
+            'Name_Lang_zhTW',
+            'Name_Lang_esES',
+            'Name_Lang_esMX',
+            'Name_Lang_ruRU',
+            'Name_Lang_ptPT',
+            'Name_Lang_ptBR',
+            'Name_Lang_itIT',
+        ];
+    }
 }
