@@ -502,9 +502,9 @@ class SpellDbc extends DbcActiveRecord
             'StartRecoveryTime' => 'Start Recovery Time',
             'MaxTargetLevel' => 'Max Target Level',
             'SpellClassSet' => 'Spell Class Set', // SpellFamilyName
-            'SpellClassMask_1' => 'Spell Class Mask 1',
-            'SpellClassMask_2' => 'Spell Class Mask 2',
-            'SpellClassMask_3' => 'Spell Class Mask 3',
+            'SpellClassMask_1' => 'Spell Class Mask 1', // SpellFamilyFlags
+            'SpellClassMask_2' => 'Spell Class Mask 2', // Unknown
+            'SpellClassMask_3' => 'Spell Class Mask 3', // SpellFamilyFlags2
             'MaxTargets' => 'Max Targets',
             'DefenseType' => 'Defense Type', // DmgClass
             'PreventionType' => 'Prevention Type',
@@ -908,59 +908,6 @@ class SpellDbc extends DbcActiveRecord
             'SpellDescriptionVariableID',
         ];
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function getDefinition(string $language)
-    {
-        $definition = parent::getDefinition($language);
-
-        // Fix the definition for Spell.dbc
-        unset($definition['unk_320_2']);
-        unset($definition['unk_320_3']);
-        unset($definition['ManaPerSecondPerLevel']);
-
-        // Find the language prefix for filtering
-        $languagePrefixes = [
-            'Name_Lang_',
-            'NameSubtext_Lang_',
-            'Description_Lang_',
-            'AuraDescription_Lang_',
-        ];
-
-        // Filter out keys based on the provided language
-        foreach ($definition as $key => $value) {
-            foreach ($languagePrefixes as $prefix) {
-                if (strpos($key, $prefix) === 0) {
-                    if (substr($key, -strlen($language)) != $language) {
-                        unset($definition[$key]);
-                    }
-                    break;
-                }
-            }
-        }
-
-        // Find the index of 'ManaPerSecondPerLevel'
-        $index = array_search('ManaPerSecondPerLevel', array_keys($definition));
-
-        // Remove 'ManaPerSecond' and insert it after 'ManaPerSecondPerLevel'
-        $manaPerSecond = $definition['ManaPerSecond'];
-        unset($definition['ManaPerSecondPerLevel']);
-
-        $keys = array_keys($definition);
-        $values = array_values($definition);
-
-        // Insert 'ManaPerSecond' at the correct index
-        array_splice($keys, $index + 1, 0, 'ManaPerSecond');
-        array_splice($values, $index + 1, 0, $manaPerSecond);
-
-        // Combine keys and values back into the definition array
-        $definition = array_combine($keys, $values);
-
-        return $definition;
-    }
-
 
     /**
      * {@inheritdoc}

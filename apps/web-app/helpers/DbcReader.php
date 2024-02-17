@@ -39,8 +39,6 @@ class DbcReader implements \IteratorAggregate, \Countable
     protected $maxId;
     protected $locale;
 
-    private string $language = DbcLanguage::EN_US;
-
     /**
      * @param string $targetClass
      * @param mixed $storage
@@ -109,20 +107,6 @@ class DbcReader implements \IteratorAggregate, \Countable
         }
 
         $this->stringBlockOffset = $this->perRecord * $this->count + $this->headerLength;
-    }
-
-    /**
-     * @param string $language (from DbcLanguage)
-     */
-    public function setLanguage($language) {
-        $reflection = new \ReflectionClass(DbcLanguage::class);
-        $classConstants = $reflection->getConstants();
-        
-        if (in_array($language, $classConstants, true)) {
-            $this->language = $language;        
-        } else {
-            throw new InvalidArgumentException("Language '$language' not found");
-        }
     }
 
     public function getStringBlockLength()
@@ -270,7 +254,7 @@ class DbcReader implements \IteratorAggregate, \Countable
     private static function ConvertSlow(DbcReader $reader, DbcRecord $record, DbcActiveRecord $target)
     {
         $values = [];
-        $definition = $target->getDefinition($reader->language); // Fix language usage
+        $definition = $target->getDefinition();
         $definitionKeys = array_keys($definition);
 
         for ($i = 0; $i < $reader->recordLength; $i++) {

@@ -88,7 +88,6 @@ class ClientDbcController extends Controller
         $storage = fopen($filePath, 'rb');
         // Create a DbcReader instance
         $dbcReader = new DbcReader($targetClass, $storage);
-        $dbcReader->setLanguage(DbcLanguage::EN_US);
         // Close the DBC file
         // Note: closed on DbcReader _destruct => fclose($storage);
 
@@ -114,6 +113,11 @@ class ClientDbcController extends Controller
 
     public function actionValidate(string $fileName)
     {
+        foreach (Yii::$app->log->targets as $target) {
+            /** @var \yii\debug\LogTarget $target */
+            $target->setEnabled(false);
+        }
+
         $dataPath = Yii::getAlias('@app/data');
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
@@ -123,7 +127,6 @@ class ClientDbcController extends Controller
         $storage = fopen($filePath, 'rb');
         // Create a DbcReader instance
         $dbcReader = new DbcReader($targetClass, $storage);
-        $dbcReader->setLanguage(DbcLanguage::EN_US);
         // Close the DBC file
         // Note: closed on DbcReader _destruct => fclose($storage);
 
@@ -133,7 +136,7 @@ class ClientDbcController extends Controller
         }
 
         // Process records in batches
-        $batchSize = 1000; // Adjust as needed
+        $batchSize = 10000; // Adjust as needed
         // Calculate counts
         $insertCount = 0;
         $updateCount = 0;
@@ -159,19 +162,7 @@ class ClientDbcController extends Controller
                     if ($query->exists()) {
                         $updateCount++;
                     }
-                    $item = null;
-                    $query = null;
-                    $condition = null;
-                    $primaryKeyValues = null;
-                    unset($item);
-                    unset($query);
-                    unset($condition);
-                    unset($primaryKeyValues);
                 }
-                $primaryKeyNames = null;
-                $batchRecords = null;
-                unset($primaryKeyNames);
-                unset($batchRecords);
             }
         );
 
@@ -186,6 +177,11 @@ class ClientDbcController extends Controller
 
     public function actionImport(string $fileName)
     {
+        foreach (Yii::$app->log->targets as $target) {
+            /** @var \yii\debug\LogTarget $target */
+            $target->setEnabled(false);
+        }
+
         // Your import logic goes here
         $dataPath = Yii::getAlias('@app/data');
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
@@ -196,7 +192,6 @@ class ClientDbcController extends Controller
         $storage = fopen($filePath, 'rb');
         // Create a DbcReader instance
         $dbcReader = new DbcReader($targetClass, $storage);
-        $dbcReader->setLanguage(DbcLanguage::EN_US);
         // Close the DBC file
         // Note: closed on DbcReader _destruct => fclose($storage);
 
@@ -206,7 +201,7 @@ class ClientDbcController extends Controller
         }
 
         // Process records in batches
-        $batchSize = 1000; // Adjust as needed
+        $batchSize = 10000; // Adjust as needed
 
         $this->processRecordsInBatches(
             $records,
@@ -271,7 +266,7 @@ class ClientDbcController extends Controller
         return $dbcFiles;
     }
 
-    public function processRecordsInBatches($records, $batchSize, $callback)
+    private function processRecordsInBatches($records, $batchSize, $callback)
     {
         // Calculate total number of batches
         $totalRecords = count($records);
@@ -285,10 +280,9 @@ class ClientDbcController extends Controller
 
             // Process records in batch using callback
             call_user_func($callback, $batchRecords);
-            $startIndex = null;
-            $batchRecords = null;
-            unset($startIndex);
-            unset($batchRecords);
+
+            Yii::getLogger()->flush(true);
+            gc_collect_cycles();
         }
     }
 
