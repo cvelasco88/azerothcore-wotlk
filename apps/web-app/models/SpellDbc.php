@@ -19,7 +19,7 @@ use Yii;
 
 /**
  * This is the model class for table "spell_dbc".
- * @see https://wowdev.wiki/DB/Spell
+* @see https://wowdev.wiki/DB/Spell
  *
  * @property int $ID
  * @property int $Category
@@ -258,7 +258,7 @@ use Yii;
  */
 class SpellDbc extends DbcActiveRecord
 {
-    use PowerTypeTrait, DispelTypeTrait, TargetFlagTrait, TargetCreatureTypeTrait,
+use PowerTypeTrait, DispelTypeTrait, TargetFlagTrait, TargetCreatureTypeTrait,
         SpellAttrsTrait, SpellAttrsEx1Trait, SpellAttrsEx2Trait, SpellAttrsEx3Trait, SpellAttrsEx4Trait,
         SpellAttrsEx5Trait, SpellAttrsEx6Trait, SpellAttrsEx7Trait;
 
@@ -305,9 +305,9 @@ class SpellDbc extends DbcActiveRecord
             'AttributesEx5' => 'Attributes Ex5',
             'AttributesEx6' => 'Attributes Ex6',
             'AttributesEx7' => 'Attributes Ex7',
-            'ShapeshiftMask' => 'Shapeshift Mask',
+            'ShapeshiftMask' => 'Shapeshift Mask', // aka Stances
             'unk_320_2' => 'Unk 320 2',
-            'ShapeshiftExclude' => 'Shapeshift Exclude',
+            'ShapeshiftExclude' => 'Shapeshift Exclude', // aka StancesNot
             'unk_320_3' => 'Unk 320 3',
             'Targets' => 'Targets',
             'TargetCreatureType' => 'Target Creature Type',
@@ -315,7 +315,7 @@ class SpellDbc extends DbcActiveRecord
             'FacingCasterFlags' => 'Facing Caster Flags',
             'CasterAuraState' => 'Caster Aura State',
             'TargetAuraState' => 'Target Aura State',
-            'ExcludeCasterAuraState' => 'Exclude Caster Aura State',
+            'ExcludeCasterAuraState' => 'Exclude Caster Aura State', // (When exclude, the title on the Editor is "xxxNot")
             'ExcludeTargetAuraState' => 'Exclude Target Aura State',
             'CasterAuraSpell' => 'Caster Aura Spell',
             'TargetAuraSpell' => 'Target Aura Spell',
@@ -342,7 +342,7 @@ class SpellDbc extends DbcActiveRecord
             'RangeIndex' => 'Range Index',
             'Speed' => 'Speed',
             'ModalNextSpell' => 'Modal Next Spell',
-            'CumulativeAura' => 'Cumulative Aura',
+            'CumulativeAura' => 'Cumulative Aura', // StackAmount
             'Totem_1' => 'Totem 1',
             'Totem_2' => 'Totem 2',
             'Reagent_1' => 'Reagent 1',
@@ -388,10 +388,10 @@ class SpellDbc extends DbcActiveRecord
             'EffectRadiusIndex_1' => 'Effect Radius Index 1',
             'EffectRadiusIndex_2' => 'Effect Radius Index 2',
             'EffectRadiusIndex_3' => 'Effect Radius Index 3',
-            'EffectAura_1' => 'Effect Aura 1',
+            'EffectAura_1' => 'Effect Aura 1', // EffectApplyAuraName
             'EffectAura_2' => 'Effect Aura 2',
             'EffectAura_3' => 'Effect Aura 3',
-            'EffectAuraPeriod_1' => 'Effect Aura Period 1',
+            'EffectAuraPeriod_1' => 'Effect Aura Period 1', // EffectAmplitude
             'EffectAuraPeriod_2' => 'Effect Aura Period 2',
             'EffectAuraPeriod_3' => 'Effect Aura Period 3',
             'EffectMultipleValue_1' => 'Effect Multiple Value 1',
@@ -429,7 +429,7 @@ class SpellDbc extends DbcActiveRecord
             'SpellIconID' => 'Spell Icon ID',
             'ActiveIconID' => 'Active Icon ID',
             'SpellPriority' => 'Spell Priority',
-            'Name_Lang_enUS' => 'Name Lang En Us',
+            'Name_Lang_enUS' => 'Name Lang En Us', // SpellName
             'Name_Lang_enGB' => 'Name Lang En Gb',
             'Name_Lang_koKR' => 'Name Lang Ko Kr',
             'Name_Lang_frFR' => 'Name Lang Fr Fr',
@@ -445,8 +445,8 @@ class SpellDbc extends DbcActiveRecord
             'Name_Lang_ptBR' => 'Name Lang Pt Br',
             'Name_Lang_itIT' => 'Name Lang It It',
             'Name_Lang_Unk' => 'Name Lang Unk',
-            'Name_Lang_Mask' => 'Name Lang Mask',
-            'NameSubtext_Lang_enUS' => 'Name Subtext Lang En Us',
+            'Name_Lang_Mask' => 'Name Lang Mask', // SpellNameFlag
+            'NameSubtext_Lang_enUS' => 'Name Subtext Lang En Us', // Rank
             'NameSubtext_Lang_enGB' => 'Name Subtext Lang En Gb',
             'NameSubtext_Lang_koKR' => 'Name Subtext Lang Ko Kr',
             'NameSubtext_Lang_frFR' => 'Name Subtext Lang Fr Fr',
@@ -462,8 +462,8 @@ class SpellDbc extends DbcActiveRecord
             'NameSubtext_Lang_ptBR' => 'Name Subtext Lang Pt Br',
             'NameSubtext_Lang_itIT' => 'Name Subtext Lang It It',
             'NameSubtext_Lang_Unk' => 'Name Subtext Lang Unk',
-            'NameSubtext_Lang_Mask' => 'Name Subtext Lang Mask',
-            'Description_Lang_enUS' => 'Description Lang En Us',
+            'NameSubtext_Lang_Mask' => 'Name Subtext Lang Mask', // RankFlags
+            'Description_Lang_enUS' => 'Description Lang En Us', // Description
             'Description_Lang_enGB' => 'Description Lang En Gb',
             'Description_Lang_koKR' => 'Description Lang Ko Kr',
             'Description_Lang_frFR' => 'Description Lang Fr Fr',
@@ -479,8 +479,8 @@ class SpellDbc extends DbcActiveRecord
             'Description_Lang_ptBR' => 'Description Lang Pt Br',
             'Description_Lang_itIT' => 'Description Lang It It',
             'Description_Lang_Unk' => 'Description Lang Unk',
-            'Description_Lang_Mask' => 'Description Lang Mask',
-            'AuraDescription_Lang_enUS' => 'Aura Description Lang En Us',
+            'Description_Lang_Mask' => 'Description Lang Mask',// DescriptionFlags
+            'AuraDescription_Lang_enUS' => 'Aura Description Lang En Us', // ToolTip
             'AuraDescription_Lang_enGB' => 'Aura Description Lang En Gb',
             'AuraDescription_Lang_koKR' => 'Aura Description Lang Ko Kr',
             'AuraDescription_Lang_frFR' => 'Aura Description Lang Fr Fr',
@@ -496,22 +496,22 @@ class SpellDbc extends DbcActiveRecord
             'AuraDescription_Lang_ptBR' => 'Aura Description Lang Pt Br',
             'AuraDescription_Lang_itIT' => 'Aura Description Lang It It',
             'AuraDescription_Lang_Unk' => 'Aura Description Lang Unk',
-            'AuraDescription_Lang_Mask' => 'Aura Description Lang Mask',
+            'AuraDescription_Lang_Mask' => 'Aura Description Lang Mask', // ToolTipFlags
             'ManaCostPct' => 'Mana Cost Pct',
             'StartRecoveryCategory' => 'Start Recovery Category',
             'StartRecoveryTime' => 'Start Recovery Time',
             'MaxTargetLevel' => 'Max Target Level',
-            'SpellClassSet' => 'Spell Class Set',
+            'SpellClassSet' => 'Spell Class Set', // SpellFamilyName
             'SpellClassMask_1' => 'Spell Class Mask 1',
             'SpellClassMask_2' => 'Spell Class Mask 2',
             'SpellClassMask_3' => 'Spell Class Mask 3',
             'MaxTargets' => 'Max Targets',
-            'DefenseType' => 'Defense Type',
+            'DefenseType' => 'Defense Type', // DmgClass
             'PreventionType' => 'Prevention Type',
             'StanceBarOrder' => 'Stance Bar Order',
-            'EffectChainAmplitude_1' => 'Effect Chain Amplitude 1',
-            'EffectChainAmplitude_2' => 'Effect Chain Amplitude 2',
-            'EffectChainAmplitude_3' => 'Effect Chain Amplitude 3',
+            'EffectChainAmplitude_1' => 'Effect Chain Amplitude 1', // DmgMultiplier1
+            'EffectChainAmplitude_2' => 'Effect Chain Amplitude 2', // DmgMultiplier2
+            'EffectChainAmplitude_3' => 'Effect Chain Amplitude 3', // DmgMultiplier3
             'MinFactionID' => 'Min Faction ID',
             'MinReputation' => 'Min Reputation',
             'RequiredAuraVision' => 'Required Aura Vision',
@@ -522,9 +522,9 @@ class SpellDbc extends DbcActiveRecord
             'RuneCostID' => 'Rune Cost ID',
             'SpellMissileID' => 'Spell Missile ID',
             'PowerDisplayID' => 'Power Display ID',
-            'EffectBonusMultiplier_1' => 'Effect Bonus Multiplier 1',
-            'EffectBonusMultiplier_2' => 'Effect Bonus Multiplier 2',
-            'EffectBonusMultiplier_3' => 'Effect Bonus Multiplier 3',
+            'EffectBonusMultiplier_1' => 'Effect Bonus Multiplier 1', // Unk_320_41
+            'EffectBonusMultiplier_2' => 'Effect Bonus Multiplier 2', // Unk_320_42
+            'EffectBonusMultiplier_3' => 'Effect Bonus Multiplier 3', // Unk_320_43
             'SpellDescriptionVariableID' => 'Spell Description Variable ID',
             'SpellDifficultyID' => 'Spell Difficulty ID',
         ];
@@ -779,7 +779,7 @@ class SpellDbc extends DbcActiveRecord
             'EffectChainAmplitude_2',
             'EffectChainAmplitude_3',
             //
-            'EffectBonusMultiplier_1',
+            'EffectBonusMultiplier_1', // 320_41
             'EffectBonusMultiplier_2',
             'EffectBonusMultiplier_3',
 
@@ -912,7 +912,7 @@ class SpellDbc extends DbcActiveRecord
     /**
      * @inheritdoc
      */
-    public function getDefinition()
+    public function getDefinition(string $language)
     {
         $definition = parent::getDefinition();
         // TODO: fix definition for Spell.dbc
@@ -1020,7 +1020,7 @@ class SpellDbc extends DbcActiveRecord
             //'EffectRadiusIndex_2' => 'Effect Radius Index 2',
             //EffectRadiusIndex_3' => 'Effect Radius Index 3',
             
-            //'EffectAura_1' => 'Effect Aura 1', (EffectAppluAuraName)
+            //'EffectAura_1' => 'Effect Aura 1', (EffectApplyAuraName)
             //'EffectAura_2' => 'Effect Aura 2', 
             //'EffectAura_3' => 'Effect Aura 3',
             //'EffectAuraPeriod_1' => 'Effect Aura Period 1', (EffectAmplitude)
@@ -1172,13 +1172,23 @@ class SpellDbc extends DbcActiveRecord
             // 'SpellMissileID' => 'Spell Missile ID',
             // 'PowerDisplayID' => 'Power Display ID',
 
-            // 'EffectBonusMultiplier_1' => 'Effect Bonus Multiplier 1', // aka Unk:320_41
-            // 'EffectBonusMultiplier_2' => 'Effect Bonus Multiplier 2', // aka Unk:320_42
-            // 'EffectBonusMultiplier_3' => 'Effect Bonus Multiplier 3', // aka Unk:320_43
+            // 'EffectBonusMultiplier_1' => 'Effect Bonus Multiplier 1', // aka Unk_320_41
+            // 'EffectBonusMultiplier_2' => 'Effect Bonus Multiplier 2', // aka Unk_320_42
+            // 'EffectBonusMultiplier_3' => 'Effect Bonus Multiplier 3', // aka Unk_320_43
 
             // 'SpellDescriptionVariableID' => 'Spell Description Variable ID',
             // 'SpellDifficultyID' => 'Spell Difficulty ID',
         ];
         return $definition;
     }
+
+    /**
+     * {@inheritdoc}
+     * @return SpellDbcQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new SpellDbcQuery(get_called_class());
+    }
+    
 }

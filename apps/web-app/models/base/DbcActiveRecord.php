@@ -9,7 +9,7 @@ use Yii;
 abstract class DbcActiveRecord extends \yii\db\ActiveRecord
 {
 
-    public function getDefinition()
+    public function getDefinition(string $language)
     {
         $columnDefinitions = [];
         $tableSchema = $this->getTableSchema();
