@@ -4,9 +4,10 @@ namespace app\controllers;
 
 use app\helpers\DbcArrayDataProvider;
 use app\helpers\DbcDefinition;
-use app\helpers\DbcLanguage;
 use app\helpers\DbcRecord;
 use app\helpers\DbcReader;
+use app\helpers\DbcWriter;
+use app\models\base\DbcActiveRecord;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
@@ -136,7 +137,7 @@ class ClientDbcController extends Controller
         }
 
         // Process records in batches
-        $batchSize = 10000; // Adjust as needed
+        $batchSize = 1000; // Adjust as needed
         // Calculate counts
         $insertCount = 0;
         $updateCount = 0;
@@ -201,7 +202,7 @@ class ClientDbcController extends Controller
         }
 
         // Process records in batches
-        $batchSize = 10000; // Adjust as needed
+        $batchSize = 1000; // Adjust as needed
 
         $this->processRecordsInBatches(
             $records,
@@ -252,6 +253,60 @@ class ClientDbcController extends Controller
         return json_encode(['success' => true]);
     }
 
+    public function actionExport(string $className)
+    {
+        if (!is_subclass_of($className, DbcActiveRecord::class)) {
+            throw new \InvalidArgumentException("$className must inherit from DbcActiveRecord");
+        }
+        
+        /** @var DbcActiveRecord $target */
+        $target = new $className();
+        $fileName = DbcDefinition::getFileName($target::class);
+
+        // Your import logic goes here
+        $dataPath = Yii::getAlias('@app/data');
+        $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
+
+        // Open the DBC file
+        $storage = fopen($filePath, 'rb');
+        // Create a DbcWriter instance
+        $dbcWriter = new DbcWriter($storage);
+        // Close the DBC file
+        // Note: closed on DbcWriter _destruct => fclose($storage);
+
+        // Define batch size
+        $batchSize = 1000; // Adjust as needed
+
+        // Calculate total number of records
+        $totalRecords = $className::find()->count();
+
+        // Process records in batches
+        for ($offset = 0; $offset < $totalRecords; $offset += $batchSize) {
+            // Retrieve records for the current batch
+            $records = $className::find()
+                ->offset($offset)
+                ->limit($batchSize)
+                ->all();
+
+            // Process records
+            foreach ($records as $record) {
+                // Write each record using the DbcWriter
+                $dbcWriter->writeRecord($record);
+            }
+        }
+
+        // Close the DBC file
+        fclose($storage);
+
+        // Return success or failure message
+        return json_encode(['success' => true]);
+    }
+
+    // PRIVATE METHODS
+
+    /**
+     * @param string $directory
+     */
     private function findDbcFiles($directory)
     {
         $files = scandir($directory);
@@ -266,7 +321,12 @@ class ClientDbcController extends Controller
         return $dbcFiles;
     }
 
-    private function processRecordsInBatches($records, $batchSize, $callback)
+    /**
+     * @param DbcRecord[] $records
+     * @param int $batchSize
+     * @param callable $callback
+     */
+    private function processRecordsInBatches(array $records, int $batchSize, callable $callback)
     {
         // Calculate total number of batches
         $totalRecords = count($records);

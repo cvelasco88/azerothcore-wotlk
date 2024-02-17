@@ -183,6 +183,9 @@ class DbcReader implements \IteratorAggregate, \Countable
         return $this->getString($offset);
     }
 
+    /**
+     * @return DbcRecord[]
+     */
     public function getRecords(): Generator
     {
         $curPos = $this->headerLength;
@@ -205,6 +208,14 @@ class DbcReader implements \IteratorAggregate, \Countable
         }
 
         $this->count = $this->recordLength = $this->perRecord = $this->stringBlockLength = $this->stringBlockOffset = 0;
+    }
+    
+    /**
+     * Closes the DBC file.
+     */
+    public function close()
+    {
+        $this->dispose();
     }
 
     public function getIterator(): Traversable

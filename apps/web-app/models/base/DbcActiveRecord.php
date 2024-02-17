@@ -59,29 +59,34 @@ abstract class DbcActiveRecord extends \yii\db\ActiveRecord
      */
     public function exportToDbc(array $definition)
     {
-        $data = $this->toArray();
+        // Get all properties of the target class
+        $keys = array_keys($definition);
+
+        $data = $this->toArray($keys);
         return $this->mapExportedDbcValues($data, $definition);
     }
 
     /**
      * Maps imported DBC values to attributes of the current ActiveRecord instance.
      *
-     * @param array $values The imported DBC values.
+     * @param array $data The imported DBC values.
      * @param array $definition The column definition for mapping imported values.
      * @return array The mapped values.
      */
-    protected function mapImportedDbcValues(array $values, array $definition)
+    protected function mapImportedDbcValues(array $data, array $definition)
     {
         // Get all properties of the target class
-        $properties = array_keys($definition);
+        /*$properties = array_keys($definition);
 
-        $data = [];
+        $values = [];
         foreach ($properties as $position => $propertyName) {
             if ($position < count($values)) {
                 // Set the value to the property of the target object
                 $data[$propertyName] = $values[$position];
             }
         }
+        return $values;
+        */
         return $data;
     }
 
