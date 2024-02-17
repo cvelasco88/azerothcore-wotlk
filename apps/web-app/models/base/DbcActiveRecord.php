@@ -38,28 +38,28 @@ abstract class DbcActiveRecord extends \yii\db\ActiveRecord
     /**
      * @param array $values
      */
-    public function importFromDbc(array $values)
+    public function importFromDbc(array $values, array $definition)
     {
-        $data = $this->mapImportedDbcValues($values);
+        $data = $this->mapImportedDbcValues($values, $definition);
         $this->load($data, '');
     }
 
     /**
      * @return array // values
      */
-    public function exportToDbc()
+    public function exportToDbc(array $definition)
     {
         $data = $this->toArray();
-        return $this->mapExportedDbcValues($data);
+        return $this->mapExportedDbcValues($data, $definition);
     }
 
     /**
      * @param array $values
      */
-    protected function mapImportedDbcValues(array $values)
+    protected function mapImportedDbcValues(array $values, array $definition)
     {
         // Get all properties of the target class
-        $properties = array_keys($this->getDefinition());
+        $properties = array_keys($definition);
 
         $data = [];
         foreach ($properties as $position => $propertyName) {
@@ -75,15 +75,18 @@ abstract class DbcActiveRecord extends \yii\db\ActiveRecord
      * @param array $data
      * @return array // values
      */
-    protected function mapExportedDbcValues(array $data)
+    protected function mapExportedDbcValues(array $data, $definition)
     {
         // Get all properties of the target class
-        $properties = array_keys($this->getDefinition());
+        $properties = array_keys($definition);
 
         $values = [];
         foreach ($properties as $propertyName) {
             // Set the value from the property of the target object
-            $values[] = $data[$propertyName] ?? null; // test if to use "??" or "?:"
+
+            // TODO: test if to use "??" or "?:" 
+            // TODO: maybe is better to replace "null" by zero
+            $values[] = $data[$propertyName] ?? null;
         }
         return $values;
     }

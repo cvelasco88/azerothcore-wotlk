@@ -5,6 +5,7 @@ namespace app\helpers;
 use app\models\base\DbcActiveRecord;
 use Generator;
 use Traversable;
+use yii\base\InvalidArgumentException;
 use yii\db\ActiveRecord;
 
 /**
@@ -37,6 +38,8 @@ class DbcReader implements \IteratorAggregate, \Countable
     protected $minId;
     protected $maxId;
     protected $locale;
+
+    private string $language = DbcLanguage::EN_US;
 
     /**
      * @param string $targetClass
@@ -106,6 +109,20 @@ class DbcReader implements \IteratorAggregate, \Countable
         }
 
         $this->stringBlockOffset = $this->perRecord * $this->count + $this->headerLength;
+    }
+
+    /**
+     * @param string $language (from DbcLanguage)
+     */
+    public function setLanguage($language) {
+        $reflection = new \ReflectionClass(DbcLanguage::class);
+        $classConstants = $reflection->getConstants();
+        
+        if (in_array($language, $classConstants, true)) {
+            $this->language = $language;        
+        } else {
+            throw new InvalidArgumentException("Language '$language' not found");
+        }
     }
 
     public function getStringBlockLength()
@@ -253,7 +270,7 @@ class DbcReader implements \IteratorAggregate, \Countable
     private static function ConvertSlow(DbcReader $reader, DbcRecord $record, DbcActiveRecord $target)
     {
         $values = [];
-        $definition = $target->getDefinition();
+        $definition = $target->getDefinition($reader->language); // Fix language usage
         $definitionKeys = array_keys($definition);
 
         for ($i = 0; $i < $reader->recordLength; $i++) {
@@ -262,7 +279,7 @@ class DbcReader implements \IteratorAggregate, \Countable
             $values[$i] = self::readAttributeValue($record, $i, $columnDefinition);
         }
 
-        $target->importFromDbc($values);
+        $target->importFromDbc($values, $definition);
     }
 
     /**

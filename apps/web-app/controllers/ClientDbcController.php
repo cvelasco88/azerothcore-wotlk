@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\helpers\DbcArrayDataProvider;
 use app\helpers\DbcDefinition;
+use app\helpers\DbcLanguage;
 use app\helpers\DbcRecord;
 use app\helpers\DbcReader;
 use Yii;
@@ -87,6 +88,7 @@ class ClientDbcController extends Controller
         $storage = fopen($filePath, 'rb');
         // Create a DbcReader instance
         $dbcReader = new DbcReader($targetClass, $storage);
+        $dbcReader->setLanguage(DbcLanguage::EN_US);
         // Close the DBC file
         // Note: closed on DbcReader _destruct => fclose($storage);
 
@@ -121,6 +123,7 @@ class ClientDbcController extends Controller
         $storage = fopen($filePath, 'rb');
         // Create a DbcReader instance
         $dbcReader = new DbcReader($targetClass, $storage);
+        $dbcReader->setLanguage(DbcLanguage::EN_US);
         // Close the DBC file
         // Note: closed on DbcReader _destruct => fclose($storage);
 
@@ -193,6 +196,7 @@ class ClientDbcController extends Controller
         $storage = fopen($filePath, 'rb');
         // Create a DbcReader instance
         $dbcReader = new DbcReader($targetClass, $storage);
+        $dbcReader->setLanguage(DbcLanguage::EN_US);
         // Close the DBC file
         // Note: closed on DbcReader _destruct => fclose($storage);
 
