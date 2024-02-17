@@ -41,13 +41,13 @@ class DbcDefinition
     {
         switch ($targetClass) {
             case ItemDbc::class:
-                return "Item.dbc";
+                return "Item.dbc.out";
             case SpellDbc::class:
-                return "Spell.dbc";
+                return "Spell.dbc.out";
             case TalentDbc::class:
-                return "Talent.dbc";
+                return "Talent.dbc.out";
             case TalentTabDbc::class:
-                return "TalentTab.dbc";
+                return "TalentTab.dbc.out";
             default:
                 throw new \Exception("Definition not found for {$targetClass}");
         }

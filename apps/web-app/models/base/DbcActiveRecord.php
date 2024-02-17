@@ -76,18 +76,8 @@ abstract class DbcActiveRecord extends \yii\db\ActiveRecord
     protected function mapImportedDbcValues(array $data, array $definition)
     {
         // Get all properties of the target class
-        /*$properties = array_keys($definition);
-
-        $values = [];
-        foreach ($properties as $position => $propertyName) {
-            if ($position < count($values)) {
-                // Set the value to the property of the target object
-                $data[$propertyName] = $values[$position];
-            }
-        }
-        return $values;
-        */
-        return $data;
+        $properties = array_keys($definition);
+        return array_combine($properties, $data);
     }
 
     /**

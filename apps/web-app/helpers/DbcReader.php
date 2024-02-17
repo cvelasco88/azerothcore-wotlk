@@ -46,8 +46,8 @@ class DbcReader implements \IteratorAggregate, \Countable
      */
     public function __construct(string $targetClass, $storage, bool $ownsStorage = true)
     {
-        if (!is_subclass_of($targetClass, ActiveRecord::class)) {
-            throw new \InvalidArgumentException("$targetClass must inherit from \yii\db\ActiveRecord");
+        if (!is_subclass_of($targetClass, DbcActiveRecord::class)) {
+            throw new \InvalidArgumentException("$targetClass must inherit from \app\models\base\DbcActiveRecord");
         }
         $this->targetClass = $targetClass;
 
@@ -209,14 +209,14 @@ class DbcReader implements \IteratorAggregate, \Countable
 
         $this->count = $this->recordLength = $this->perRecord = $this->stringBlockLength = $this->stringBlockOffset = 0;
     }
-    
+
     /**
      * Closes the DBC file.
      */
-    public function close()
+    /*public function close()
     {
         $this->dispose();
-    }
+    }*/
 
     public function getIterator(): Traversable
     {

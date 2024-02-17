@@ -268,31 +268,16 @@ class ClientDbcController extends Controller
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
         // Open the DBC file
-        $storage = fopen($filePath, 'rb');
-        // Create a DbcWriter instance
-        $dbcWriter = new DbcWriter($storage);
+        $storage = fopen($filePath, 'wb');
+
+        // Create a DbcWriter instance with calculated header attributes
+        $dbcWriter = new DbcWriter($className, $storage);
         // Close the DBC file
         // Note: closed on DbcWriter _destruct => fclose($storage);
 
-        // Define batch size
-        $batchSize = 1000; // Adjust as needed
-
-        // Calculate total number of records
-        $totalRecords = $className::find()->count();
-
-        // Process records in batches
-        for ($offset = 0; $offset < $totalRecords; $offset += $batchSize) {
-            // Retrieve records for the current batch
-            $records = $className::find()
-                ->offset($offset)
-                ->limit($batchSize)
-                ->all();
-
-            // Process records
-            foreach ($records as $record) {
-                // Write each record using the DbcWriter
-                $dbcWriter->writeRecord($record);
-            }
+        foreach($dbcWriter->getRecords() as $record) {
+            // Write each record using the DbcWriter
+            $dbcWriter->writeRecord($record);
         }
 
         // Close the DBC file
