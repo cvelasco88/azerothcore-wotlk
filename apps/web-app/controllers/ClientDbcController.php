@@ -167,6 +167,8 @@ class ClientDbcController extends Controller
             }
         );
 
+        $dbcReader->close();
+        
         $insertCount = count($records) - $updateCount;
 
         // Return the results
@@ -249,6 +251,8 @@ class ClientDbcController extends Controller
             }
         );
 
+        $dbcReader->close();
+
         // Return success or failure message
         return json_encode(['success' => true]);
     }
@@ -275,16 +279,14 @@ class ClientDbcController extends Controller
         // Close the DBC file
         // Note: closed on DbcWriter _destruct => fclose($storage);
 
+        $definition = $target->getDefinition();
+
         foreach($dbcWriter->getRecords() as $record) {
             // Write each record using the DbcWriter
-            $dbcWriter->writeRecord($record);
+            $dbcWriter->writeRecord($record, $definition);
         }
 
-        // Close the DBC file
-        fclose($storage);
-
-        // Return success or failure message
-        return json_encode(['success' => true]);
+        $dbcWriter->close();
     }
 
     // PRIVATE METHODS

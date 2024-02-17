@@ -213,10 +213,10 @@ class DbcReader implements \IteratorAggregate, \Countable
     /**
      * Closes the DBC file.
      */
-    /*public function close()
+    public function close()
     {
         $this->dispose();
-    }*/
+    }
 
     public function getIterator(): Traversable
     {

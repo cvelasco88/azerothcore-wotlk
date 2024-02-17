@@ -3,7 +3,6 @@
 use app\models\TalentTabDbc;
 use yii\grid\GridView;
 use yii\helpers\Html;
-use yii\helpers\Json;
 
 $this->title = 'Index Page';
 $this->params['breadcrumbs'][] = $this->title;
@@ -11,6 +10,15 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <?= Html::a('Create TalentTabDbc', ['create'], ['class' => 'btn btn-success']) ?>
+
+<?= Html::a('Export', ['client-dbc/export', 'className' => TalentTabDbc::class], 
+[
+    'class' => 'btn btn-warning',
+    'data' => [
+        'confirm' => 'Are you sure you want to Export this data?',
+        'method' => 'post',
+    ],
+]) ?>
 
 <div class="mb-3"></div>
 

@@ -193,14 +193,15 @@ class DbcWriter implements \IteratorAggregate, \Countable
      * @param DbcActiveRecord $record
      * @throws \Exception
      */
-    public function writeRecord(DbcActiveRecord $record)
+    public function writeRecord(DbcActiveRecord $record, array $definition = null)
     {
-        $definition = $record->getDefinition();
+        if(is_null($definition)) {
+            $definition = $record->getDefinition();
+        }
         $definitionKeys = array_keys($definition);
-        $values = $record->exportDbc();
-        $fields = count($definition);
+        $values = $record->exportToDbc($definition);
 
-        for ($i = 0; $i < $fields; $i++) {
+        for ($i = 0; $i < $this->recordLength; $i++) {
             $columnDefinition = $definition[$definitionKeys[$i]]; // Get the attribute by its position
             // Read value based on the type of the attribute
             self::writeAttributeValue($this, $values[$i], $columnDefinition);
