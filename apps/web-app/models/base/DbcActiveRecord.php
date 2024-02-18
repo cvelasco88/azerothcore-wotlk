@@ -98,7 +98,7 @@ abstract class DbcActiveRecord extends \yii\db\ActiveRecord
 
             // TODO: test if to use "??" or "?:"
             // TODO: maybe is better to replace "null" by zero
-            $values[] = $data[$propertyName] ?? null;
+            $values[] = $data[$propertyName] ?: null;
         }
         return $values;
     }

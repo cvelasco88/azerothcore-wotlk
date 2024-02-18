@@ -155,7 +155,7 @@ class DbcReader implements \IteratorAggregate, \Countable
             $string = mb_convert_encoding($string, "UTF-8", mb_detect_encoding($string));
         }
 
-        return $string;
+        return $string ?: null;
     }
 
     public function getUInt32Value($record, $column)

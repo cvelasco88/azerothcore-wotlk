@@ -240,39 +240,39 @@ class DbcWriter implements \IteratorAggregate, \Countable
     /**
      * Writes a UInt32 value to the DBC file.
      * 
-     * @param int $value
+     * @param int|null $value
      */
-    public function setUInt32Value(int $value)
+    public function setUInt32Value(?int $value)
     {
-        fwrite($this->store, pack("V", $value));
+        fwrite($this->store, pack("V", $value ?? 0));
     }
 
     /**
      * Writes an Int32 value to the DBC file.
      * 
-     * @param int $value
+     * @param int|null $value
      */
-    public function setInt32Value(int $value)
+    public function setInt32Value(?int $value)
     {
-        fwrite($this->store, pack("l", $value));
+        fwrite($this->store, pack("l", $value ?? 0));
     }
 
     /**
      * Writes a Single value to the DBC file.
      * 
-     * @param float $value
+     * @param float|null $value
      */
-    public function setSingleValue(float $value)
+    public function setSingleValue(?float $value)
     {
-        fwrite($this->store, pack("f", $value));
+        fwrite($this->store, pack("f", $value ?? 0));
     }
 
     /**
      * Writes a String value to the DBC file.
      * 
-     * @param string $value
+     * @param string|null $value
      */
-    public function setStringValue(string $value)
+    public function setStringValue(?string $value)
     {
         $this->setUInt32Value($this->stringBlockLength);
 
@@ -310,8 +310,10 @@ class DbcWriter implements \IteratorAggregate, \Countable
         $curPos = ftell($this->store);
         fseek($this->store, $this->stringBlockOffset + $this->stringBlockLength, SEEK_SET);
 
-        // Write the new string to the file
-        fwrite($this->store, $value);
+        if(!is_null($value)) {
+            // Write the new string to the file
+            fwrite($this->store, $value);
+        }
         // Write the null character to set the limit of the string
         fwrite($this->store, chr(0));
 
