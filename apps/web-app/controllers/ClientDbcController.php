@@ -287,6 +287,9 @@ class ClientDbcController extends Controller
         }
 
         $dbcWriter->close();
+
+        // Redirect to the previous page
+        return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
     }
 
     // PRIVATE METHODS

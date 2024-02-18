@@ -112,10 +112,7 @@ class DbcWriter implements \IteratorAggregate, \Countable
             $this->setUInt32Value($this->locale);
             // Skip the next 4 bytes
             $this->setUInt32Value(0);
-        }
-
-        // Calculate string block offset
-        $this->stringBlockOffset = $this->perRecord * $this->count + $this->headerLength;
+        }        
     }
 
     /**
@@ -169,6 +166,9 @@ class DbcWriter implements \IteratorAggregate, \Countable
             $this->maxId = -1;
             $this->locale = 0;
         }
+
+        // Calculate string block offset
+        $this->stringBlockOffset = $this->perRecord * $this->count + $this->headerLength;
 
         return $magic;
     }
@@ -312,6 +312,8 @@ class DbcWriter implements \IteratorAggregate, \Countable
 
         // Write the new string to the file
         fwrite($this->store, $value);
+        // Write the null character to set the limit of the string
+        fwrite($this->store, chr(0));
 
         // Calculate the offset based on the current position
         $this->stringBlockLength = ftell($this->store) - $this->stringBlockOffset;
