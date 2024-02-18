@@ -23,7 +23,8 @@ class AppAsset extends AssetBundle
         'css/site.css',
     ];
     public $js = [
-        'js/site-ajax-functions.js'
+        // Note: Not necessary if it's registered from the needed view
+        // 'js/client-dbc-ajax-functions.js'
     ];
     public $depends = [
         'yii\web\YiiAsset',

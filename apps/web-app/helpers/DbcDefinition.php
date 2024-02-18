@@ -26,6 +26,7 @@ class DbcDefinition
             case "Talent.dbc":
                 return TalentDbc::class;
             case "TalentTab.dbc":
+            case "OldTalentTab.dbc":
                 return TalentTabDbc::class;
             default:
                 throw new \Exception("Definition not found for {$filename}");

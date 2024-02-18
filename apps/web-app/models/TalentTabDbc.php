@@ -89,6 +89,8 @@ class TalentTabDbc extends DbcActiveRecord
         ];
     }
 
+    // PUBLIC STATIC METHODS
+
     /**
      * {@inheritdoc}
      * @return TalentTabDbcQuery the active query used by this AR class.
@@ -97,8 +99,6 @@ class TalentTabDbc extends DbcActiveRecord
     {
         return new TalentTabDbcQuery(get_called_class());
     }
-
-    // PUBLIC STATIC METHODS
 
     public static function getDetailAttributes()
     {

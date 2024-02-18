@@ -233,18 +233,17 @@ class ClientDbcController extends Controller
 
                     $exists = $query->exists();
                     if ($exists) {
-                        // TODO: implementar
-                        // $model = $query->one();
-                    } else {
-                        // TODO: implementar
-                        try {
-                            if (!$item->save()) {
-                                throw new \yii\db\Exception('Error saving model', $item->getErrors());
-                            }    
-                        } catch (\yii\base\Exception|\yii\db\Exception $e) {
-                            throw $e;
-                        }
-                        
+                        $model = $query->one();
+                        $model->load($item->getAttributes(), '');
+                        $item = $model;
+                    } 
+                    // TODO: implementar
+                    try {
+                        if (!$item->save()) {
+                            throw new \yii\db\Exception('Error saving model', $item->getErrors());
+                        }    
+                    } catch (\yii\base\Exception|\yii\db\Exception $e) {
+                        throw $e;
                     }
                     unset($item);
                 }
