@@ -5,6 +5,35 @@ namespace app\helpers;
 use app\models\base\DbcActiveRecord;
 use Traversable;
 
+/**
+ * DbcWriter is a utility class designed to facilitate the writing of DBC (Database Cache) files.
+ * It allows for the creation and modification of DBC files, which are structured binary files used 
+ * to cache database records efficiently. This class provides methods to write individual records, 
+ * as well as set various types of values (UInt32, Int32, Single, and String) within the DBC file.
+ * 
+ * Note: DBC files typically consist of a header section followed by a data section, which includes 
+ * records and a string block for storing variable-length strings. This class handles the writing of 
+ * both sections and manages the string block dynamically as strings are added or updated.
+ * 
+ * Most methods in this class require a valid stream resource as input, which represents the 
+ * file to be written. Additionally, it supports different DBC formats (Dbc, Db2, AdbCache) 
+ * and can adjust the header structure accordingly.
+ * 
+ * Some key functionalities include:
+ * - Writing individual records to the DBC file.
+ * - Setting different types of values (UInt32, Int32, Single, and String).
+ * - Managing the string block dynamically to handle variable-length strings.
+ * - Handling different DBC formats and adjusting header structure accordingly.
+ * - Closing the DBC file when done.
+ * 
+ * Example usage:
+ * ```
+ * $storage = fopen('example.dbc', 'wb');
+ * $dbcWriter = new DbcWriter('App\Models\MyDbcRecord', $storage);
+ * $dbcWriter->writeRecord($myRecord);
+ * $dbcWriter->close();
+ * ```
+ */
 class DbcWriter implements \IteratorAggregate, \Countable
 {
     protected const HEADER_LENGTH_DBC = 20;
@@ -117,7 +146,7 @@ class DbcWriter implements \IteratorAggregate, \Countable
         $this->count = $this->targetClass::find()->count();
         $this->recordLength = count($definition);
         $this->perRecord = $this->recordLength * 4;
-        $this->stringBlockLength = 784; // Because is that on the reader it is
+        $this->stringBlockLength = 0; // updated when written strings
 
         if ($this->format != DbcFileFormat::Dbc) {
             $this->tableHash = $config['tableHash'];
@@ -195,7 +224,7 @@ class DbcWriter implements \IteratorAggregate, \Countable
      */
     public function writeRecord(DbcActiveRecord $record, array $definition = null)
     {
-        if(is_null($definition)) {
+        if (is_null($definition)) {
             $definition = $record->getDefinition();
         }
         $definitionKeys = array_keys($definition);
@@ -245,10 +274,11 @@ class DbcWriter implements \IteratorAggregate, \Countable
      */
     public function setStringValue(string $value)
     {
-        // Write string length (4 bytes, unsigned long)
-        fwrite($this->store, pack("V", strlen($value)));
-        // Write string content
-        fwrite($this->store, $value);
+        $this->setUInt32Value($this->stringBlockLength);
+
+        // Update the string at the given offset with the new value
+        $this->setString($value);
+        $this->updateStringBlockLength();
     }
 
     public function __destruct()
@@ -270,6 +300,34 @@ class DbcWriter implements \IteratorAggregate, \Countable
     public function close()
     {
         $this->dispose();
+    }
+
+    /**
+     * @param string|null $value
+     */
+    private function setString(?string $value)
+    {
+        $curPos = ftell($this->store);
+        fseek($this->store, $this->stringBlockOffset + $this->stringBlockLength, SEEK_SET);
+
+        // Write the new string to the file
+        fwrite($this->store, $value);
+
+        // Calculate the offset based on the current position
+        $this->stringBlockLength = ftell($this->store) - $this->stringBlockOffset;
+        fseek($this->store, $curPos, SEEK_SET);
+    }
+
+    private function updateStringBlockLength()
+    {
+        $curPos = ftell($this->store);
+        $stringBlockLengthHeaderColumn = 4;
+        fseek($this->store, $stringBlockLengthHeaderColumn * 4, SEEK_SET);
+
+        // overwrite last stringBlockLength
+        $this->setUInt32Value($this->stringBlockLength);
+        // restore cursor
+        fseek($this->store, $curPos, SEEK_SET);
     }
 
     /**
