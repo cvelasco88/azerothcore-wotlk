@@ -3,6 +3,8 @@
 namespace app\models;
 
 use app\models\base\DbcActiveRecord;
+use app\models\traits\common\ClassMaskTrait;
+use app\models\traits\common\RaceMaskTrait;
 use Yii;
 
 /**
@@ -35,6 +37,8 @@ use Yii;
  */
 class TalentTabDbc extends DbcActiveRecord
 {
+    use ClassMaskTrait, RaceMaskTrait;
+
     /**
      * {@inheritdoc}
      */

@@ -28,6 +28,15 @@ function getNameById($id, $talentIds)
 
 <?= Html::a('Create TalentDbc', ['create'], ['class' => 'btn btn-success']) ?>
 
+<?= Html::a('Export', ['client-dbc/export', 'className' => TalentDbc::class], 
+[
+    'class' => 'btn btn-warning',
+    'data' => [
+        'confirm' => 'Are you sure you want to Export this data?',
+        'method' => 'post',
+    ],
+]) ?>
+
 <div class="mb-3"></div>
 
 <?= GridView::widget([

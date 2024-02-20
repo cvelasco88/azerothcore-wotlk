@@ -45,8 +45,12 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $form->field($model, 'Name_Lang_Unk')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'Name_Lang_Mask')->textInput() ?>
     <?= $form->field($model, 'SpellIconID')->textInput() ?>
-    <?= $form->field($model, 'RaceMask')->textInput() ?>
-    <?= $form->field($model, 'ClassMask')->textInput() ?>
+    
+    <?= '' // $form->field($model, 'RaceMask')->textInput() ?>
+    <?= '' // $form->field($model, 'ClassMask')->textInput() ?>
+    <?= $form->field($formModel, 'raceMask')->checkboxList(TalentTabDbc::getRaceMaskOptions()); ?>
+    <?= $form->field($formModel, 'classMask')->checkboxList(TalentTabDbc::getClassMaskOptions()); ?>
+
     <?= $form->field($model, 'PetTalentMask')->textInput() ?>
     <?= $form->field($model, 'OrderIndex')->textInput() ?>
     <?= $form->field($model, 'BackgroundFile')->textInput(['maxlength' => true]) ?>

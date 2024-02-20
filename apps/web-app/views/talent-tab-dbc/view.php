@@ -1,5 +1,6 @@
 <?php
 
+use app\helpers\DbcView;
 use app\models\TalentDbc;
 use app\models\TalentTabDbc;
 use yii\bootstrap5\Tabs;
@@ -57,6 +58,12 @@ $this->registerJs($script, View::POS_READY);
         foreach ($attributes as $attribute) {
             switch ($attribute) {
                 // Add more customizations for other attributes as needed
+                case 'RaceMask':
+                    $customAttributes[] = DbcView::column('RaceMask', 'Race Mask', TalentTabDbc::getRaceMaskOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'ClassMask':
+                    $customAttributes[] = DbcView::column('ClassMask', 'Class Mask', TalentTabDbc::getClassMaskOptions(), ['onclick' => 'return false;']);
+                    break;
                 default:
                     $customAttributes[] = $attribute;
                     break;

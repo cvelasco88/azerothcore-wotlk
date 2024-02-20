@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\forms\TalentTabDbcForm;
 use app\models\TalentTabDbc;
 use app\models\search\TalentTabDbcSearch;
 use Yii;
@@ -32,30 +33,36 @@ class TalentTabDbcController extends Controller
 
     public function actionUpdate($id)
     {
+        $formModel = new TalentTabDbcForm();
         $model = $this->findModel($id);
+        $formModel->initModelAttributes($model);
 
         // Check if data is submitted
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($formModel->processForm($model, Yii::$app->request->post())) {
             // Successfully updated, redirect to view action
             return $this->redirect(['view', 'id' => $model->ID]);
         }
 
         return $this->render('update', [
             'model' => $model,
+            'formModel' => $formModel,
         ]);
     }
 
     public function actionCreate()
     {
+        $formModel = new TalentTabDbcForm();
         $model = new TalentTabDbc();
+        $formModel->initModelAttributes($model);        
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($formModel->processForm($model, Yii::$app->request->post())) {
             // Successfully created, redirect to view action
             return $this->redirect(['view', 'id' => $model->ID]);
         }
 
         return $this->render('create', [
             'model' => $model,
+            'formModel' => $formModel,
         ]);
     }
 

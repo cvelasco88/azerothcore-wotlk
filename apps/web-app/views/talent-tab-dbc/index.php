@@ -1,5 +1,6 @@
 <?php
 /** @var yii\web\View $this */
+use app\helpers\DbcView;
 use app\models\TalentTabDbc;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -39,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             'ID',
             'Name_Lang_enUS',
-            'Name_Lang_enGB',
+            /*'Name_Lang_enGB',
             'Name_Lang_koKR',
             'Name_Lang_frFR',
             'Name_Lang_deDE',
@@ -54,10 +55,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'Name_Lang_ptBR',
             'Name_Lang_itIT',
             'Name_Lang_Unk',
-            'Name_Lang_Mask',
+            'Name_Lang_Mask',*/
             'SpellIconID',
-            'RaceMask',
-            'ClassMask',
+            DbcView::column('RaceMask', 'Race Mask', TalentTabDbc::getRaceMaskOptions(), ['onclick' => 'return false;']),
+            DbcView::column('ClassMask', 'Class Mask', TalentTabDbc::getClassMaskOptions(), ['onclick' => 'return false;']),            
             'PetTalentMask',
             'OrderIndex',
             'BackgroundFile',
