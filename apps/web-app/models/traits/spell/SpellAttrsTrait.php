@@ -92,16 +92,4 @@ trait SpellAttrsTrait
         $spellAttributes = self::getSpellAttributesOptions();
         return isset($spellAttributes[$attribute]) ? $spellAttributes[$attribute] : null;
     }
-
-    public static function getPresentSpellAttributes($value) {
-        $presentFlags = [];
-        // Iterate over each constant
-        foreach (self::getSpellAttributesOptions() as $flag => $label) {
-            // Check if the constant is present in the $value
-            if ($value & $flag) {
-                $presentFlags[] = $flag;
-            }
-        }
-        return $presentFlags;
-    }
 }
