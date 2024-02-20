@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Index Page', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="player-create-info-skill-create">
+<div class="talent-dbc-create">
 
     <?php $form = ActiveForm::begin(); ?>
 

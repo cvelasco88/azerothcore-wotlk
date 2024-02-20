@@ -79,7 +79,7 @@ class DbcView {
         // Iterate over each constant
         foreach ($entries as $flag => $label) {
             // Check if the constant is present in the $value
-            if ($value & $flag) {
+            if ($value & $flag || ($flag === 0 && $value === 0)) {
                 $presentFlags[] = $flag;
             }
         }

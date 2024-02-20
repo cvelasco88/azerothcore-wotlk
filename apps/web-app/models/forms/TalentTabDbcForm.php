@@ -22,13 +22,13 @@ class TalentTabDbcForm extends Model
     public function initModelAttributes(TalentTabDbc $model) {
         $this->raceMask = $this->initAttributes(
             $model->RaceMask,
-            $model::getRaceMaskOptions(),
-                $model::RACE_MASK_ANY
+            TalentTabDbc::getRaceMaskOptions(),
+                TalentTabDbc::RACE_MASK_ANY
         );
         $this->classMask = $this->initAttributes(
             $model->ClassMask,
-            $model::getClassMaskOptions(),
-                $model::CLASS_MASK_ANY
+            TalentTabDbc::getClassMaskOptions(),
+                TalentTabDbc::CLASS_MASK_ANY
         );
     }
 
@@ -42,7 +42,7 @@ class TalentTabDbcForm extends Model
             $model->ClassMask = $this->processCheckboxList($this->classMask);
 
             // Save the model
-            if ($model->save()) {
+            if ($model->validate() && $model->save()) {
                 return true; // Successfully processed the form
             }
         }

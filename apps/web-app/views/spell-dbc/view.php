@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Spells', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="view">
+<div class="spell-dbc-view">
 
     <?= Html::a('Update', ['update', 'id' => $model->ID], ['class' => 'btn btn-primary']) ?>
     
@@ -31,10 +31,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
     
     function handledAttributes(array $attributes) {
-        $targetFlagOptions = SpellDbc::getTargetFlagOptions();
-        $targetCreatureTypes = SpellDbc::getTargetCreatureTypeOptions();
-        $spellAttributesOptions = SpellDbc::getSpellAttributesOptions();
-        
         $customAttributes = [];
 
         foreach ($attributes as $attribute) {
@@ -66,7 +62,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 case 'Attributes':
                     $customAttributes[] = DbcView::columnInline('Attributes', SpellDbc::getSpellAttributesOptions(), ['onclick' => 'return false;']);
                     break;
-                    
                 // Add more customizations for other attributes as needed
                 default:
                     $customAttributes[] = $attribute;

@@ -37,7 +37,7 @@ JS;
 $this->registerJs($script, View::POS_READY);
 
 ?>
-<div class="talent-dbc-view">
+<div class="talent-tab-dbc-view">
 
     <?= Html::a('Update', ['update', 'id' => $model->ID], ['class' => 'btn btn-primary']) ?>
     

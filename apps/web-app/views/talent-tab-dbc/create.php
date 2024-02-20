@@ -12,7 +12,7 @@ $this->title = 'Create TalentTabDbc';
 $this->params['breadcrumbs'][] = ['label' => 'Index Page', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="talent-dbc-create">
+<div class="talent-tab-dbc-create">
 
     <?php $form = ActiveForm::begin(); ?>
 

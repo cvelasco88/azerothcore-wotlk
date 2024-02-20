@@ -12,7 +12,7 @@ $this->title = 'Update TalentTabDbc';
 $this->params['breadcrumbs'][] = ['label' => 'Index Page', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="talent-dbc-update">
+<div class="talent-tab-dbc-update">
 
     <?= Html::a(
         'View',

@@ -22,13 +22,13 @@ class PlayerCreateInfoSkillForm extends Model
     public function initModelAttributes(PlayerCreateInfoSkill $model) {
         $this->raceMask = $this->initAttributes(
             $model->raceMask,
-            $model::getRaceMaskOptions(),
-                $model::RACE_MASK_ANY
+            PlayerCreateInfoSkill::getRaceMaskOptions(),
+                PlayerCreateInfoSkill::RACE_MASK_ANY
         );
         $this->classMask = $this->initAttributes(
             $model->classMask,
-            $model::getClassMaskOptions(),
-                $model::CLASS_MASK_ANY
+            PlayerCreateInfoSkill::getClassMaskOptions(),
+                PlayerCreateInfoSkill::CLASS_MASK_ANY
         );
     }
 
@@ -42,7 +42,7 @@ class PlayerCreateInfoSkillForm extends Model
             $model->classMask = $this->processCheckboxList($this->classMask);
 
             // Save the model
-            if ($model->save()) {
+            if ($model->validate() && $model->save()) {
                 return true; // Successfully processed the form
             }
         }
