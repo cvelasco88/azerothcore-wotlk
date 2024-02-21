@@ -5,6 +5,9 @@ namespace app\models;
 use app\models\base\DbcActiveRecord;
 use app\models\traits\common\LangTrait;
 use app\models\traits\spell\DispelTypeTrait;
+use app\models\traits\spell\EquippedItemClassTrait;
+use app\models\traits\spell\EquippedItemInvTypesTrait;
+use app\models\traits\spell\EquippedItemSubclassTrait;
 use app\models\traits\spell\InterruptFlagsTrait;
 use app\models\traits\spell\PowerTypeTrait;
 use app\models\traits\spell\SchoolMaskTrait;
@@ -18,7 +21,6 @@ use app\models\traits\spell\SpellAttrsEx5Trait;
 use app\models\traits\spell\SpellAttrsEx6Trait;
 use app\models\traits\spell\SpellAttrsEx7Trait;
 use app\models\traits\spell\MechanicTrait;
-use app\models\traits\spell\StanceTrait;
 use app\models\traits\spell\TargetFlagTrait;
 use app\models\traits\spell\TargetCreatureTypeTrait;
 use Yii;
@@ -267,7 +269,7 @@ class SpellDbc extends DbcActiveRecord
     use PowerTypeTrait, DispelTypeTrait, TargetFlagTrait, TargetCreatureTypeTrait,
         SpellAttrsTrait, SpellAttrsEx1Trait, SpellAttrsEx2Trait, SpellAttrsEx3Trait, SpellAttrsEx4Trait,
         SpellAttrsEx5Trait, SpellAttrsEx6Trait, SpellAttrsEx7Trait, MechanicTrait, ShapeshiftMaskTrait, InterruptFlagsTrait,
-        SchoolMaskTrait, LangTrait;
+        SchoolMaskTrait, LangTrait, EquippedItemClassTrait, EquippedItemSubclassTrait, EquippedItemInvTypesTrait;
 
 
     /**

@@ -95,6 +95,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 case 'AuraDescription_Lang_Mask':
                     $customAttributes[] = DbcView::columnInline('AuraDescription_Lang_Mask', SpellDbc::getLanguageOptions(), ['onclick' => 'return false;']);
                     break;
+                case 'EquippedItemClass':
+                    $customAttributes[] = DbcView::columnInline('EquippedItemClass', SpellDbc::getEquippedItemClassOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'EquippedItemSubclass':
+                    $customAttributes[] = DbcView::columnInlineCustom('EquippedItemSubclass', function($model) {
+                        return SpellDbc::getEquippedItemSubclassOptions($model, $model->EquippedItemClass);
+                    }, ['onclick' => 'return false;']);
+                    break;
+                case 'EquippedItemInvTypes':
+                    $customAttributes[] = DbcView::columnInline('EquippedItemInvTypes', SpellDbc::getEquippedItemInvTypeOptions(), ['onclick' => 'return false;']);
+                    break;                    
                 // Add more customizations for other attributes as needed
                 default:
                     $customAttributes[] = $attribute;
