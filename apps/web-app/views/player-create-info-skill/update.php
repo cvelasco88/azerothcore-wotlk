@@ -31,7 +31,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= '' //$form->field($model, 'raceMask') ?>
     <?= '' //$form->field($model, 'classMask') ?>
-
     <?= $form->field($formModel, 'raceMask')->checkboxList(PlayerCreateInfoSkill::getRaceMaskOptions()); ?>
     <?= $form->field($formModel, 'classMask')->checkboxList(PlayerCreateInfoSkill::getClassMaskOptions()); ?>
     

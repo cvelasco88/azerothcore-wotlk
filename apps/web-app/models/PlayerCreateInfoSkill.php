@@ -3,8 +3,8 @@
 namespace app\models;
 
 use app\models\base\DbcActiveRecord;
-use app\models\traits\playerCreateInfo\ClassMaskTrait;
-use app\models\traits\playerCreateInfo\RaceMaskTrait;
+use app\models\traits\common\ClassMaskTrait;
+use app\models\traits\common\RaceMaskTrait;
 use Yii;
 
 /**

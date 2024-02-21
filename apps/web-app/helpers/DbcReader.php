@@ -5,6 +5,7 @@ namespace app\helpers;
 use app\models\base\DbcActiveRecord;
 use Generator;
 use Traversable;
+use yii\base\InvalidArgumentException;
 use yii\db\ActiveRecord;
 
 /**
@@ -45,8 +46,8 @@ class DbcReader implements \IteratorAggregate, \Countable
      */
     public function __construct(string $targetClass, $storage, bool $ownsStorage = true)
     {
-        if (!is_subclass_of($targetClass, ActiveRecord::class)) {
-            throw new \InvalidArgumentException("$targetClass must inherit from \yii\db\ActiveRecord");
+        if (!is_subclass_of($targetClass, DbcActiveRecord::class)) {
+            throw new \InvalidArgumentException("$targetClass must inherit from \app\models\base\DbcActiveRecord");
         }
         $this->targetClass = $targetClass;
 
@@ -154,7 +155,7 @@ class DbcReader implements \IteratorAggregate, \Countable
             $string = mb_convert_encoding($string, "UTF-8", mb_detect_encoding($string));
         }
 
-        return $string;
+        return $string ?: null;
     }
 
     public function getUInt32Value($record, $column)
@@ -182,6 +183,9 @@ class DbcReader implements \IteratorAggregate, \Countable
         return $this->getString($offset);
     }
 
+    /**
+     * @return DbcRecord[]
+     */
     public function getRecords(): Generator
     {
         $curPos = $this->headerLength;
@@ -204,6 +208,14 @@ class DbcReader implements \IteratorAggregate, \Countable
         }
 
         $this->count = $this->recordLength = $this->perRecord = $this->stringBlockLength = $this->stringBlockOffset = 0;
+    }
+
+    /**
+     * Closes the DBC file.
+     */
+    public function close()
+    {
+        $this->dispose();
     }
 
     public function getIterator(): Traversable
@@ -262,7 +274,7 @@ class DbcReader implements \IteratorAggregate, \Countable
             $values[$i] = self::readAttributeValue($record, $i, $columnDefinition);
         }
 
-        $target->importFromDbc($values);
+        $target->importFromDbc($values, $definition);
     }
 
     /**

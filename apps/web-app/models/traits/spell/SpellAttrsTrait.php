@@ -4,6 +4,7 @@ namespace app\models\traits\spell;
 
 trait SpellAttrsTrait
 {
+    const SPELL_ATTR0_NONE = 0x00000000; // Player or target ? Might also be none-individual target
     const SPELL_ATTR0_PROC_FAILURE_BURNS_CHARGE = 0x00000001;
     const SPELL_ATTR0_USES_RANGED_SLOT = 0x00000002;
     const SPELL_ATTR0_ON_NEXT_SWING_NO_DAMAGE = 0x00000004;
@@ -45,6 +46,7 @@ trait SpellAttrsTrait
     public static function getSpellAttributesOptions()
     {
         return [
+            self::SPELL_ATTR0_NONE => 'NONE',
             self::SPELL_ATTR0_PROC_FAILURE_BURNS_CHARGE => 'PROC_FAILURE_BURNS_CHARGE',
             self::SPELL_ATTR0_USES_RANGED_SLOT => 'USES_RANGED_SLOT',
             self::SPELL_ATTR0_ON_NEXT_SWING_NO_DAMAGE => 'ON_NEXT_SWING_NO_DAMAGE',
@@ -91,17 +93,5 @@ trait SpellAttrsTrait
     {
         $spellAttributes = self::getSpellAttributesOptions();
         return isset($spellAttributes[$attribute]) ? $spellAttributes[$attribute] : null;
-    }
-
-    public static function getPresentSpellAttributes($value) {
-        $presentFlags = [];
-        // Iterate over each constant
-        foreach (self::getSpellAttributesOptions() as $flag => $label) {
-            // Check if the constant is present in the $value
-            if ($value & $flag) {
-                $presentFlags[] = $flag;
-            }
-        }
-        return $presentFlags;
     }
 }

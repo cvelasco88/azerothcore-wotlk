@@ -1,5 +1,6 @@
 <?php
 /** @var yii\web\View $this */
+use app\helpers\DbcView;
 use app\models\PlayerCreateInfoSkill;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -28,63 +29,8 @@ echo GridView::widget([
             ]
         ],
         [ 
-            [
-                'attribute' => 'raceMask',
-                'label' => 'Race Mask',
-                'format' => 'raw',
-                'value' => function ($model) {
-                    $raceOptions = PlayerCreateInfoSkill::getRaceMaskOptions();
-                    $selectedRaceMask = $model->raceMask;
-
-                    $checkboxes = [];
-                    foreach ($raceOptions as $value => $label) {
-                        $checked = ($selectedRaceMask & $value) || ($selectedRaceMask === 0 && $value === 0);
-                        $checkbox = Html::checkbox('raceMask[]', $checked, [
-                            'value' => $value,
-                            'label' => $label,
-                            // 'disabled' => true,
-                            'onclick' => 'return false;', // Disabled click
-                        ]);
-                        $checkboxes[] = "<div class='checkbox-inline mx-2'>{$checkbox}</div>";
-                    }
-
-                    return implode('', $checkboxes);
-                },
-                /*'filter' => Html::activeCheckboxList(
-                    $searchModel,
-                    'raceMask',
-                    PlayerCreateInfoSkill::getRaceMaskOptions(),
-                    [
-                        'item' => function ($index, $label, $name, $checked, $value) {
-                            $checkbox = Html::checkbox($name, $checked, ['value' => $value, 'label' => $label]);
-                            return "<div class='checkbox-inline'>{$checkbox}</div>";
-                        },
-                    ]
-                ),*/
-            ],
-            [
-                'attribute' => 'classMask',
-                'label' => 'Class Mask',
-                'format' => 'raw',
-                'value' => function ($model) {
-                    $classOptions = PlayerCreateInfoSkill::getClassMaskOptions();
-                    $selectedClassMask = $model->classMask;
-
-                    $checkboxes = [];
-                    foreach ($classOptions as $value => $label) {
-                        $checked = ($selectedClassMask & $value) || ($selectedClassMask === 0 && $value === 0);
-                        $checkbox = Html::checkbox('classMask[]', $checked, [
-                            'value' => $value,
-                            'label' => $label,
-                            // 'disabled' => true,
-                            'onclick' => 'return false;', // Disabled click
-                        ]);
-                        $checkboxes[] = "<div class='checkbox-inline mx-2'>{$checkbox}</div>";
-                    }
-
-                    return implode('', $checkboxes);
-                },
-            ],
+            DbcView::column('raceMask', 'Race Mask', PlayerCreateInfoSkill::getRaceMaskOptions(), ['onclick' => 'return false;']),
+            DbcView::column('classMask', 'Class Mask', PlayerCreateInfoSkill::getClassMaskOptions(), ['onclick' => 'return false;']),
             'skill',
             'rank',
             'comment',

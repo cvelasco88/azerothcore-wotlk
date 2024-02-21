@@ -1,4 +1,4 @@
-// site-ajax-functions.js
+// client-dbc-ajax-functions.js
 
 function validateRecords(button, fileName) {
     $(button).prop('disabled', true);

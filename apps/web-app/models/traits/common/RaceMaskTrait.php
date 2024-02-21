@@ -1,6 +1,6 @@
 <?php
 
-namespace app\models\traits\playerCreateInfo;
+namespace app\models\traits\common;
 
 trait RaceMaskTrait
 {

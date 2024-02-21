@@ -6,6 +6,8 @@ use app\helpers\DbcArrayDataProvider;
 use app\helpers\DbcDefinition;
 use app\helpers\DbcRecord;
 use app\helpers\DbcReader;
+use app\helpers\DbcWriter;
+use app\models\base\DbcActiveRecord;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
@@ -112,6 +114,11 @@ class ClientDbcController extends Controller
 
     public function actionValidate(string $fileName)
     {
+        foreach (Yii::$app->log->targets as $target) {
+            /** @var \yii\debug\LogTarget $target */
+            $target->setEnabled(false);
+        }
+
         $dataPath = Yii::getAlias('@app/data');
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
@@ -156,22 +163,12 @@ class ClientDbcController extends Controller
                     if ($query->exists()) {
                         $updateCount++;
                     }
-                    $item = null;
-                    $query = null;
-                    $condition = null;
-                    $primaryKeyValues = null;
-                    unset($item);
-                    unset($query);
-                    unset($condition);
-                    unset($primaryKeyValues);
                 }
-                $primaryKeyNames = null;
-                $batchRecords = null;
-                unset($primaryKeyNames);
-                unset($batchRecords);
             }
         );
 
+        $dbcReader->close();
+        
         $insertCount = count($records) - $updateCount;
 
         // Return the results
@@ -183,6 +180,11 @@ class ClientDbcController extends Controller
 
     public function actionImport(string $fileName)
     {
+        foreach (Yii::$app->log->targets as $target) {
+            /** @var \yii\debug\LogTarget $target */
+            $target->setEnabled(false);
+        }
+
         // Your import logic goes here
         $dataPath = Yii::getAlias('@app/data');
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
@@ -231,28 +233,69 @@ class ClientDbcController extends Controller
 
                     $exists = $query->exists();
                     if ($exists) {
-                        // TODO: implementar
-                        // $model = $query->one();
-                    } else {
-                        // TODO: implementar
-                        try {
-                            if (!$item->save()) {
-                                throw new \yii\db\Exception('Error saving model', $item->getErrors());
-                            }    
-                        } catch (\yii\base\Exception|\yii\db\Exception $e) {
-                            throw $e;
-                        }
-                        
+                        $model = $query->one();
+                        $model->load($item->getAttributes(), '');
+                        $item = $model;
+                    } 
+                    // TODO: implementar
+                    try {
+                        if (!$item->save()) {
+                            throw new \yii\db\Exception('Error saving model', $item->getErrors());
+                        }    
+                    } catch (\yii\base\Exception|\yii\db\Exception $e) {
+                        throw $e;
                     }
                     unset($item);
                 }
             }
         );
 
+        $dbcReader->close();
+
         // Return success or failure message
         return json_encode(['success' => true]);
     }
 
+    public function actionExport(string $className)
+    {
+        if (!is_subclass_of($className, DbcActiveRecord::class)) {
+            throw new \InvalidArgumentException("$className must inherit from DbcActiveRecord");
+        }
+        
+        /** @var DbcActiveRecord $target */
+        $target = new $className();
+        $fileName = DbcDefinition::getFileName($target::class);
+
+        // Your import logic goes here
+        $dataPath = Yii::getAlias('@app/data');
+        $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
+
+        // Open the DBC file
+        $storage = fopen($filePath, 'wb');
+
+        // Create a DbcWriter instance with calculated header attributes
+        $dbcWriter = new DbcWriter($className, $storage);
+        // Close the DBC file
+        // Note: closed on DbcWriter _destruct => fclose($storage);
+
+        $definition = $target->getDefinition();
+
+        foreach($dbcWriter->getRecords() as $record) {
+            // Write each record using the DbcWriter
+            $dbcWriter->writeRecord($record, $definition);
+        }
+
+        $dbcWriter->close();
+
+        // Redirect to the previous page
+        return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
+    }
+
+    // PRIVATE METHODS
+
+    /**
+     * @param string $directory
+     */
     private function findDbcFiles($directory)
     {
         $files = scandir($directory);
@@ -267,7 +310,12 @@ class ClientDbcController extends Controller
         return $dbcFiles;
     }
 
-    public function processRecordsInBatches($records, $batchSize, $callback)
+    /**
+     * @param DbcRecord[] $records
+     * @param int $batchSize
+     * @param callable $callback
+     */
+    private function processRecordsInBatches(array $records, int $batchSize, callable $callback)
     {
         // Calculate total number of batches
         $totalRecords = count($records);
@@ -281,10 +329,9 @@ class ClientDbcController extends Controller
 
             // Process records in batch using callback
             call_user_func($callback, $batchRecords);
-            $startIndex = null;
-            $batchRecords = null;
-            unset($startIndex);
-            unset($batchRecords);
+
+            Yii::getLogger()->flush(true);
+            gc_collect_cycles();
         }
     }
 

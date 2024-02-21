@@ -3,6 +3,8 @@
 namespace app\models;
 
 use app\models\base\DbcActiveRecord;
+use app\models\traits\common\ClassMaskTrait;
+use app\models\traits\common\RaceMaskTrait;
 use Yii;
 
 /**
@@ -35,6 +37,8 @@ use Yii;
  */
 class TalentTabDbc extends DbcActiveRecord
 {
+    use ClassMaskTrait, RaceMaskTrait;
+
     /**
      * {@inheritdoc}
      */
@@ -89,6 +93,8 @@ class TalentTabDbc extends DbcActiveRecord
         ];
     }
 
+    // PUBLIC STATIC METHODS
+
     /**
      * {@inheritdoc}
      * @return TalentTabDbcQuery the active query used by this AR class.
@@ -97,8 +103,6 @@ class TalentTabDbc extends DbcActiveRecord
     {
         return new TalentTabDbcQuery(get_called_class());
     }
-
-    // PUBLIC STATIC METHODS
 
     public static function getDetailAttributes()
     {

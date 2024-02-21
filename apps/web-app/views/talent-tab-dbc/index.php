@@ -1,9 +1,9 @@
 <?php
 /** @var yii\web\View $this */
+use app\helpers\DbcView;
 use app\models\TalentTabDbc;
 use yii\grid\GridView;
 use yii\helpers\Html;
-use yii\helpers\Json;
 
 $this->title = 'Index Page';
 $this->params['breadcrumbs'][] = $this->title;
@@ -11,6 +11,15 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <?= Html::a('Create TalentTabDbc', ['create'], ['class' => 'btn btn-success']) ?>
+
+<?= Html::a('Export', ['client-dbc/export', 'className' => TalentTabDbc::class], 
+[
+    'class' => 'btn btn-warning',
+    'data' => [
+        'confirm' => 'Are you sure you want to Export this data?',
+        'method' => 'post',
+    ],
+]) ?>
 
 <div class="mb-3"></div>
 
@@ -31,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             'ID',
             'Name_Lang_enUS',
-            'Name_Lang_enGB',
+            /*'Name_Lang_enGB',
             'Name_Lang_koKR',
             'Name_Lang_frFR',
             'Name_Lang_deDE',
@@ -46,10 +55,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'Name_Lang_ptBR',
             'Name_Lang_itIT',
             'Name_Lang_Unk',
-            'Name_Lang_Mask',
+            'Name_Lang_Mask',*/
             'SpellIconID',
-            'RaceMask',
-            'ClassMask',
+            DbcView::column('RaceMask', 'Race Mask', TalentTabDbc::getRaceMaskOptions(), ['onclick' => 'return false;']),
+            DbcView::column('ClassMask', 'Class Mask', TalentTabDbc::getClassMaskOptions(), ['onclick' => 'return false;']),            
             'PetTalentMask',
             'OrderIndex',
             'BackgroundFile',

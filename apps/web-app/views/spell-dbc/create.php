@@ -8,15 +8,11 @@ use yii\widgets\ActiveForm;
 /** @var app\models\SpellDbc $model */
 /** @var ActiveForm $form */
 ?>
-<div class="spell-dbc-update">
-
-    <?= Html::a('View', ['view', 'id' => $model->ID], ['class' => 'btn btn-success']) ?>
-
-    <div class="mb-3"></div>
+<div class="spell-dbc-create">
 
     <?php $form = ActiveForm::begin(); ?>
 
-        <?= $form->field($model, 'ID')->textInput(['readonly' => true]) ?>
+        <?= $form->field($model, 'ID') ?>
         <?= $form->field($model, 'Category') ?>
         <?= $form->field($model, 'DispelType') ?>
         <?= $form->field($model, 'Mechanic') ?>

@@ -2,11 +2,26 @@
 /** @var yii\web\View $this */
 use app\models\SpellDbc;
 use yii\grid\GridView;
+use yii\helpers\Html;
 
 $this->title = 'Index Page';
 $this->params['breadcrumbs'][] = $this->title;
+?>
 
-echo GridView::widget([
+<?= Html::a('Create SpellDbc', ['create'], ['class' => 'btn btn-success']) ?>
+
+<?= Html::a('Export', ['client-dbc/export', 'className' => SpellDbc::class], 
+[
+    'class' => 'btn btn-warning',
+    'data' => [
+        'confirm' => 'Are you sure you want to Export this data?',
+        'method' => 'post',
+    ],
+]) ?>
+
+<div class="mb-3"></div>
+
+<?= GridView::widget([
     'pager' => [
         'class' => yii\bootstrap5\LinkPager::class,
     ],
