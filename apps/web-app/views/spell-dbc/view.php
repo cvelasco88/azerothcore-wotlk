@@ -53,6 +53,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                     ];
                     break;
+                case 'Mechanic':
+                    $customAttributes[] = [
+                        'attribute' => 'Mechanic',
+                        'value' => function ($model) {
+                            /** @var SpellDbc $model */
+                            return $model->getCurrentMechanicName();
+                        },
+                    ];
+                    break;
                 case 'Targets':
                     $customAttributes[] = DbcView::columnInline('Targets', SpellDbc::getTargetFlagOptions(), ['onclick' => 'return false;']);
                     break;
@@ -61,6 +70,30 @@ $this->params['breadcrumbs'][] = $this->title;
                     break;
                 case 'Attributes':
                     $customAttributes[] = DbcView::columnInline('Attributes', SpellDbc::getSpellAttributesOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'ShapeshiftMask':
+                    $customAttributes[] = DbcView::columnInline('ShapeshiftMask', SpellDbc::getSpellShapeshiftMaskOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'ShapeshiftExclude':
+                    $customAttributes[] = DbcView::columnInline('ShapeshiftExclude', SpellDbc::getSpellShapeshiftMaskOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'InterruptFlags':
+                    $customAttributes[] = DbcView::columnInline('InterruptFlags', SpellDbc::getSpellInterruptFlagOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'SchoolMask':
+                    $customAttributes[] = DbcView::columnInline('SchoolMask', SpellDbc::getSchoolMaskOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'Name_Lang_Mask':
+                    $customAttributes[] = DbcView::columnInline('Name_Lang_Mask', SpellDbc::getLanguageOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'NameSubtext_Lang_Mask':
+                    $customAttributes[] = DbcView::columnInline('NameSubtext_Lang_Mask', SpellDbc::getLanguageOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'Description_Lang_Mask':
+                    $customAttributes[] = DbcView::columnInline('Description_Lang_Mask', SpellDbc::getLanguageOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'AuraDescription_Lang_Mask':
+                    $customAttributes[] = DbcView::columnInline('AuraDescription_Lang_Mask', SpellDbc::getLanguageOptions(), ['onclick' => 'return false;']);
                     break;
                 // Add more customizations for other attributes as needed
                 default:
@@ -88,7 +121,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => $groupName,
             'content' => DetailView::widget([
                 'model' => $model,
-                'attributes' => $attributes,
+                'attributes' => handledAttributes($attributes),
             ]),
         ];
     }

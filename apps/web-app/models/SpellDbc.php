@@ -3,8 +3,12 @@
 namespace app\models;
 
 use app\models\base\DbcActiveRecord;
+use app\models\traits\common\LangTrait;
 use app\models\traits\spell\DispelTypeTrait;
+use app\models\traits\spell\InterruptFlagsTrait;
 use app\models\traits\spell\PowerTypeTrait;
+use app\models\traits\spell\SchoolMaskTrait;
+use app\models\traits\spell\ShapeshiftMaskTrait;
 use app\models\traits\spell\SpellAttrsTrait;
 use app\models\traits\spell\SpellAttrsEx1Trait;
 use app\models\traits\spell\SpellAttrsEx2Trait;
@@ -13,6 +17,8 @@ use app\models\traits\spell\SpellAttrsEx4Trait;
 use app\models\traits\spell\SpellAttrsEx5Trait;
 use app\models\traits\spell\SpellAttrsEx6Trait;
 use app\models\traits\spell\SpellAttrsEx7Trait;
+use app\models\traits\spell\MechanicTrait;
+use app\models\traits\spell\StanceTrait;
 use app\models\traits\spell\TargetFlagTrait;
 use app\models\traits\spell\TargetCreatureTypeTrait;
 use Yii;
@@ -260,7 +266,8 @@ class SpellDbc extends DbcActiveRecord
 {
     use PowerTypeTrait, DispelTypeTrait, TargetFlagTrait, TargetCreatureTypeTrait,
         SpellAttrsTrait, SpellAttrsEx1Trait, SpellAttrsEx2Trait, SpellAttrsEx3Trait, SpellAttrsEx4Trait,
-        SpellAttrsEx5Trait, SpellAttrsEx6Trait, SpellAttrsEx7Trait;
+        SpellAttrsEx5Trait, SpellAttrsEx6Trait, SpellAttrsEx7Trait, MechanicTrait, ShapeshiftMaskTrait, InterruptFlagsTrait,
+        SchoolMaskTrait, LangTrait;
 
 
     /**
@@ -558,6 +565,16 @@ class SpellDbc extends DbcActiveRecord
     public function getCurrentTargetCreatureTypeName(int $type = null)
     {
         return $this->getTargetCreatureTypeName($type ?? $this->TargetCreatureType);
+    }
+
+    /**
+     * Get the human-readable power type name.
+     *
+     * @return string|null
+     */
+    public function getCurrentMechanicName(int $type = null)
+    {
+        return $this->getMechanicName($type ?? $this->Mechanic);
     }
 
     // PUBLIC STATIC METHODS
