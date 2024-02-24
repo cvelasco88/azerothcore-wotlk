@@ -16,7 +16,7 @@ use yii\filters\VerbFilter;
 
 class ClientDbcController extends Controller
 {
-    const BATCH_SIZE = 100; // Adjust as needed
+    const BATCH_SIZE = 1000; // Adjust as needed
 
     /**
      * {@inheritdoc}

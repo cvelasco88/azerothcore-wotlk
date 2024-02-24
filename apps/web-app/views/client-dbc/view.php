@@ -17,17 +17,19 @@ $this->registerJsVar('totalRecords', $totalRecords);
 $this->registerJsFile('@web/js/client-dbc-ajax-functions.js', ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 
+<style>
+    .hidden-progress {
+        display: none;
+    }
+</style>
+
 <div class="client-dbc-view">
     <h1>
         <?= Html::encode($this->title) ?>
     </h1>
 
-    <p>
-        <?= Html::a('Back to List', ['index'], ['class' => 'btn btn-primary']) ?>
-    </p>
-
-    <div class="import-progress">
-        <h1>Import Progress</h1>
+    <div class="validation-progress hidden-progress">
+        <h2>Validation Progress</h1>
         <div class="progress">
             <div class="progress-bar progress-bar-striped active" role="progressbar"
                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
@@ -37,8 +39,8 @@ $this->registerJsFile('@web/js/client-dbc-ajax-functions.js', ['depends' => [\yi
         <div class="status"></div>
     </div>
 
-    <div class="validation-progress">
-        <h1>Validation Progress</h1>
+    <div class="import-progress hidden-progress">
+        <h2>Import Progress</h1>
         <div class="progress">
             <div class="progress-bar progress-bar-striped active" role="progressbar"
                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
@@ -47,15 +49,17 @@ $this->registerJsFile('@web/js/client-dbc-ajax-functions.js', ['depends' => [\yi
         </div>
         <div class="status"></div>
     </div>
+
+    <div class="mb-3"></div>
 
     <?= Html::button('Validate Records', [
             'class' => 'btn btn-primary',
             'onclick' => 'validateRecords(this)'
         ]) ?>
-    <?= Html::button('Import Data', [
+    <?= Html::button('Import Records', [
         'class' => 'btn btn-primary',
-        'onclick' => 'importData(this)',
-        'confirm' => 'Are you sure you want to import data?'
+        'onclick' => 'importRecords(this)',
+        'confirm' => 'Are you sure you want to import all records?'
     ]) ?>
     
     <h2>Records:</h2>
