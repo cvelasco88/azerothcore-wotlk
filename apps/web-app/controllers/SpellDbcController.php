@@ -13,7 +13,6 @@ class SpellDbcController extends \yii\web\Controller
     public function actionIndex()
     {
         $searchModel = new SpellDbcSearch();
-        $searchModel->loadDefaultValues();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -40,6 +39,7 @@ class SpellDbcController extends \yii\web\Controller
     {
         $formModel = new SpellDbcForm();
         $model = new SpellDbc();
+        $model->loadDefaultValues();
         $formModel->initModelAttributes($model);        
 
         if ($formModel->processForm($model, Yii::$app->request->post())) {

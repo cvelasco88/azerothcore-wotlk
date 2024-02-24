@@ -598,8 +598,7 @@ class SpellDbc extends DbcActiveRecord
      */
     public function getCurrentSpellClassSetName(int $type = null)
     {
-        // return $this->SpellClassSet;
-        return sprintf('(%s) => %s', $this->SpellClassSet, $this->getSpellClassSetName($type ?? $this->SpellClassSet));
+        return $this->getSpellClassSetName($type ?? $this->SpellClassSet);
     }
 
     /**

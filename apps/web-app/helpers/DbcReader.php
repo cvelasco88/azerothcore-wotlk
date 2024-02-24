@@ -174,7 +174,12 @@ class DbcReader implements \IteratorAggregate, \Countable
     public function getSingleValue($record, $column)
     {
         fseek($this->store, $record * $this->perRecord + $this->headerLength + $column * 4, SEEK_SET);
-        return unpack("f", fread($this->store, 4))[1];
+        $value = unpack("f", fread($this->store, 4))[1];
+        if (is_nan($value)) {
+            return 0; // Return 0 if the value is NaN
+        } else {
+            return $value; // Return the actual value if it's not NaN
+        }
     }
 
     public function getStringValue($record, $column)

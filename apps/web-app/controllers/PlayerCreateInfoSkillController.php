@@ -13,7 +13,6 @@ class PlayerCreateInfoSkillController extends \yii\web\Controller
     public function actionIndex()
     {
         $searchModel = new PlayerCreateInfoSkillSearch();
-        $searchModel->loadDefaultValues();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -53,6 +52,7 @@ class PlayerCreateInfoSkillController extends \yii\web\Controller
     {
         $formModel = new PlayerCreateInfoSkillForm();
         $model = new PlayerCreateInfoSkill();
+        $model->loadDefaultValues();
         $formModel->initModelAttributes($model);        
 
         if ($formModel->processForm($model, Yii::$app->request->post())) {
