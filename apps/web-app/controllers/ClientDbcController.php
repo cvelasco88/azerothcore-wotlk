@@ -164,7 +164,11 @@ class ClientDbcController extends Controller
                         $item = $oldItem;
                     }
                     if(!$item->validate()) {
-                        throw new ServerErrorHttpException('Validation with errors: ' . json_encode($item->getErrors()));
+                        throw new ServerErrorHttpException('Validation with errors: ' . json_encode([
+                            'index' => $index,
+                            'PK' => $condition,
+                            'errors' => $item->getErrors()
+                        ]));
                     }
                 }
             }
