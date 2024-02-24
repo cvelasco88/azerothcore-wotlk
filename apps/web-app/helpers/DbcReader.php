@@ -145,7 +145,7 @@ class DbcReader implements \IteratorAggregate, \Countable
         fseek($this->store, $this->stringBlockOffset + $stringTablePosition, SEEK_SET);
 
         $string = '';
-        while (($char = fgetc($this->store)) !== chr(0)) {
+        while (($char = fgetc($this->store)) !== false && $char !== chr(0)) {
             $string .= $char;
         }
 
@@ -263,21 +263,39 @@ class DbcReader implements \IteratorAggregate, \Countable
     /**
      * @param DbcReader $dbcReader
      * @param int $batchSize
+     * @param int $batchIndex
      * @param callable $callback
-     * @param int $offset
-     * @param int $limit
      * @return array
      */
-    public static function batch(DbcReader $dbcReader, int $batchSize, callable $callback, int $offset = 0, int $limit = -1)
+    public static function batch(DbcReader $dbcReader, int $batchSize, int $batchIndex, callable $callback)
     {
-        $records = [];
+        $startIndex = $batchIndex * $batchSize;
+
+        $batchRecords = [];
         foreach ($dbcReader->getRecords() as $index => $record) {
-            if($index < $offset) {
+            if($index < $startIndex) {
                 continue;
             }
-            if($limit >= 0 && count($records) >= $limit) {
+            if($batchSize >= 0 && count($batchRecords) >= $batchSize) {
                 break;
             }
+            $batchRecords[] = $record;
+        }
+        // Process records in batch using callback
+        call_user_func($callback, $batchRecords);
+        return [count($batchRecords)];
+    }
+
+    /**
+     * @param DbcReader $dbcReader
+     * @param int $batchSize
+     * @param callable $callback
+     * @return array
+     */
+    public static function batches(DbcReader $dbcReader, int $batchSize, callable $callback)
+    {
+        $records = [];
+        foreach ($dbcReader->getRecords() as $record) {
             $records[] = $record;
         }
 
@@ -293,9 +311,6 @@ class DbcReader implements \IteratorAggregate, \Countable
 
             // Process records in batch using callback
             call_user_func($callback, $batchRecords);
-
-            Yii::getLogger()->flush(true);
-            gc_collect_cycles();
         }
 
         return [$totalRecords];

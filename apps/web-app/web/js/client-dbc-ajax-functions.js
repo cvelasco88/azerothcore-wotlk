@@ -4,6 +4,7 @@ var totalRecords = window.totalRecords;
 var processedRecords = 0;
 var totalUpdateCount = 0;
 var totalInsertCount = 0;
+var totalErrorCount = 0;
 // progress bar
 var validateProgress = $('.validation-progress');
 var importProgress = $('.import-progress');
@@ -11,8 +12,10 @@ var importProgress = $('.import-progress');
 
 function validateRecords(button) {
     // Reset total counts
+    processedRecords = 0;
     totalUpdateCount = 0;
     totalInsertCount = 0;
+    totalErrorCount = 0;
 
     $(button).prop('disabled', true);
     $(button).removeClass(function(index, className) {
@@ -39,16 +42,17 @@ function updateProgress(target) {
     $(target).find('.progress-bar .sr-only').text(percentComplete.toFixed(2) + '% Complete');
 }
 
-function validateRecordsImpl(button, offset) {
+function validateRecordsImpl(button, batchIndex) {
     $.ajax({
         url: '/client-dbc/validate?fileName=' + fileName,
         type: 'POST',
-        data: {offset: offset, limit: batchSize},
+        data: {batchIndex: batchIndex},
         dataType: 'json',
         success: function(response) {
             processedRecords += response.insertCount + response.updateCount;
             totalInsertCount += response.insertCount;
             totalUpdateCount += response.updateCount;
+            totalErrorCount += response.errorCount;
 
             $(validateProgress).find('.status').text('Processed ' + processedRecords + ' out of ' + totalRecords + ' records.');
 
@@ -56,12 +60,15 @@ function validateRecordsImpl(button, offset) {
 
             if (processedRecords < totalRecords) {
                 setTimeout(function() {
-                    validateRecordsImpl(button, offset + batchSize);
+                    validateRecordsImpl(button, batchIndex+1);
                 }, 1000);
             } else {
-                $('.status').text('Validation complete.');
+                $(validateProgress).find('.status').text('Validation complete.');
                 $(button).prop('disabled', false);
-                if (totalUpdateCount === 0) {
+
+                if (totalErrorCount > 0) {
+                    $(button).addClass('btn-danger').removeClass('btn-primary');
+                } else if (totalUpdateCount === 0) {
                     $(button).addClass('btn-success').removeClass('btn-primary');
                 } else if (totalUpdateCount > 0) {
                     $(button).addClass('btn-warning').removeClass('btn-primary');
@@ -69,17 +76,17 @@ function validateRecordsImpl(button, offset) {
             }
         },
         error: function(xhr, status, error) {
-            $('.status').text('Error occurred: ' + error);
+            $(validateProgress).find('.status').text('Error occurred: ' + error);
             $(button).prop('disabled', false);
         }
     });
 }
 
-function importRecordsImpl(button, offset) {
+function importRecordsImpl(button, batchIndex) {
     $.ajax({
         url: '/client-dbc/import?fileName=' + fileName,
         type: 'POST',
-        data: {offset: offset, limit: batchSize},
+        data: {batchIndex: batchIndex},
         dataType: 'json',
         success: function(response) {
             processedRecords += batchSize;
@@ -90,15 +97,15 @@ function importRecordsImpl(button, offset) {
 
             if (processedRecords < totalRecords) {
                 setTimeout(function() {
-                    importRecordsImpl(button, offset + batchSize);
+                    importRecordsImpl(button, batchIndex+1);
                 }, 1000);
             } else {
-                $('.status').text('Import complete.');
+                $(importProgress).find('.status').text('Import complete.');
                 $(button).prop('disabled', false);
             }
         },
         error: function(xhr, status, error) {
-            $('.status').text('Error occurred: ' + error);
+            $(importProgress).find('.status').text('Error occurred: ' + error);
             $(button).prop('disabled', false);
         }
     });

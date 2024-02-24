@@ -13,6 +13,7 @@ use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
+use yii\web\ServerErrorHttpException;
 
 class ClientDbcController extends Controller
 {
@@ -118,9 +119,7 @@ class ClientDbcController extends Controller
 
     public function actionValidate(string $fileName)
     {
-
-        $offset = $this->request->getBodyParam('offset', 0);
-        $limit = $this->request->getBodyParam('limit', -1);
+        $batchIndex = $this->request->getBodyParam('batchIndex', 0);
 
         $dataPath = Yii::getAlias('@app/data');
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
@@ -136,16 +135,18 @@ class ClientDbcController extends Controller
 
         $insertCount = 0;
         $updateCount = 0;
+        $errorCount = 0;
 
         // Process records in batches
         [$totalRecords] = DbcReader::batch(
             $dbcReader,
             self::BATCH_SIZE,
-            function ($batchRecords) use ($targetClass, &$insertCount, &$updateCount) {
+            $batchIndex,
+            function ($batchRecords) use ($targetClass, &$updateCount, &$errorCount) {
                 // Get primary key names
                 $primaryKeyNames = $targetClass::primaryKey(); // Array of primary key names
     
-                foreach ($batchRecords as $record) {
+                foreach ($batchRecords as $index => $record) {
                     /** @var DbcRecord $record */
                     $item = $record->value();
                     $primaryKeyValues = $item->getPrimaryKey();
@@ -158,28 +159,28 @@ class ClientDbcController extends Controller
                     $query = $targetClass::find()->andWhere($condition);
                     if ($query->exists()) {
                         $updateCount++;
-                    } else {
-                        $insertCount++;
+                    }
+                    if(!$item->validate()) {
+                        $errorCount++;
                     }
                 }
-            },
-            $offset,
-            $limit
+            }
         );
 
         $dbcReader->close();
 
+        $insertCount = $totalRecords - $updateCount;
         // Return the results
         return json_encode([
             'insertCount' => $insertCount,
             'updateCount' => $updateCount,
+            'errorCount' => $errorCount,
         ]);
     }
 
     public function actionImport(string $fileName)
     {
-        $offset = $this->request->getBodyParam('offset', 0);
-        $limit = $this->request->getBodyParam('limit', -1);
+        $batchIndex = $this->request->getBodyParam('batchIndex', 0);
 
         // Your import logic goes here
         $dataPath = Yii::getAlias('@app/data');
@@ -198,6 +199,7 @@ class ClientDbcController extends Controller
         DbcReader::batch(
             $dbcReader,
             self::BATCH_SIZE,
+            $batchIndex,
             function ($batchRecords) use ($targetClass) {
                 // Get primary key names
                 $primaryKeyNames = $targetClass::primaryKey(); // Array of primary key names
@@ -231,14 +233,21 @@ class ClientDbcController extends Controller
                         if (!$item->save()) {
                             throw new \yii\db\Exception('Error saving model', $item->getErrors());
                         }
-                    } catch (\yii\base\Exception | \yii\db\Exception $e) {
-                        throw $e;
+                    } catch (\yii\db\Exception $e) {
+                        // Catch the exception and pass the model errors to the user
+                        $errorMessage = 'An error occurred while saving the model. Please correct the following errors:';
+                        $errors = $e->errorInfo; // Get the model validation errors
+                        // Combine the error message and model errors
+                        $response = [
+                            'message' => $errorMessage,
+                            'errors' => $errors,
+                        ];
+                        // Return the error response
+                        throw new ServerErrorHttpException(json_encode($response));
                     }
                     unset($item);
                 }
-            },
-            $offset,
-            $limit
+            }
         );
 
         $dbcReader->close();
