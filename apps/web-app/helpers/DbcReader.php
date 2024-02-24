@@ -5,6 +5,7 @@ namespace app\helpers;
 use app\models\base\DbcActiveRecord;
 use Generator;
 use Traversable;
+use Yii;
 use yii\base\InvalidArgumentException;
 use yii\db\ActiveRecord;
 
@@ -256,6 +257,51 @@ class DbcReader implements \IteratorAggregate, \Countable
         // self::ConvertSlowOld($this, $this->recordLength, $target, $index);
         return $target;
     }
+
+    // PUBLIC STATIC FUNCTIONS
+
+    /**
+     * @param DbcReader $dbcReader
+     * @param int $batchSize
+     * @param callable $callback
+     * @param int $offset
+     * @param int $limit
+     * @return array
+     */
+    public static function batch(DbcReader $dbcReader, int $batchSize, callable $callback, int $offset = 0, int $limit = -1)
+    {
+        $records = [];
+        foreach ($dbcReader->getRecords() as $index => $record) {
+            if($index < $offset) {
+                continue;
+            }
+            if($limit >= 0 && count($records) >= $limit) {
+                break;
+            }
+            $records[] = $record;
+        }
+
+        // Calculate total number of batches
+        $totalRecords = count($records);
+        $totalBatches = ceil($totalRecords / $batchSize);
+
+        // Process records in batches
+        for ($batchIndex = 0; $batchIndex < $totalBatches; $batchIndex++) {
+            // Get records for the current batch
+            $startIndex = $batchIndex * $batchSize;
+            $batchRecords = array_slice($records, $startIndex, $batchSize);
+
+            // Process records in batch using callback
+            call_user_func($callback, $batchRecords);
+
+            Yii::getLogger()->flush(true);
+            gc_collect_cycles();
+        }
+
+        return [$totalRecords];
+    }
+
+    // PRIVATE STATIC FUNCTIONS
 
     /**
      * @param DbcReader $reader

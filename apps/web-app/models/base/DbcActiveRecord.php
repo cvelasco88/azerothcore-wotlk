@@ -9,29 +9,6 @@ use Yii;
  */
 abstract class DbcActiveRecord extends \yii\db\ActiveRecord
 {
-    protected bool $preventInit = false;
-
-    /**
-     * @inheritdoc
-     */
-    public function init()
-    {
-        parent::init();
-        
-        if(!$this->preventInit) {
-            // Fetch default attribute values from the database schema
-            $schema = $this->getTableSchema();
-            
-            if ($schema) {
-                foreach ($schema->columns as $columnName => $column) {
-                    if ($column->defaultValue !== null && $this->$columnName === null) {
-                        $this->$columnName = $column->defaultValue;
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * Retrieves the column definitions for the database table associated with this ActiveRecord.
      *

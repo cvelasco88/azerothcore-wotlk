@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\helpers\DbcView;
 use app\models\base\DbcActiveRecord;
 use app\models\traits\common\LangTrait;
 use app\models\traits\spell\DispelTypeTrait;
@@ -21,6 +22,8 @@ use app\models\traits\spell\SpellAttrsEx5Trait;
 use app\models\traits\spell\SpellAttrsEx6Trait;
 use app\models\traits\spell\SpellAttrsEx7Trait;
 use app\models\traits\spell\MechanicTrait;
+use app\models\traits\spell\SpellCategoryTrait;
+use app\models\traits\spell\SpellClassSetTrait;
 use app\models\traits\spell\TargetFlagTrait;
 use app\models\traits\spell\TargetCreatureTypeTrait;
 use Yii;
@@ -269,7 +272,8 @@ class SpellDbc extends DbcActiveRecord
     use PowerTypeTrait, DispelTypeTrait, TargetFlagTrait, TargetCreatureTypeTrait,
         SpellAttrsTrait, SpellAttrsEx1Trait, SpellAttrsEx2Trait, SpellAttrsEx3Trait, SpellAttrsEx4Trait,
         SpellAttrsEx5Trait, SpellAttrsEx6Trait, SpellAttrsEx7Trait, MechanicTrait, ShapeshiftMaskTrait, InterruptFlagsTrait,
-        SchoolMaskTrait, LangTrait, EquippedItemClassTrait, EquippedItemSubclassTrait, EquippedItemInvTypesTrait;
+        SchoolMaskTrait, LangTrait, EquippedItemClassTrait, EquippedItemSubclassTrait, EquippedItemInvTypesTrait, SpellClassSetTrait,
+        SpellCategoryTrait;
 
 
     /**
@@ -577,6 +581,30 @@ class SpellDbc extends DbcActiveRecord
     public function getCurrentMechanicName(int $type = null)
     {
         return $this->getMechanicName($type ?? $this->Mechanic);
+    }
+
+    /**
+     * TODO: 
+     * Get the human-readable power type name.
+     *
+     * @return string|null
+     */
+    public function getCurrentSpellClassSetName(int $type = null)
+    {
+        // return $this->SpellClassSet;
+        return sprintf('(%s) => %s', $this->SpellClassSet, $this->getSpellClassSetName($type ?? $this->SpellClassSet));
+    }
+
+    /**
+     * TODO:
+     * Get the human-readable power type name.
+     *
+     * @return string|null
+     */
+    public function getCurrentCategoryName(int $type = null)
+    {
+        return sprintf('(%s) => %s', $this->Category, $this->getSpellCategoryName($type ?? $this->Category));
+        // return $this->getSpellCategoryName($type ?? $this->Category);
     }
 
     // PUBLIC STATIC METHODS
@@ -936,5 +964,110 @@ class SpellDbc extends DbcActiveRecord
     {
         return new SpellDbcQuery(get_called_class());
     }
+
+    public static function transformView(array $attributes) {
+        $customAttributes = [];
+
+        foreach ($attributes as $attribute) {
+            switch ($attribute) {
+                case 'PowerType':
+                    $customAttributes[] = [
+                        'attribute' => 'PowerType',
+                        'value' => function ($model) {
+                            /** @var SpellDbc $model */
+                            return $model->getCurrentPowerTypeName();
+                        },
+                    ];
+                    break;
+                case 'DispelType':
+                    $customAttributes[] = [
+                        'attribute' => 'DispelType',
+                        'value' => function ($model) {
+                            /** @var SpellDbc $model */
+                            return $model->getCurrentDispelTypeName();
+                        },
+                    ];
+                    break;
+                case 'Mechanic':
+                    $customAttributes[] = [
+                        'attribute' => 'Mechanic',
+                        'value' => function ($model) {
+                            /** @var SpellDbc $model */
+                            return $model->getCurrentMechanicName();
+                        },
+                    ];
+                    break;
+                case 'Targets':
+                    $customAttributes[] = DbcView::columnInline('Targets', SpellDbc::getTargetFlagOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'TargetCreatureType':
+                    $customAttributes[] = DbcView::columnInline('TargetCreatureType', SpellDbc::getTargetCreatureTypeOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'Attributes':
+                    $customAttributes[] = DbcView::columnInline('Attributes', SpellDbc::getSpellAttributesOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'ShapeshiftMask':
+                    $customAttributes[] = DbcView::columnInline('ShapeshiftMask', SpellDbc::getSpellShapeshiftMaskOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'ShapeshiftExclude':
+                    $customAttributes[] = DbcView::columnInline('ShapeshiftExclude', SpellDbc::getSpellShapeshiftMaskOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'InterruptFlags':
+                    $customAttributes[] = DbcView::columnInline('InterruptFlags', SpellDbc::getSpellInterruptFlagOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'SchoolMask':
+                    $customAttributes[] = DbcView::columnInline('SchoolMask', SpellDbc::getSchoolMaskOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'Name_Lang_Mask':
+                    $customAttributes[] = DbcView::columnInline('Name_Lang_Mask', SpellDbc::getLanguageOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'NameSubtext_Lang_Mask':
+                    $customAttributes[] = DbcView::columnInline('NameSubtext_Lang_Mask', SpellDbc::getLanguageOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'Description_Lang_Mask':
+                    $customAttributes[] = DbcView::columnInline('Description_Lang_Mask', SpellDbc::getLanguageOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'AuraDescription_Lang_Mask':
+                    $customAttributes[] = DbcView::columnInline('AuraDescription_Lang_Mask', SpellDbc::getLanguageOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'EquippedItemClass':
+                    $customAttributes[] = DbcView::columnInline('EquippedItemClass', SpellDbc::getEquippedItemClassOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'EquippedItemSubclass':
+                    $customAttributes[] = DbcView::columnInlineCustom('EquippedItemSubclass', function($model) {
+                        return SpellDbc::getEquippedItemSubclassOptions($model, $model->EquippedItemClass);
+                    }, ['onclick' => 'return false;']);
+                    break;
+                case 'EquippedItemInvTypes':
+                    $customAttributes[] = DbcView::columnInline('EquippedItemInvTypes', SpellDbc::getEquippedItemInvTypeOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'SpellClassSet':
+                    $customAttributes[] = [
+                        'attribute' => 'SpellClassSet',
+                        'value' => function ($model) {
+                            /** @var SpellDbc $model */
+                            return $model->getCurrentSpellClassSetName();
+                        },
+                    ];
+                    break;
+                // case 'Category':
+                //     $customAttributes[] = [
+                //         'attribute' => 'Category',
+                //         'value' => function ($model) {
+                //             /** @var SpellDbc $model */
+                //             return $model->getCurrentCategoryName();
+                //         },
+                //     ];
+                //     break;
+                // Add more customizations for other attributes as needed
+                default:
+                    $customAttributes[] = $attribute;
+                    break;
+            }
+        }
+
+        return $customAttributes;
+    }
+
 
 }
