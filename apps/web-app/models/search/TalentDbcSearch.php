@@ -11,7 +11,6 @@ use app\models\TalentDbc;
  */
 class TalentDbcSearch extends TalentDbc
 {
-    protected bool $preventInit = true;
 
     /**
      * {@inheritdoc}

@@ -14,6 +14,7 @@ class TalentTabDbcController extends Controller
     public function actionIndex()
     {
         $searchModel = new TalentTabDbcSearch();
+        $searchModel->loadDefaultValues();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

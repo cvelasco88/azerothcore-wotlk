@@ -5,6 +5,7 @@ namespace app\helpers;
 use app\models\base\DbcActiveRecord;
 use Generator;
 use Traversable;
+use Yii;
 use yii\base\InvalidArgumentException;
 use yii\db\ActiveRecord;
 
@@ -144,7 +145,7 @@ class DbcReader implements \IteratorAggregate, \Countable
         fseek($this->store, $this->stringBlockOffset + $stringTablePosition, SEEK_SET);
 
         $string = '';
-        while (($char = fgetc($this->store)) !== chr(0)) {
+        while (($char = fgetc($this->store)) !== false && $char !== chr(0)) {
             $string .= $char;
         }
 
@@ -256,6 +257,66 @@ class DbcReader implements \IteratorAggregate, \Countable
         // self::ConvertSlowOld($this, $this->recordLength, $target, $index);
         return $target;
     }
+
+    // PUBLIC STATIC FUNCTIONS
+
+    /**
+     * @param DbcReader $dbcReader
+     * @param int $batchSize
+     * @param int $batchIndex
+     * @param callable $callback
+     * @return array
+     */
+    public static function batch(DbcReader $dbcReader, int $batchSize, int $batchIndex, callable $callback)
+    {
+        $startIndex = $batchIndex * $batchSize;
+
+        $batchRecords = [];
+        foreach ($dbcReader->getRecords() as $index => $record) {
+            if($index < $startIndex) {
+                continue;
+            }
+            if($batchSize >= 0 && count($batchRecords) >= $batchSize) {
+                break;
+            }
+            $batchRecords[] = $record;
+        }
+        // Process records in batch using callback
+        call_user_func($callback, $batchRecords);
+        return [count($batchRecords)];
+    }
+
+    /**
+     * @param DbcReader $dbcReader
+     * @param int $batchSize
+     * @param callable $callback
+     * @return array
+     */
+    public static function batches(DbcReader $dbcReader, int $batchSize, callable $callback)
+    {
+        $records = [];
+        foreach ($dbcReader->getRecords() as $record) {
+            $records[] = $record;
+        }
+
+        // Calculate total number of batches
+        $totalRecords = count($records);
+        $totalBatches = ceil($totalRecords / $batchSize);
+
+        // Process records in batches
+        for ($batchIndex = 0; $batchIndex < $totalBatches; $batchIndex++) {
+            // Get records for the current batch
+            $startIndex = $batchIndex * $batchSize;
+            $batchRecords = array_slice($records, $startIndex, $batchSize);
+
+            // Process records in batch using callback
+            call_user_func($callback, $batchRecords);
+        }
+
+        return [$totalRecords];
+    }
+
+    // PRIVATE STATIC FUNCTIONS
 
     /**
      * @param DbcReader $reader

@@ -13,9 +13,12 @@ use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
+use yii\web\ServerErrorHttpException;
 
 class ClientDbcController extends Controller
 {
+    const BATCH_SIZE = 500; // Adjust as needed
+
     /**
      * {@inheritdoc}
      */
@@ -109,15 +112,14 @@ class ClientDbcController extends Controller
             'dataProvider' => $dataProvider,
             'fileName' => $fileName,
             'targetClass' => $targetClass,
+            'batchSize' => self::BATCH_SIZE,
+            'totalRecords' => count($records),
         ]);
     }
 
     public function actionValidate(string $fileName)
     {
-        foreach (Yii::$app->log->targets as $target) {
-            /** @var \yii\debug\LogTarget $target */
-            $target->setEnabled(false);
-        }
+        $batchIndex = $this->request->getBodyParam('batchIndex', 0);
 
         $dataPath = Yii::getAlias('@app/data');
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
@@ -131,25 +133,20 @@ class ClientDbcController extends Controller
         // Close the DBC file
         // Note: closed on DbcReader _destruct => fclose($storage);
 
-        $records = [];
-        foreach ($dbcReader->getRecords() as $record) {
-            $records[] = $record;
-        }
-
-        // Process records in batches
-        $batchSize = 1000; // Adjust as needed
-        // Calculate counts
         $insertCount = 0;
         $updateCount = 0;
+        $errorCount = 0;
 
-        $this->processRecordsInBatches(
-            $records,
-            $batchSize,
-            function ($batchRecords) use ($targetClass, &$updateCount) {
+        // Process records in batches
+        [$totalRecords] = DbcReader::batch(
+            $dbcReader,
+            self::BATCH_SIZE,
+            $batchIndex,
+            function ($batchRecords) use ($targetClass, &$updateCount, &$errorCount) {
                 // Get primary key names
                 $primaryKeyNames = $targetClass::primaryKey(); // Array of primary key names
-
-                foreach ($batchRecords as $record) {
+    
+                foreach ($batchRecords as $index => $record) {
                     /** @var DbcRecord $record */
                     $item = $record->value();
                     $primaryKeyValues = $item->getPrimaryKey();
@@ -162,28 +159,35 @@ class ClientDbcController extends Controller
                     $query = $targetClass::find()->andWhere($condition);
                     if ($query->exists()) {
                         $updateCount++;
+                        $oldItem = $query->one();
+                        $oldItem->load($item->getAttributes(), '');
+                        $item = $oldItem;
+                    }
+                    if(!$item->validate()) {
+                        throw new ServerErrorHttpException('Validation with errors: ' . json_encode([
+                            'index' => $index,
+                            'PK' => $condition,
+                            'errors' => $item->getErrors()
+                        ]));
                     }
                 }
             }
         );
 
         $dbcReader->close();
-        
-        $insertCount = count($records) - $updateCount;
 
+        $insertCount = $totalRecords - $updateCount;
         // Return the results
         return json_encode([
             'insertCount' => $insertCount,
             'updateCount' => $updateCount,
+            'errorCount' => $errorCount,
         ]);
     }
 
     public function actionImport(string $fileName)
     {
-        foreach (Yii::$app->log->targets as $target) {
-            /** @var \yii\debug\LogTarget $target */
-            $target->setEnabled(false);
-        }
+        $batchIndex = $this->request->getBodyParam('batchIndex', 0);
 
         // Your import logic goes here
         $dataPath = Yii::getAlias('@app/data');
@@ -198,21 +202,15 @@ class ClientDbcController extends Controller
         // Close the DBC file
         // Note: closed on DbcReader _destruct => fclose($storage);
 
-        $records = [];
-        foreach ($dbcReader->getRecords() as $record) {
-            $records[] = $record;
-        }
-
         // Process records in batches
-        $batchSize = 1000; // Adjust as needed
-
-        $this->processRecordsInBatches(
-            $records,
-            $batchSize,
+        DbcReader::batch(
+            $dbcReader,
+            self::BATCH_SIZE,
+            $batchIndex,
             function ($batchRecords) use ($targetClass) {
                 // Get primary key names
                 $primaryKeyNames = $targetClass::primaryKey(); // Array of primary key names
-
+    
                 // Check existence of records and update counts
                 foreach ($batchRecords as $record) {
                     /** @var DbcRecord $record */
@@ -226,7 +224,7 @@ class ClientDbcController extends Controller
                     }
                     // Construct condition for composite primary keys
                     $condition = array_combine($primaryKeyNames, $primaryKeyValues);
-                    
+
                     // Fetch existing records count in batches
                     /** @var \yii\db\ActiveQuery $query */
                     $query = $targetClass::find()->andWhere($condition);
@@ -236,14 +234,23 @@ class ClientDbcController extends Controller
                         $model = $query->one();
                         $model->load($item->getAttributes(), '');
                         $item = $model;
-                    } 
-                    // TODO: implementar
+                    }
+
                     try {
                         if (!$item->save()) {
                             throw new \yii\db\Exception('Error saving model', $item->getErrors());
-                        }    
-                    } catch (\yii\base\Exception|\yii\db\Exception $e) {
-                        throw $e;
+                        }
+                    } catch (\yii\db\Exception $e) {
+                        // Catch the exception and pass the model errors to the user
+                        $errorMessage = 'An error occurred while saving the model. Please correct the following errors:';
+                        $errors = $e->errorInfo; // Get the model validation errors
+                        // Combine the error message and model errors
+                        $response = [
+                            'message' => $errorMessage,
+                            'errors' => $errors,
+                        ];
+                        // Return the error response
+                        throw new ServerErrorHttpException(json_encode($response));
                     }
                     unset($item);
                 }
@@ -261,7 +268,7 @@ class ClientDbcController extends Controller
         if (!is_subclass_of($className, DbcActiveRecord::class)) {
             throw new \InvalidArgumentException("$className must inherit from DbcActiveRecord");
         }
-        
+
         /** @var DbcActiveRecord $target */
         $target = new $className();
         $fileName = DbcDefinition::getFileName($target::class);
@@ -280,7 +287,7 @@ class ClientDbcController extends Controller
 
         $definition = $target->getDefinition();
 
-        foreach($dbcWriter->getRecords() as $record) {
+        foreach ($dbcWriter->getRecords() as $record) {
             // Write each record using the DbcWriter
             $dbcWriter->writeRecord($record, $definition);
         }
@@ -309,30 +316,4 @@ class ClientDbcController extends Controller
 
         return $dbcFiles;
     }
-
-    /**
-     * @param DbcRecord[] $records
-     * @param int $batchSize
-     * @param callable $callback
-     */
-    private function processRecordsInBatches(array $records, int $batchSize, callable $callback)
-    {
-        // Calculate total number of batches
-        $totalRecords = count($records);
-        $totalBatches = ceil($totalRecords / $batchSize);
-
-        // Process records in batches
-        for ($batchIndex = 0; $batchIndex < $totalBatches; $batchIndex++) {
-            // Get records for the current batch
-            $startIndex = $batchIndex * $batchSize;
-            $batchRecords = array_slice($records, $startIndex, $batchSize);
-
-            // Process records in batch using callback
-            call_user_func($callback, $batchRecords);
-
-            Yii::getLogger()->flush(true);
-            gc_collect_cycles();
-        }
-    }
-
 }

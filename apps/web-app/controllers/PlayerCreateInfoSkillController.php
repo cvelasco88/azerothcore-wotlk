@@ -13,6 +13,7 @@ class PlayerCreateInfoSkillController extends \yii\web\Controller
     public function actionIndex()
     {
         $searchModel = new PlayerCreateInfoSkillSearch();
+        $searchModel->loadDefaultValues();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

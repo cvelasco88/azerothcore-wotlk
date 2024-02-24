@@ -11,7 +11,6 @@ use app\models\SpellDbc;
  */
 class SpellDbcSearch extends SpellDbc
 {
-    protected bool $preventInit = true;
 
     /**
      * {@inheritdoc}

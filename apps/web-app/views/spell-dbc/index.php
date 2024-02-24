@@ -48,14 +48,14 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         // ['class' => 'yii\grid\SerialColumn'],
         // array_keys((new SpellDbc())->attributes),
-        [
+        SpellDbc::transformView([
             'ID',
             'Name_Lang_enUS',
             'Category',
             'SpellClassSet',
             'SpellLevel',
             'RangeIndex',
-        ]
+        ])
         // Add more columns as needed
         // ['class' => 'yii\grid\ActionColumn'],
     ),

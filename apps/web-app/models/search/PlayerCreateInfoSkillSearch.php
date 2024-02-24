@@ -11,7 +11,6 @@ use app\models\PlayerCreateInfoSkill;
  */
 class PlayerCreateInfoSkillSearch extends PlayerCreateInfoSkill
 {
-    protected bool $preventInit = true;
   
     /**
      * {@inheritdoc}

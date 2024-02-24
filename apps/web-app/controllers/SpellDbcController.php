@@ -13,6 +13,7 @@ class SpellDbcController extends \yii\web\Controller
     public function actionIndex()
     {
         $searchModel = new SpellDbcSearch();
+        $searchModel->loadDefaultValues();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
