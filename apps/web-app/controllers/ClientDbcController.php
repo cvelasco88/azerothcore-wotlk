@@ -135,14 +135,13 @@ class ClientDbcController extends Controller
 
         $insertCount = 0;
         $updateCount = 0;
-        $errorCount = 0;
 
         // Process records in batches
         [$totalRecords] = DbcReader::batch(
             $dbcReader,
             self::BATCH_SIZE,
             $batchIndex,
-            function ($batchRecords) use ($targetClass, &$updateCount, &$errorCount) {
+            function ($batchRecords) use ($targetClass, &$updateCount) {
                 // Get primary key names
                 $primaryKeyNames = $targetClass::primaryKey(); // Array of primary key names
     
@@ -163,6 +162,7 @@ class ClientDbcController extends Controller
                         $oldItem->load($item->getAttributes(), '');
                         $item = $oldItem;
                     }
+
                     if(!$item->validate()) {
                         throw new ServerErrorHttpException('Validation with errors: ' . json_encode([
                             'index' => $index,
@@ -181,7 +181,6 @@ class ClientDbcController extends Controller
         return json_encode([
             'insertCount' => $insertCount,
             'updateCount' => $updateCount,
-            'errorCount' => $errorCount,
         ]);
     }
 
