@@ -13,7 +13,6 @@ class TalentDbcController extends Controller
     public function actionIndex()
     {
         $searchModel = new TalentDbcSearch();
-        $searchModel->loadDefaultValues();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -49,6 +48,7 @@ class TalentDbcController extends Controller
     public function actionCreate()
     {
         $model = new TalentDbc();
+        $model->loadDefaultValues();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             // Successfully created, redirect to view action

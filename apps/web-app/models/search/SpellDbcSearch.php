@@ -19,7 +19,7 @@ class SpellDbcSearch extends SpellDbc
     {
         return [
             [['ID'], 'integer'],
-            [['Name_Lang_enUS', 'Category', 'SpellClassSet', 'SpellLevel'], 'safe'],
+            [['Name_Lang_esES', 'Category', 'SpellClassSet', 'SpellLevel', 'RangeIndex'], 'safe'],
         ];
     }
 
@@ -63,9 +63,10 @@ class SpellDbcSearch extends SpellDbc
             'ID' => $this->ID,
             'SpellClassSet' => $this->SpellClassSet,
             'SpellLevel' => $this->SpellLevel,
+            'RangeIndex' => $this->RangeIndex,
         ]);
 
-        $query->andFilterWhere(['like', 'Name_Lang_enUS', $this->Name_Lang_enUS])
+        $query->andFilterWhere(['like', 'Name_Lang_esES', $this->Name_Lang_esES])
             ->andFilterWhere(['like', 'Category', $this->Category]);
 
         return $dataProvider;

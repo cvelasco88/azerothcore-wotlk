@@ -14,7 +14,6 @@ class TalentTabDbcController extends Controller
     public function actionIndex()
     {
         $searchModel = new TalentTabDbcSearch();
-        $searchModel->loadDefaultValues();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -54,6 +53,7 @@ class TalentTabDbcController extends Controller
     {
         $formModel = new TalentTabDbcForm();
         $model = new TalentTabDbc();
+        $model->loadDefaultValues();
         $formModel->initModelAttributes($model);        
 
         if ($formModel->processForm($model, Yii::$app->request->post())) {

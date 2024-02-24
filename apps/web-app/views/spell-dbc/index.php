@@ -50,7 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
         // array_keys((new SpellDbc())->attributes),
         SpellDbc::transformView([
             'ID',
-            'Name_Lang_enUS',
+            'Name_Lang_esES',
             'Category',
             'SpellClassSet',
             'SpellLevel',
