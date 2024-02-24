@@ -17,7 +17,7 @@ use yii\web\ServerErrorHttpException;
 
 class ClientDbcController extends Controller
 {
-    const BATCH_SIZE = 1000; // Adjust as needed
+    const BATCH_SIZE = 500; // Adjust as needed
 
     /**
      * {@inheritdoc}
@@ -159,9 +159,12 @@ class ClientDbcController extends Controller
                     $query = $targetClass::find()->andWhere($condition);
                     if ($query->exists()) {
                         $updateCount++;
+                        $oldItem = $query->one();
+                        $oldItem->load($item->getAttributes(), '');
+                        $item = $oldItem;
                     }
                     if(!$item->validate()) {
-                        $errorCount++;
+                        throw new ServerErrorHttpException('Validation with errors: ' . json_encode($item->getErrors()));
                     }
                 }
             }

@@ -4,7 +4,6 @@ var totalRecords = window.totalRecords;
 var processedRecords = 0;
 var totalUpdateCount = 0;
 var totalInsertCount = 0;
-var totalErrorCount = 0;
 // progress bar
 var validateProgress = $('.validation-progress');
 var importProgress = $('.import-progress');
@@ -15,7 +14,6 @@ function validateRecords(button) {
     processedRecords = 0;
     totalUpdateCount = 0;
     totalInsertCount = 0;
-    totalErrorCount = 0;
 
     $(button).prop('disabled', true);
     $(button).removeClass(function(index, className) {
@@ -52,7 +50,6 @@ function validateRecordsImpl(button, batchIndex) {
             processedRecords += response.insertCount + response.updateCount;
             totalInsertCount += response.insertCount;
             totalUpdateCount += response.updateCount;
-            totalErrorCount += response.errorCount;
 
             $(validateProgress).find('.status').text('Processed ' + processedRecords + ' out of ' + totalRecords + ' records.');
 
@@ -66,9 +63,7 @@ function validateRecordsImpl(button, batchIndex) {
                 $(validateProgress).find('.status').text('Validation complete.');
                 $(button).prop('disabled', false);
 
-                if (totalErrorCount > 0) {
-                    $(button).addClass('btn-danger').removeClass('btn-primary');
-                } else if (totalUpdateCount === 0) {
+                if (totalUpdateCount === 0) {
                     $(button).addClass('btn-success').removeClass('btn-primary');
                 } else if (totalUpdateCount > 0) {
                     $(button).addClass('btn-warning').removeClass('btn-primary');
@@ -77,6 +72,7 @@ function validateRecordsImpl(button, batchIndex) {
         },
         error: function(xhr, status, error) {
             $(validateProgress).find('.status').text('Error occurred: ' + error);
+            $(button).addClass('btn-danger').removeClass('btn-primary');
             $(button).prop('disabled', false);
         }
     });
