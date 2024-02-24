@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         // ['class' => 'yii\grid\SerialColumn'],
         // array_keys((new SpellDbc())->attributes),
-        SpellDbc::transformView([
+        SpellDbc::viewColumn([
             'ID',
             'Name_Lang_esES',
             'Category',

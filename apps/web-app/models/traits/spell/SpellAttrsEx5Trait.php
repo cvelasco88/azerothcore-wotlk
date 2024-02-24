@@ -4,6 +4,7 @@ namespace app\models\traits\spell;
 
 trait SpellAttrsEx5Trait
 {
+    const SPELL_ATTR5_NONE = 0x00000000;
     const SPELL_ATTR5_ALLOW_ACTIONS_DURING_CHANNEL = 0x00000001;
     const SPELL_ATTR5_NO_REAGENT_COST_WITH_AURA = 0x00000002;
     const SPELL_ATTR5_REMOVE_ENTERING_ARENA = 0x00000004;
@@ -45,6 +46,7 @@ trait SpellAttrsEx5Trait
     public static function getSpellAttributesEx5Options()
     {
         return [
+            self::SPELL_ATTR5_NONE => 'NONE',
             self::SPELL_ATTR5_ALLOW_ACTIONS_DURING_CHANNEL => 'ALLOW_ACTIONS_DURING_CHANNEL',
             self::SPELL_ATTR5_NO_REAGENT_COST_WITH_AURA => 'NO_REAGENT_COST_WITH_AURA',
             self::SPELL_ATTR5_REMOVE_ENTERING_ARENA => 'REMOVE_ENTERING_ARENA',

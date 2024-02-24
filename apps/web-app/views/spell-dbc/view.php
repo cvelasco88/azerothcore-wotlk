@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => "Detail",
             'content' => DetailView::widget([
                 'model' => $model,
-                'attributes' => SpellDbc::transformView(SpellDbc::getDetailAttributes()),
+                'attributes' => SpellDbc::viewColumn(SpellDbc::getDetailAttributes()),
             ]),
         ]
     ];
@@ -46,7 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => $groupName,
             'content' => DetailView::widget([
                 'model' => $model,
-                'attributes' => SpellDbc::transformView($attributes),
+                'attributes' => SpellDbc::viewColumn($attributes),
             ]),
         ];
     }

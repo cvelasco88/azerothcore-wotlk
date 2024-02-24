@@ -4,6 +4,7 @@ namespace app\models\traits\spell;
 
 trait SpellAttrsEx2Trait
 {
+    const SPELL_ATTR2_NONE = 0x00000000;
     const SPELL_ATTR2_ALLOW_DEAD_TARGET = 0x00000001;
     const SPELL_ATTR2_NO_SHAPESHIFT_UI = 0x00000002;
     const SPELL_ATTR2_IGNORE_LINE_OF_SIGHT = 0x00000004;
@@ -45,6 +46,7 @@ trait SpellAttrsEx2Trait
     public static function getSpellAttributesEx2Options()
     {
         return [
+            self::SPELL_ATTR2_NONE => 'NONE',
             self::SPELL_ATTR2_ALLOW_DEAD_TARGET => 'ALLOW_DEAD_TARGET',
             self::SPELL_ATTR2_NO_SHAPESHIFT_UI => 'NO_SHAPESHIFT_UI',
             self::SPELL_ATTR2_IGNORE_LINE_OF_SIGHT => 'IGNORE_LINE_OF_SIGHT',

@@ -291,12 +291,20 @@ class SpellDbc extends DbcActiveRecord
     {
         return [
             // Apply filters
-            [['Name_Lang_enUS', 'Name_Lang_enGB', 'Name_Lang_koKR', 'Name_Lang_frFR', 'Name_Lang_deDE', 'Name_Lang_enCN', 'Name_Lang_zhCN', 'Name_Lang_enTW', 'Name_Lang_zhTW', 'Name_Lang_esES', 'Name_Lang_esMX', 'Name_Lang_ruRU', 'Name_Lang_ptPT', 'Name_Lang_ptBR', 'Name_Lang_itIT', 'Name_Lang_Unk', 'NameSubtext_Lang_enUS', 'NameSubtext_Lang_enGB', 'NameSubtext_Lang_koKR', 'NameSubtext_Lang_frFR', 'NameSubtext_Lang_deDE', 'NameSubtext_Lang_enCN', 'NameSubtext_Lang_zhCN', 'NameSubtext_Lang_enTW', 'NameSubtext_Lang_zhTW', 'NameSubtext_Lang_esES', 'NameSubtext_Lang_esMX', 'NameSubtext_Lang_ruRU', 'NameSubtext_Lang_ptPT', 'NameSubtext_Lang_ptBR', 'NameSubtext_Lang_itIT', 'NameSubtext_Lang_Unk'], 'filter', 'filter' => function ($value) {
-                return $value !== null ? mb_substr(trim($value), 0, 100, 'UTF-8') : null;
-            }],
-            [['AuraDescription_Lang_enUS', 'AuraDescription_Lang_enGB', 'AuraDescription_Lang_koKR', 'AuraDescription_Lang_frFR', 'AuraDescription_Lang_deDE', 'AuraDescription_Lang_enCN', 'AuraDescription_Lang_zhCN', 'AuraDescription_Lang_enTW', 'AuraDescription_Lang_zhTW', 'AuraDescription_Lang_esES', 'AuraDescription_Lang_esMX', 'AuraDescription_Lang_ruRU', 'AuraDescription_Lang_ptPT', 'AuraDescription_Lang_ptBR', 'AuraDescription_Lang_itIT'], 'filter', 'filter' => function ($value) {
-                return $value !== null ? mb_substr(trim($value), 0, 500, 'UTF-8') : null;
-            }],
+            [
+                ['Name_Lang_enUS', 'Name_Lang_enGB', 'Name_Lang_koKR', 'Name_Lang_frFR', 'Name_Lang_deDE', 'Name_Lang_enCN', 'Name_Lang_zhCN', 'Name_Lang_enTW', 'Name_Lang_zhTW', 'Name_Lang_esES', 'Name_Lang_esMX', 'Name_Lang_ruRU', 'Name_Lang_ptPT', 'Name_Lang_ptBR', 'Name_Lang_itIT', 'Name_Lang_Unk', 'NameSubtext_Lang_enUS', 'NameSubtext_Lang_enGB', 'NameSubtext_Lang_koKR', 'NameSubtext_Lang_frFR', 'NameSubtext_Lang_deDE', 'NameSubtext_Lang_enCN', 'NameSubtext_Lang_zhCN', 'NameSubtext_Lang_enTW', 'NameSubtext_Lang_zhTW', 'NameSubtext_Lang_esES', 'NameSubtext_Lang_esMX', 'NameSubtext_Lang_ruRU', 'NameSubtext_Lang_ptPT', 'NameSubtext_Lang_ptBR', 'NameSubtext_Lang_itIT', 'NameSubtext_Lang_Unk'],
+                'filter',
+                'filter' => function ($value) {
+                    return $value !== null ? mb_substr(trim($value), 0, 100, 'UTF-8') : null;
+                }
+            ],
+            [
+                ['AuraDescription_Lang_enUS', 'AuraDescription_Lang_enGB', 'AuraDescription_Lang_koKR', 'AuraDescription_Lang_frFR', 'AuraDescription_Lang_deDE', 'AuraDescription_Lang_enCN', 'AuraDescription_Lang_zhCN', 'AuraDescription_Lang_enTW', 'AuraDescription_Lang_zhTW', 'AuraDescription_Lang_esES', 'AuraDescription_Lang_esMX', 'AuraDescription_Lang_ruRU', 'AuraDescription_Lang_ptPT', 'AuraDescription_Lang_ptBR', 'AuraDescription_Lang_itIT'],
+                'filter',
+                'filter' => function ($value) {
+                    return $value !== null ? mb_substr(trim($value), 0, 500, 'UTF-8') : null;
+                }
+            ],
             [['ID'], 'required'],
             [['ID', 'Category', 'DispelType', 'Mechanic', 'Attributes', 'AttributesEx', 'AttributesEx2', 'AttributesEx3', 'AttributesEx4', 'AttributesEx5', 'AttributesEx6', 'AttributesEx7', 'ShapeshiftMask', 'unk_320_2', 'ShapeshiftExclude', 'unk_320_3', 'Targets', 'TargetCreatureType', 'RequiresSpellFocus', 'FacingCasterFlags', 'CasterAuraState', 'TargetAuraState', 'ExcludeCasterAuraState', 'ExcludeTargetAuraState', 'CasterAuraSpell', 'TargetAuraSpell', 'ExcludeCasterAuraSpell', 'ExcludeTargetAuraSpell', 'CastingTimeIndex', 'RecoveryTime', 'CategoryRecoveryTime', 'InterruptFlags', 'AuraInterruptFlags', 'ChannelInterruptFlags', 'ProcTypeMask', 'ProcChance', 'ProcCharges', 'MaxLevel', 'BaseLevel', 'SpellLevel', 'DurationIndex', 'PowerType', 'ManaCost', 'ManaCostPerLevel', 'ManaPerSecond', 'ManaPerSecondPerLevel', 'RangeIndex', 'ModalNextSpell', 'CumulativeAura', 'Totem_1', 'Totem_2', 'Reagent_1', 'Reagent_2', 'Reagent_3', 'Reagent_4', 'Reagent_5', 'Reagent_6', 'Reagent_7', 'Reagent_8', 'ReagentCount_1', 'ReagentCount_2', 'ReagentCount_3', 'ReagentCount_4', 'ReagentCount_5', 'ReagentCount_6', 'ReagentCount_7', 'ReagentCount_8', 'EquippedItemClass', 'EquippedItemSubclass', 'EquippedItemInvTypes', 'Effect_1', 'Effect_2', 'Effect_3', 'EffectDieSides_1', 'EffectDieSides_2', 'EffectDieSides_3', 'EffectBasePoints_1', 'EffectBasePoints_2', 'EffectBasePoints_3', 'EffectMechanic_1', 'EffectMechanic_2', 'EffectMechanic_3', 'ImplicitTargetA_1', 'ImplicitTargetA_2', 'ImplicitTargetA_3', 'ImplicitTargetB_1', 'ImplicitTargetB_2', 'ImplicitTargetB_3', 'EffectRadiusIndex_1', 'EffectRadiusIndex_2', 'EffectRadiusIndex_3', 'EffectAura_1', 'EffectAura_2', 'EffectAura_3', 'EffectAuraPeriod_1', 'EffectAuraPeriod_2', 'EffectAuraPeriod_3', 'EffectChainTargets_1', 'EffectChainTargets_2', 'EffectChainTargets_3', 'EffectItemType_1', 'EffectItemType_2', 'EffectItemType_3', 'EffectMiscValue_1', 'EffectMiscValue_2', 'EffectMiscValue_3', 'EffectMiscValueB_1', 'EffectMiscValueB_2', 'EffectMiscValueB_3', 'EffectTriggerSpell_1', 'EffectTriggerSpell_2', 'EffectTriggerSpell_3', 'EffectSpellClassMaskA_1', 'EffectSpellClassMaskA_2', 'EffectSpellClassMaskA_3', 'EffectSpellClassMaskB_1', 'EffectSpellClassMaskB_2', 'EffectSpellClassMaskB_3', 'EffectSpellClassMaskC_1', 'EffectSpellClassMaskC_2', 'EffectSpellClassMaskC_3', 'SpellVisualID_1', 'SpellVisualID_2', 'SpellIconID', 'ActiveIconID', 'SpellPriority', 'Name_Lang_Mask', 'NameSubtext_Lang_Mask', 'Description_Lang_Mask', 'AuraDescription_Lang_Mask', 'ManaCostPct', 'StartRecoveryCategory', 'StartRecoveryTime', 'MaxTargetLevel', 'SpellClassSet', 'SpellClassMask_1', 'SpellClassMask_2', 'SpellClassMask_3', 'MaxTargets', 'DefenseType', 'PreventionType', 'StanceBarOrder', 'MinFactionID', 'MinReputation', 'RequiredAuraVision', 'RequiredTotemCategoryID_1', 'RequiredTotemCategoryID_2', 'RequiredAreasID', 'SchoolMask', 'RuneCostID', 'SpellMissileID', 'PowerDisplayID', 'SpellDescriptionVariableID', 'SpellDifficultyID'], 'integer'],
             [['Speed', 'EffectRealPointsPerLevel_1', 'EffectRealPointsPerLevel_2', 'EffectRealPointsPerLevel_3', 'EffectMultipleValue_1', 'EffectMultipleValue_2', 'EffectMultipleValue_3', 'EffectPointsPerCombo_1', 'EffectPointsPerCombo_2', 'EffectPointsPerCombo_3', 'EffectChainAmplitude_1', 'EffectChainAmplitude_2', 'EffectChainAmplitude_3', 'EffectBonusMultiplier_1', 'EffectBonusMultiplier_2', 'EffectBonusMultiplier_3'], 'number'],
@@ -971,7 +979,8 @@ class SpellDbc extends DbcActiveRecord
         return new SpellDbcQuery(get_called_class());
     }
 
-    public static function transformView(array $attributes) {
+    public static function viewColumn(array $attributes)
+    {
         $customAttributes = [];
 
         foreach ($attributes as $attribute) {
@@ -1040,12 +1049,33 @@ class SpellDbc extends DbcActiveRecord
                     $customAttributes[] = DbcView::columnInline('EquippedItemClass', SpellDbc::getEquippedItemClassOptions(), ['onclick' => 'return false;']);
                     break;
                 case 'EquippedItemSubclass':
-                    $customAttributes[] = DbcView::columnInlineCustom('EquippedItemSubclass', function($model) {
+                    $customAttributes[] = DbcView::columnInlineCustom('EquippedItemSubclass', function ($model) {
                         return SpellDbc::getEquippedItemSubclassOptions($model, $model->EquippedItemClass);
                     }, ['onclick' => 'return false;']);
                     break;
                 case 'EquippedItemInvTypes':
                     $customAttributes[] = DbcView::columnInline('EquippedItemInvTypes', SpellDbc::getEquippedItemInvTypeOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'AttributesEx':
+                    $customAttributes[] = DbcView::columnInline('AttributesEx', SpellDbc::getSpellAttributesEx1Options(), ['onclick' => 'return false;']);
+                    break;
+                case 'AttributesEx2':
+                    $customAttributes[] = DbcView::columnInline('AttributesEx2', SpellDbc::getSpellAttributesEx2Options(), ['onclick' => 'return false;']);
+                    break;
+                case 'AttributesEx3':
+                    $customAttributes[] = DbcView::columnInline('AttributesEx3', SpellDbc::getSpellAttributesEx3Options(), ['onclick' => 'return false;']);
+                    break;
+                case 'AttributesEx4':
+                    $customAttributes[] = DbcView::columnInline('AttributesEx4', SpellDbc::getSpellAttributesEx4Options(), ['onclick' => 'return false;']);
+                    break;
+                case 'AttributesEx5':
+                    $customAttributes[] = DbcView::columnInline('AttributesEx5', SpellDbc::getSpellAttributesEx5Options(), ['onclick' => 'return false;']);
+                    break;
+                case 'AttributesEx6':
+                    $customAttributes[] = DbcView::columnInline('AttributesEx6', SpellDbc::getSpellAttributesEx6Options(), ['onclick' => 'return false;']);
+                    break;
+                case 'AttributesEx7':
+                    $customAttributes[] = DbcView::columnInline('AttributesEx7', SpellDbc::getSpellAttributesEx7Options(), ['onclick' => 'return false;']);
                     break;
                 case 'SpellClassSet':
                     $customAttributes[] = [

@@ -4,6 +4,7 @@ namespace app\models\traits\spell;
 
 trait SpellAttrsEx4Trait
 {
+    const SPELL_ATTR4_NONE = 0x00000000;
     const SPELL_ATTR4_NO_CAST_LOG = 0x00000001;
     const SPELL_ATTR4_CLASS_TRIGGER_ONLY_ON_TARGET = 0x00000002;
     const SPELL_ATTR4_AURA_EXPIRES_OFFLINE = 0x00000004;
@@ -45,6 +46,7 @@ trait SpellAttrsEx4Trait
     public static function getSpellAttributesEx4Options()
     {
         return [
+            self::SPELL_ATTR4_NONE => 'NONE',
             self::SPELL_ATTR4_NO_CAST_LOG => 'NO_CAST_LOG',
             self::SPELL_ATTR4_CLASS_TRIGGER_ONLY_ON_TARGET => 'CLASS_TRIGGER_ONLY_ON_TARGET',
             self::SPELL_ATTR4_AURA_EXPIRES_OFFLINE => 'AURA_EXPIRES_OFFLINE',
