@@ -11,6 +11,9 @@ $this->title = 'View DBC File: ' . $fileName;
 $this->params['breadcrumbs'][] = ['label' => 'Index of DBC Files', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
+$this->registerJsVar('fileName', $fileName);
+$this->registerJsVar('batchSize', $batchSize);
+$this->registerJsVar('totalRecords', $totalRecords);
 $this->registerJsFile('@web/js/client-dbc-ajax-functions.js', ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 
@@ -23,13 +26,35 @@ $this->registerJsFile('@web/js/client-dbc-ajax-functions.js', ['depends' => [\yi
         <?= Html::a('Back to List', ['index'], ['class' => 'btn btn-primary']) ?>
     </p>
 
+    <div class="import-progress">
+        <h1>Import Progress</h1>
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped active" role="progressbar"
+                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                <span class="sr-only">0% Complete</span>
+            </div>
+        </div>
+        <div class="status"></div>
+    </div>
+
+    <div class="validation-progress">
+        <h1>Validation Progress</h1>
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped active" role="progressbar"
+                aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                <span class="sr-only">0% Complete</span>
+            </div>
+        </div>
+        <div class="status"></div>
+    </div>
+
     <?= Html::button('Validate Records', [
             'class' => 'btn btn-primary',
-            'onclick' => 'validateRecords(this, "' . $fileName . '")'
+            'onclick' => 'validateRecords(this)'
         ]) ?>
     <?= Html::button('Import Data', [
         'class' => 'btn btn-primary',
-        'onclick' => 'importData(this, "' . $fileName . '")',
+        'onclick' => 'importData(this)',
         'confirm' => 'Are you sure you want to import data?'
     ]) ?>
     

@@ -16,7 +16,7 @@ use yii\filters\VerbFilter;
 
 class ClientDbcController extends Controller
 {
-    static const BATCH_SIZE = 1000; // Adjust as needed
+    const BATCH_SIZE = 100; // Adjust as needed
 
     /**
      * {@inheritdoc}
@@ -111,25 +111,16 @@ class ClientDbcController extends Controller
             'dataProvider' => $dataProvider,
             'fileName' => $fileName,
             'targetClass' => $targetClass,
-        ]);
-    }
-
-    public function actionRequest()
-    {
-        return json_encode([
-            "batchSize" => self::BATCH_SIZE
+            'batchSize' => self::BATCH_SIZE,
+            'totalRecords' => count($records),
         ]);
     }
 
     public function actionValidate(string $fileName)
     {
-        foreach (Yii::$app->log->targets as $target) {
-            /** @var \yii\debug\LogTarget $target */
-            $target->setEnabled(false);
-        }
 
-        $offset = $this->request->getQueryParam('offset', 0);
-        $limit = $this->request->getQueryParam('limit', -1);
+        $offset = $this->request->getBodyParam('offset', 0);
+        $limit = $this->request->getBodyParam('limit', -1);
 
         $dataPath = Yii::getAlias('@app/data');
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
@@ -150,7 +141,7 @@ class ClientDbcController extends Controller
         [$totalRecords] = DbcReader::batch(
             $dbcReader,
             self::BATCH_SIZE,
-            function ($batchRecords) use ($targetClass, &$updateCount) {
+            function ($batchRecords) use ($targetClass, &$insertCount, &$updateCount) {
                 // Get primary key names
                 $primaryKeyNames = $targetClass::primaryKey(); // Array of primary key names
     
@@ -167,6 +158,8 @@ class ClientDbcController extends Controller
                     $query = $targetClass::find()->andWhere($condition);
                     if ($query->exists()) {
                         $updateCount++;
+                    } else {
+                        $insertCount++;
                     }
                 }
             },
@@ -176,8 +169,6 @@ class ClientDbcController extends Controller
 
         $dbcReader->close();
 
-        // Calculate counts
-        $insertCount = $totalRecords - $updateCount;
         // Return the results
         return json_encode([
             'insertCount' => $insertCount,
@@ -187,13 +178,8 @@ class ClientDbcController extends Controller
 
     public function actionImport(string $fileName)
     {
-        foreach (Yii::$app->log->targets as $target) {
-            /** @var \yii\debug\LogTarget $target */
-            $target->setEnabled(false);
-        }
-
-        $offset = $this->request->getQueryParam('offset', 0);
-        $limit = $this->request->getQueryParam('limit', -1);
+        $offset = $this->request->getBodyParam('offset', 0);
+        $limit = $this->request->getBodyParam('limit', -1);
 
         // Your import logic goes here
         $dataPath = Yii::getAlias('@app/data');
@@ -211,7 +197,7 @@ class ClientDbcController extends Controller
         // Process records in batches
         DbcReader::batch(
             $dbcReader,
-            self::BATCH_SIZE,            
+            self::BATCH_SIZE,
             function ($batchRecords) use ($targetClass) {
                 // Get primary key names
                 $primaryKeyNames = $targetClass::primaryKey(); // Array of primary key names
@@ -250,7 +236,9 @@ class ClientDbcController extends Controller
                     }
                     unset($item);
                 }
-            }
+            },
+            $offset,
+            $limit
         );
 
         $dbcReader->close();
