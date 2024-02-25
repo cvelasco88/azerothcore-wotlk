@@ -75,11 +75,11 @@ class SpellDbcController extends \yii\web\Controller
     {
         $formModel = new SpellDbcForm();
         $model = $this->findModel($id);
-
         // Create a new model instance for cloning
         $clonedModel = new SpellDbc();
         $clonedModel->attributes = $model->attributes;
         unset($clonedModel->ID); // Unset the ID to ensure a new record is created
+        $formModel->initModelAttributes($model);
 
         if ($formModel->processForm($clonedModel, Yii::$app->request->post())) {
             // Successfully cloned, redirect to view action for the cloned model
