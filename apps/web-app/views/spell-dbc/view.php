@@ -2,6 +2,7 @@
 
 use app\helpers\models\SpellDbcView;
 use app\models\SpellDbc;
+use yii\bootstrap5\ButtonDropdown;
 use yii\bootstrap5\Tabs;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
@@ -21,14 +22,35 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="mb-3"></div>
 
     <?= Html::a('Update', ['update', 'id' => $model->ID], ['class' => 'btn btn-primary']) ?>
-    
-    <?= Html::a('Delete', ['delete', 'id' => $model->ID], [
-        'class' => 'btn btn-danger',
-        'data' => [
-            'confirm' => 'Are you sure you want to delete this item?',
-            'method' => 'post',
-        ],
-    ]) ?>
+
+    <?= ButtonDropdown::widget([
+            'label' => 'Actions',
+            'buttonOptions' => [
+                // 'class' => 'btn btn-primary',
+            ],
+            'dropdown' => [
+                'items' => [
+                    [
+                        'label' => 'Clone',
+                        'url' => ['spell-dbc/clone', 'id'=> $model->ID],
+                        'linkOptions' => ['class' => 'option', 'id' => 'clone'],
+                    ],
+                    '<div class="dropdown-divider"></div>', // Divider line between items
+                    [
+                        'label' => 'Delete',
+                        'url' => ['delete', 'id' => $model->ID],
+                        'linkOptions' => [
+                            'class' => 'dropdown-item text-danger',
+                            'data' => [
+                                'confirm' => 'Are you sure you want to delete this item?',
+                                'method' => 'post',
+                            ],
+                        ],
+                    ],
+                    // Add other options here
+                ],
+            ],
+        ]); ?>
 
     <div class="mb-3"></div>
 

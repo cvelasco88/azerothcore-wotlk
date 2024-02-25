@@ -1,6 +1,7 @@
 <?php
 
 namespace app\controllers;
+
 use app\models\forms\SpellDbcForm;
 use app\models\SpellDbc;
 use app\models\search\SpellDbcSearch;
@@ -40,7 +41,7 @@ class SpellDbcController extends \yii\web\Controller
         $formModel = new SpellDbcForm();
         $model = new SpellDbc();
         $model->loadDefaultValues();
-        $formModel->initModelAttributes($model);        
+        $formModel->initModelAttributes($model);
 
         if ($formModel->processForm($model, Yii::$app->request->post())) {
             // Successfully created, redirect to view action
@@ -57,7 +58,7 @@ class SpellDbcController extends \yii\web\Controller
     {
         $formModel = new SpellDbcForm();
         $model = $this->findModel($id);
-        $formModel->initModelAttributes($model);        
+        $formModel->initModelAttributes($model);
 
         if ($formModel->processForm($model, Yii::$app->request->post())) {
             // Successfully created, redirect to view action
@@ -66,6 +67,27 @@ class SpellDbcController extends \yii\web\Controller
 
         return $this->render('update', [
             'model' => $model,
+            'formModel' => $formModel,
+        ]);
+    }
+
+    public function actionClone($id)
+    {
+        $formModel = new SpellDbcForm();
+        $model = $this->findModel($id);
+
+        // Create a new model instance for cloning
+        $clonedModel = new SpellDbc();
+        $clonedModel->attributes = $model->attributes;
+        unset($clonedModel->ID); // Unset the ID to ensure a new record is created
+
+        if ($formModel->processForm($clonedModel, Yii::$app->request->post())) {
+            // Successfully cloned, redirect to view action for the cloned model
+            return $this->redirect(['view', 'id' => $clonedModel->ID]);
+        }
+
+        return $this->render('create', [
+            'model' => $clonedModel,
             'formModel' => $formModel,
         ]);
     }
