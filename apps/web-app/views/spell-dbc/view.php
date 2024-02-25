@@ -1,6 +1,6 @@
 <?php
 
-use app\helpers\DbcView;
+use app\helpers\models\SpellDbcView;
 use app\models\SpellDbc;
 use yii\bootstrap5\Tabs;
 use yii\helpers\Html;
@@ -39,11 +39,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => "Detail",
             'content' => DetailView::widget([
                 'model' => $model,
-                'attributes' => SpellDbc::viewColumn(SpellDbc::getDetailAttributes()),
+                'attributes' => SpellDbc::viewColumn(SpellDbcView::getDetailAttributes()),
             ]),
         ]
     ];
-    $attributeGroups = SpellDbc::getAttributeGroups();
+    $attributeGroups = SpellDbcView::getAttributeGroups();
     // Create tabs with DetailView for each attribute group
     foreach ($attributeGroups as $groupName => $attributes) {
         $tabs[] = [
