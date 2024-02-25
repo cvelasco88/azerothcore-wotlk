@@ -24,6 +24,9 @@ use app\models\traits\spell\SpellAttrsEx7Trait;
 use app\models\traits\spell\MechanicTrait;
 use app\models\traits\spell\SpellCategoryTrait;
 use app\models\traits\spell\SpellClassSetTrait;
+use app\models\traits\spell\SpellDefenseType;
+use app\models\traits\spell\SpellDefenseTypeTrait;
+use app\models\traits\spell\SpellPreventionTypeTrait;
 use app\models\traits\spell\TargetFlagTrait;
 use app\models\traits\spell\TargetCreatureTypeTrait;
 use Yii;
@@ -273,7 +276,7 @@ class SpellDbc extends DbcActiveRecord
         SpellAttrsTrait, SpellAttrsEx1Trait, SpellAttrsEx2Trait, SpellAttrsEx3Trait, SpellAttrsEx4Trait,
         SpellAttrsEx5Trait, SpellAttrsEx6Trait, SpellAttrsEx7Trait, MechanicTrait, ShapeshiftMaskTrait, InterruptFlagsTrait,
         SchoolMaskTrait, LangTrait, EquippedItemClassTrait, EquippedItemSubclassTrait, EquippedItemInvTypesTrait, SpellClassSetTrait,
-        SpellCategoryTrait;
+        SpellCategoryTrait, SpellDefenseTypeTrait, SpellPreventionTypeTrait;
 
 
     /**
@@ -619,6 +622,26 @@ class SpellDbc extends DbcActiveRecord
     {
         return sprintf('(%s) => %s', $this->Category, $this->getSpellCategoryName($type ?? $this->Category));
         // return $this->getSpellCategoryName($type ?? $this->Category);
+    }
+
+    /**
+     * Get the human-readable defense type name.
+     *
+     * @return string|null
+     */
+    public function getCurrentDefenseTypeName(int $type = null)
+    {
+        return $this->getSpellDefenseTypeName($type ?? $this->DefenseType);
+    }
+
+    /**
+     * Get the human-readable prevention type name.
+     *
+     * @return string|null
+     */
+    public function getCurrentPreventionTypeName(int $type = null)
+    {
+        return $this->getSpellPreventionTypeName($type ?? $this->PreventionType);
     }
 
     // PUBLIC STATIC METHODS
@@ -979,6 +1002,9 @@ class SpellDbc extends DbcActiveRecord
         return new SpellDbcQuery(get_called_class());
     }
 
+    /**
+     * @param array $attributes
+     */
     public static function viewColumn(array $attributes)
     {
         $customAttributes = [];
@@ -1095,6 +1121,24 @@ class SpellDbc extends DbcActiveRecord
                 //         },
                 //     ];
                 //     break;
+                case 'DefenseType':
+                    $customAttributes[] = [
+                        'attribute' => 'DefenseType',
+                        'value' => function ($model) {
+                            /** @var SpellDbc $model */
+                            return $model->getCurrentDefenseTypeName();
+                        },
+                    ];
+                    break;
+                case 'PreventionType':
+                    $customAttributes[] = [
+                        'attribute' => 'PreventionType',
+                        'value' => function ($model) {
+                            /** @var SpellDbc $model */
+                            return $model->getCurrentPreventionTypeName();
+                        },
+                    ];
+                    break;
                 // Add more customizations for other attributes as needed
                 default:
                     $customAttributes[] = $attribute;
@@ -1105,5 +1149,12 @@ class SpellDbc extends DbcActiveRecord
         return $customAttributes;
     }
 
+    /**
+     * @param array $attributes
+     */
+    public static function editColumn(array $attributes) {
+        // TODO:
+        return $attributes;
+    }
 
 }

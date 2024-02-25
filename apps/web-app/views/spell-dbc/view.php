@@ -9,12 +9,16 @@ use yii\widgets\DetailView;
 /** @var yii\web\View $this */
 /** @var app\models\SpellDbc $model */
 
-$this->title = $model->Name_Lang_enUS;
+$this->title = $model->Name_Lang_esES;
 $this->params['breadcrumbs'][] = ['label' => 'Spells', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="spell-dbc-view">
+
+    <h1><?= Html::encode($model->Name_Lang_esES) ?></h1>
+
+    <div class="mb-3"></div>
 
     <?= Html::a('Update', ['update', 'id' => $model->ID], ['class' => 'btn btn-primary']) ?>
     

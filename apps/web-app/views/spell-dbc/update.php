@@ -7,8 +7,16 @@ use yii\widgets\ActiveForm;
 /** @var yii\web\View $this */
 /** @var app\models\SpellDbc $model */
 /** @var ActiveForm $form */
+
+$this->title = $model->Name_Lang_esES;
+$this->params['breadcrumbs'][] = ['label' => 'Spells', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="spell-dbc-update">
+
+    <h1><?= Html::encode($model->Name_Lang_esES) ?></h1>
+
+    <div class="mb-3"></div>
 
     <?= Html::a('View', ['view', 'id' => $model->ID], ['class' => 'btn btn-success']) ?>
 
