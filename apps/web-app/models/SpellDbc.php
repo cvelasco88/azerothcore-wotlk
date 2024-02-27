@@ -3,6 +3,7 @@
 namespace app\models;
 
 use app\helpers\DbcView;
+use app\helpers\DbcWriter;
 use app\models\base\DbcActiveRecord;
 use app\models\traits\common\LangTrait;
 use app\models\traits\spell\DispelTypeTrait;
@@ -660,6 +661,37 @@ class SpellDbc extends DbcActiveRecord
             }
         }*/
         return $result;
+    }
+
+
+    /**
+     * Exports values from the current ActiveRecord instance to DBC (Database Client Cache) format.
+     *
+     * @param array $definition The column definition for mapping exported values.
+     * @return array The exported values.
+     */
+    public function mapExportedDbcValues(DbcWriter $dbcWriter, array $data, array $definition) {
+        $dbcLanguage = $dbcWriter->getLanguage();
+        if ($dbcLanguage) {
+            // Define the translatables
+            $translatables = ['Name_Lang_', 'NameSubtext_Lang_', 'Description_Lang_', 'AuraDescription_Lang_'];
+            // Iterate through the data
+            foreach ($data as $key => $value) {
+                // Check if the key matches any of the patterns in $translatables
+                foreach ($translatables as $match) {
+                    if (strpos($key, $match) === 0) {
+                        // Check if the key ends with the language code
+                        if (substr($key, -strlen($dbcLanguage)) !== $dbcLanguage) {
+                            // If not, set the value to null
+                            $data[$key] = null;
+                        }
+                        // Found a match, break the inner loop
+                        break;
+                    }
+                }
+            }
+        }
+        return parent::mapExportedDbcValues($dbcWriter, $data, $definition);
     }
 
     // PUBLIC STATIC METHODS

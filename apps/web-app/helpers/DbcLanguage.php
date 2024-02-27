@@ -60,6 +60,16 @@ class DbcLanguage {
     }
 
     /**
+     * Check if the given value is a valid language constant.
+     *
+     * @param string $value The value to check
+     * @return bool Whether the value is a valid language constant
+     */
+    public static function isValidLanguage($value) {
+        return in_array($value, array_keys(self::getLanguages()), true);
+    }
+
+    /**
      * Get language locale for the provided language constant.
      *
      * @param string $languageConstant The language constant (e.g., DbcLanguage::EN_US)

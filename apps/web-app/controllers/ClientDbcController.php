@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\helpers\DbcArrayDataProvider;
 use app\helpers\DbcDefinition;
+use app\helpers\DbcLanguage;
 use app\helpers\DbcRecord;
 use app\helpers\DbcReader;
 use app\helpers\DbcWriter;
@@ -285,11 +286,15 @@ class ClientDbcController extends Controller
         $dataPath = Yii::getAlias('@app/data');
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
+        // Get language to export the DBC file with the appropriate locales
+        $dbcLang = DbcLanguage::getLanguageFromLocale(Yii::$app->language);
+
         // Open the DBC file
         $storage = fopen($filePath, 'wb');
 
         // Create a DbcWriter instance with calculated header attributes
         $dbcWriter = new DbcWriter($className, $storage);
+        $dbcWriter->setLanguage($dbcLang);
         // Close the DBC file
         // Note: closed on DbcWriter _destruct => fclose($storage);
 
