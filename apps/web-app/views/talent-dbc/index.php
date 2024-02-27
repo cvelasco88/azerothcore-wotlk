@@ -1,41 +1,17 @@
 <?php
 /** @var yii\web\View $this */
+use app\helpers\DbcView;
 use app\models\TalentDbc;
 use yii\grid\GridView;
 use yii\helpers\Html;
-use yii\helpers\Json;
 
 $this->title = 'Index Page';
 $this->params['breadcrumbs'][] = $this->title;
-
-// Load the talent_ids.json file
-$talentIdsJson = file_get_contents(Yii::getAlias('@app/data') . DIRECTORY_SEPARATOR . 'talent_ids.json');
-$talentIds = Json::decode($talentIdsJson);
-
-// Define a function to get the name based on ID
-function getNameById($id, $talentIds)
-{
-    foreach ($talentIds as $talent) {
-        if (strcmp($talent['id'], $id) == 0) {
-            return $talent['name'];
-        }
-    }
-    // If name is not found, return the ID
-    return $id;
-}
-
 ?>
 
 <?= Html::a('Create TalentDbc', ['create'], ['class' => 'btn btn-success']) ?>
 
-<?= Html::a('Export', ['client-dbc/export', 'className' => TalentDbc::class], 
-[
-    'class' => 'btn btn-warning',
-    'data' => [
-        'confirm' => 'Are you sure you want to Export this data?',
-        'method' => 'post',
-    ],
-]) ?>
+<?= DbcView::exportButton(['client-dbc/export', 'className' => TalentDbc::class]) ?>
 
 <div class="mb-3"></div>
 
@@ -54,14 +30,7 @@ function getNameById($id, $talentIds)
             ]
         ],        
         [
-            [
-                // 'attribute' => 'ID',
-                'label' => 'Talent Name',
-                'value' => function ($model) use ($talentIds) {
-                    /** @var TalentDbc $model */
-                    return getNameById($model->ID, $talentIds);
-                },
-            ],
+            'ID',
             'TabID',
             'TierID',
             'ColumnIndex',

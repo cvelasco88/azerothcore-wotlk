@@ -4,6 +4,7 @@ namespace app\models\traits\spell;
 
 trait SpellAttrsEx1Trait
 {
+    const SPELL_ATTR1_NONE = 0x00000000;
     const SPELL_ATTR1_DISMISS_PET_FIRST = 0x00000001;
     const SPELL_ATTR1_USE_ALL_MANA = 0x00000002;
     const SPELL_ATTR1_IS_CHANNELED = 0x00000004;
@@ -45,6 +46,7 @@ trait SpellAttrsEx1Trait
     public static function getSpellAttributesEx1Options()
     {
         return [
+            self::SPELL_ATTR1_NONE => 'NONE',
             self::SPELL_ATTR1_DISMISS_PET_FIRST => 'DISMISS_PET_FIRST',
             self::SPELL_ATTR1_USE_ALL_MANA => 'USE_ALL_MANA',
             self::SPELL_ATTR1_IS_CHANNELED => 'IS_CHANNELED',

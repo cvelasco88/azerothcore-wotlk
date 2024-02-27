@@ -2,6 +2,7 @@
 
 namespace app\models\base;
 
+use app\helpers\DbcWriter;
 use Yii;
 
 /**
@@ -54,16 +55,17 @@ abstract class DbcActiveRecord extends \yii\db\ActiveRecord
     /**
      * Exports values from the current ActiveRecord instance to DBC (Database Client Cache) format.
      *
+     * @param DbcWriter $dbcWriter
      * @param array $definition The column definition for mapping exported values.
      * @return array The exported values.
      */
-    public function exportToDbc(array $definition)
+    public function exportToDbc(DbcWriter $dbcWriter, array $definition)
     {
         // Get all properties of the target class
         $keys = array_keys($definition);
 
         $data = $this->toArray($keys);
-        return $this->mapExportedDbcValues($data, $definition);
+        return $this->mapExportedDbcValues($dbcWriter, $data, $definition);
     }
 
     /**
@@ -83,11 +85,12 @@ abstract class DbcActiveRecord extends \yii\db\ActiveRecord
     /**
      * Maps exported attribute values of the current ActiveRecord instance to DBC format.
      *
+     * @param DbcWriter $dbcWriter
      * @param array $data The attribute values of the current ActiveRecord instance.
      * @param array $definition The column definition for mapping exported values.
      * @return array The exported values in DBC format.
      */
-    protected function mapExportedDbcValues(array $data, array $definition)
+    protected function mapExportedDbcValues(DbcWriter $dbcWriter, array $data, array $definition)
     {
         // Get all properties of the target class
         $properties = array_keys($definition);

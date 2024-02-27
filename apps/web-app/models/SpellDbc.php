@@ -3,6 +3,7 @@
 namespace app\models;
 
 use app\helpers\DbcView;
+use app\helpers\DbcWriter;
 use app\models\base\DbcActiveRecord;
 use app\models\traits\common\LangTrait;
 use app\models\traits\spell\DispelTypeTrait;
@@ -22,8 +23,12 @@ use app\models\traits\spell\SpellAttrsEx5Trait;
 use app\models\traits\spell\SpellAttrsEx6Trait;
 use app\models\traits\spell\SpellAttrsEx7Trait;
 use app\models\traits\spell\MechanicTrait;
+use app\models\traits\spell\SpellAuraInterruptFlagsTrait;
 use app\models\traits\spell\SpellCategoryTrait;
 use app\models\traits\spell\SpellClassSetTrait;
+use app\models\traits\spell\SpellDefenseTypeTrait;
+use app\models\traits\spell\SpellEffectsTrait;
+use app\models\traits\spell\SpellPreventionTypeTrait;
 use app\models\traits\spell\TargetFlagTrait;
 use app\models\traits\spell\TargetCreatureTypeTrait;
 use Yii;
@@ -273,7 +278,7 @@ class SpellDbc extends DbcActiveRecord
         SpellAttrsTrait, SpellAttrsEx1Trait, SpellAttrsEx2Trait, SpellAttrsEx3Trait, SpellAttrsEx4Trait,
         SpellAttrsEx5Trait, SpellAttrsEx6Trait, SpellAttrsEx7Trait, MechanicTrait, ShapeshiftMaskTrait, InterruptFlagsTrait,
         SchoolMaskTrait, LangTrait, EquippedItemClassTrait, EquippedItemSubclassTrait, EquippedItemInvTypesTrait, SpellClassSetTrait,
-        SpellCategoryTrait;
+        SpellCategoryTrait, SpellDefenseTypeTrait, SpellPreventionTypeTrait, SpellEffectsTrait, SpellAuraInterruptFlagsTrait;
 
 
     /**
@@ -291,12 +296,20 @@ class SpellDbc extends DbcActiveRecord
     {
         return [
             // Apply filters
-            [['Name_Lang_enUS', 'Name_Lang_enGB', 'Name_Lang_koKR', 'Name_Lang_frFR', 'Name_Lang_deDE', 'Name_Lang_enCN', 'Name_Lang_zhCN', 'Name_Lang_enTW', 'Name_Lang_zhTW', 'Name_Lang_esES', 'Name_Lang_esMX', 'Name_Lang_ruRU', 'Name_Lang_ptPT', 'Name_Lang_ptBR', 'Name_Lang_itIT', 'Name_Lang_Unk', 'NameSubtext_Lang_enUS', 'NameSubtext_Lang_enGB', 'NameSubtext_Lang_koKR', 'NameSubtext_Lang_frFR', 'NameSubtext_Lang_deDE', 'NameSubtext_Lang_enCN', 'NameSubtext_Lang_zhCN', 'NameSubtext_Lang_enTW', 'NameSubtext_Lang_zhTW', 'NameSubtext_Lang_esES', 'NameSubtext_Lang_esMX', 'NameSubtext_Lang_ruRU', 'NameSubtext_Lang_ptPT', 'NameSubtext_Lang_ptBR', 'NameSubtext_Lang_itIT', 'NameSubtext_Lang_Unk'], 'filter', 'filter' => function ($value) {
-                return $value !== null ? mb_substr(trim($value), 0, 100, 'UTF-8') : null;
-            }],
-            [['AuraDescription_Lang_enUS', 'AuraDescription_Lang_enGB', 'AuraDescription_Lang_koKR', 'AuraDescription_Lang_frFR', 'AuraDescription_Lang_deDE', 'AuraDescription_Lang_enCN', 'AuraDescription_Lang_zhCN', 'AuraDescription_Lang_enTW', 'AuraDescription_Lang_zhTW', 'AuraDescription_Lang_esES', 'AuraDescription_Lang_esMX', 'AuraDescription_Lang_ruRU', 'AuraDescription_Lang_ptPT', 'AuraDescription_Lang_ptBR', 'AuraDescription_Lang_itIT'], 'filter', 'filter' => function ($value) {
-                return $value !== null ? mb_substr(trim($value), 0, 500, 'UTF-8') : null;
-            }],
+            [
+                ['Name_Lang_enUS', 'Name_Lang_enGB', 'Name_Lang_koKR', 'Name_Lang_frFR', 'Name_Lang_deDE', 'Name_Lang_enCN', 'Name_Lang_zhCN', 'Name_Lang_enTW', 'Name_Lang_zhTW', 'Name_Lang_esES', 'Name_Lang_esMX', 'Name_Lang_ruRU', 'Name_Lang_ptPT', 'Name_Lang_ptBR', 'Name_Lang_itIT', 'Name_Lang_Unk', 'NameSubtext_Lang_enUS', 'NameSubtext_Lang_enGB', 'NameSubtext_Lang_koKR', 'NameSubtext_Lang_frFR', 'NameSubtext_Lang_deDE', 'NameSubtext_Lang_enCN', 'NameSubtext_Lang_zhCN', 'NameSubtext_Lang_enTW', 'NameSubtext_Lang_zhTW', 'NameSubtext_Lang_esES', 'NameSubtext_Lang_esMX', 'NameSubtext_Lang_ruRU', 'NameSubtext_Lang_ptPT', 'NameSubtext_Lang_ptBR', 'NameSubtext_Lang_itIT', 'NameSubtext_Lang_Unk'],
+                'filter',
+                'filter' => function ($value) {
+                    return $value !== null ? mb_substr(trim($value), 0, 100, 'UTF-8') : null;
+                }
+            ],
+            [
+                ['AuraDescription_Lang_enUS', 'AuraDescription_Lang_enGB', 'AuraDescription_Lang_koKR', 'AuraDescription_Lang_frFR', 'AuraDescription_Lang_deDE', 'AuraDescription_Lang_enCN', 'AuraDescription_Lang_zhCN', 'AuraDescription_Lang_enTW', 'AuraDescription_Lang_zhTW', 'AuraDescription_Lang_esES', 'AuraDescription_Lang_esMX', 'AuraDescription_Lang_ruRU', 'AuraDescription_Lang_ptPT', 'AuraDescription_Lang_ptBR', 'AuraDescription_Lang_itIT'],
+                'filter',
+                'filter' => function ($value) {
+                    return $value !== null ? mb_substr(trim($value), 0, 500, 'UTF-8') : null;
+                }
+            ],
             [['ID'], 'required'],
             [['ID', 'Category', 'DispelType', 'Mechanic', 'Attributes', 'AttributesEx', 'AttributesEx2', 'AttributesEx3', 'AttributesEx4', 'AttributesEx5', 'AttributesEx6', 'AttributesEx7', 'ShapeshiftMask', 'unk_320_2', 'ShapeshiftExclude', 'unk_320_3', 'Targets', 'TargetCreatureType', 'RequiresSpellFocus', 'FacingCasterFlags', 'CasterAuraState', 'TargetAuraState', 'ExcludeCasterAuraState', 'ExcludeTargetAuraState', 'CasterAuraSpell', 'TargetAuraSpell', 'ExcludeCasterAuraSpell', 'ExcludeTargetAuraSpell', 'CastingTimeIndex', 'RecoveryTime', 'CategoryRecoveryTime', 'InterruptFlags', 'AuraInterruptFlags', 'ChannelInterruptFlags', 'ProcTypeMask', 'ProcChance', 'ProcCharges', 'MaxLevel', 'BaseLevel', 'SpellLevel', 'DurationIndex', 'PowerType', 'ManaCost', 'ManaCostPerLevel', 'ManaPerSecond', 'ManaPerSecondPerLevel', 'RangeIndex', 'ModalNextSpell', 'CumulativeAura', 'Totem_1', 'Totem_2', 'Reagent_1', 'Reagent_2', 'Reagent_3', 'Reagent_4', 'Reagent_5', 'Reagent_6', 'Reagent_7', 'Reagent_8', 'ReagentCount_1', 'ReagentCount_2', 'ReagentCount_3', 'ReagentCount_4', 'ReagentCount_5', 'ReagentCount_6', 'ReagentCount_7', 'ReagentCount_8', 'EquippedItemClass', 'EquippedItemSubclass', 'EquippedItemInvTypes', 'Effect_1', 'Effect_2', 'Effect_3', 'EffectDieSides_1', 'EffectDieSides_2', 'EffectDieSides_3', 'EffectBasePoints_1', 'EffectBasePoints_2', 'EffectBasePoints_3', 'EffectMechanic_1', 'EffectMechanic_2', 'EffectMechanic_3', 'ImplicitTargetA_1', 'ImplicitTargetA_2', 'ImplicitTargetA_3', 'ImplicitTargetB_1', 'ImplicitTargetB_2', 'ImplicitTargetB_3', 'EffectRadiusIndex_1', 'EffectRadiusIndex_2', 'EffectRadiusIndex_3', 'EffectAura_1', 'EffectAura_2', 'EffectAura_3', 'EffectAuraPeriod_1', 'EffectAuraPeriod_2', 'EffectAuraPeriod_3', 'EffectChainTargets_1', 'EffectChainTargets_2', 'EffectChainTargets_3', 'EffectItemType_1', 'EffectItemType_2', 'EffectItemType_3', 'EffectMiscValue_1', 'EffectMiscValue_2', 'EffectMiscValue_3', 'EffectMiscValueB_1', 'EffectMiscValueB_2', 'EffectMiscValueB_3', 'EffectTriggerSpell_1', 'EffectTriggerSpell_2', 'EffectTriggerSpell_3', 'EffectSpellClassMaskA_1', 'EffectSpellClassMaskA_2', 'EffectSpellClassMaskA_3', 'EffectSpellClassMaskB_1', 'EffectSpellClassMaskB_2', 'EffectSpellClassMaskB_3', 'EffectSpellClassMaskC_1', 'EffectSpellClassMaskC_2', 'EffectSpellClassMaskC_3', 'SpellVisualID_1', 'SpellVisualID_2', 'SpellIconID', 'ActiveIconID', 'SpellPriority', 'Name_Lang_Mask', 'NameSubtext_Lang_Mask', 'Description_Lang_Mask', 'AuraDescription_Lang_Mask', 'ManaCostPct', 'StartRecoveryCategory', 'StartRecoveryTime', 'MaxTargetLevel', 'SpellClassSet', 'SpellClassMask_1', 'SpellClassMask_2', 'SpellClassMask_3', 'MaxTargets', 'DefenseType', 'PreventionType', 'StanceBarOrder', 'MinFactionID', 'MinReputation', 'RequiredAuraVision', 'RequiredTotemCategoryID_1', 'RequiredTotemCategoryID_2', 'RequiredAreasID', 'SchoolMask', 'RuneCostID', 'SpellMissileID', 'PowerDisplayID', 'SpellDescriptionVariableID', 'SpellDifficultyID'], 'integer'],
             [['Speed', 'EffectRealPointsPerLevel_1', 'EffectRealPointsPerLevel_2', 'EffectRealPointsPerLevel_3', 'EffectMultipleValue_1', 'EffectMultipleValue_2', 'EffectMultipleValue_3', 'EffectPointsPerCombo_1', 'EffectPointsPerCombo_2', 'EffectPointsPerCombo_3', 'EffectChainAmplitude_1', 'EffectChainAmplitude_2', 'EffectChainAmplitude_3', 'EffectBonusMultiplier_1', 'EffectBonusMultiplier_2', 'EffectBonusMultiplier_3'], 'number'],
@@ -613,354 +626,75 @@ class SpellDbc extends DbcActiveRecord
         // return $this->getSpellCategoryName($type ?? $this->Category);
     }
 
-    // PUBLIC STATIC METHODS
-
-    public static function getDetailAttributes()
+    /**
+     * Get the human-readable defense type name.
+     *
+     * @return string|null
+     */
+    public function getCurrentDefenseTypeName(int $type = null)
     {
-        $attributeGroups = self::getAttributeGroups();
-        $except = [];
-        foreach ($attributeGroups as $groupName => $attributes) {
-            $except = array_merge($except, $attributes);
+        return $this->getSpellDefenseTypeName($type ?? $this->DefenseType);
+    }
+
+    /**
+     * Get the human-readable prevention type name.
+     *
+     * @return string|null
+     */
+    public function getCurrentPreventionTypeName(int $type = null)
+    {
+        return $this->getSpellPreventionTypeName($type ?? $this->PreventionType);
+    }
+
+    /**
+     * Get the human-readable prevention type name.
+     *
+     * @return string|null
+     */
+    public function getCurrentReagentName(?string $reagent)
+    {
+        $result = $reagent;
+        /* TODO: if(!is_null($reagent)) {
+            $item = ItemDbc::findOne(['name' => $reagent]);
+            if(isset($item)) {
+                $result = $item->name;
+            }
+        }*/
+        return $result;
+    }
+
+
+    /**
+     * Exports values from the current ActiveRecord instance to DBC (Database Client Cache) format.
+     *
+     * @param array $definition The column definition for mapping exported values.
+     * @return array The exported values.
+     */
+    public function mapExportedDbcValues(DbcWriter $dbcWriter, array $data, array $definition) {
+        $dbcLanguage = $dbcWriter->getLanguage();
+        if ($dbcLanguage) {
+            // Define the translatables
+            $translatables = ['Name_Lang_', 'NameSubtext_Lang_', 'Description_Lang_', 'AuraDescription_Lang_'];
+            // Iterate through the data
+            foreach ($data as $key => $value) {
+                // Check if the key matches any of the patterns in $translatables
+                foreach ($translatables as $match) {
+                    if (strpos($key, $match) === 0) {
+                        // Check if the key ends with the language code
+                        if (substr($key, -strlen($dbcLanguage)) !== $dbcLanguage) {
+                            // If not, set the value to null
+                            $data[$key] = null;
+                        }
+                        // Found a match, break the inner loop
+                        break;
+                    }
+                }
+            }
         }
-        $tmp = new static();
-        return array_keys($tmp->getAttributes(null, $except));
+        return parent::mapExportedDbcValues($dbcWriter, $data, $definition);
     }
 
-    public static function getAttributeGroups()
-    {
-        $groups = [];
-        $groups["AttributesExt"] = self::getAttributesExtAttributes();
-        $groups["Recovery"] = self::getRecoveryAttributes();
-        $groups["Aura"] = self::getAuraAttributes();
-        $groups["Mana"] = self::getManaAttributes();
-        $groups["Totem"] = self::getTotemAttributes();
-        $groups["Reagent"] = self::getReagentAttributes();
-        $groups["ReagentCount"] = self::getReagentCountAttributes();
-        $groups["EquippedItem"] = self::getEquippedItemAttributes();
-        $groups["Effect"] = self::getEffectAttributes();
-        $groups["ImplicitTarget"] = self::getImplicitTargetAttributes();
-        $groups["NameAndDescription"] = self::getNameAndDescriptionAttributes();
-        $groups["SpellClass"] = self::getSpellClassAttributes();
-        $groups["Required"] = self::getRequiredAttributes();
-        $groups["Interrupt"] = self::getInterruptAttributes();
-        $groups["Other"] = self::getOtherAttributes();
-        return $groups;
-    }
-
-    // PRIVATE STATIC METHODS
-
-    private static function getAttributesExtAttributes()
-    {
-        return [
-            'AttributesEx',
-            'AttributesEx2',
-            'AttributesEx3',
-            'AttributesEx4',
-            'AttributesEx5',
-            'AttributesEx6',
-            'AttributesEx7',
-        ];
-    }
-
-    private static function getRecoveryAttributes()
-    {
-        return [
-            'RecoveryTime',
-            'CategoryRecoveryTime',
-            'StartRecoveryCategory',
-            'StartRecoveryTime',
-        ];
-    }
-
-    private static function getAuraAttributes()
-    {
-        return [
-            'CasterAuraState',
-            'TargetAuraState',
-            'ExcludeCasterAuraState',
-            'ExcludeTargetAuraState',
-            'CasterAuraSpell',
-            'TargetAuraSpell',
-            'ExcludeCasterAuraSpell',
-            'ExcludeTargetAuraSpell',
-            //
-            //'AuraInterruptFlags',
-            //
-            'CumulativeAura',
-            //
-            'EffectAura_1',
-            'EffectAura_2',
-            'EffectAura_3',
-            'EffectAuraPeriod_1',
-            'EffectAuraPeriod_2',
-            'EffectAuraPeriod_3',
-            //
-            'AuraDescription_Lang_enUS',
-            'AuraDescription_Lang_enGB',
-            'AuraDescription_Lang_koKR',
-            'AuraDescription_Lang_frFR',
-            'AuraDescription_Lang_deDE',
-            'AuraDescription_Lang_enCN',
-            'AuraDescription_Lang_zhCN',
-            'AuraDescription_Lang_enTW',
-            'AuraDescription_Lang_zhTW',
-            'AuraDescription_Lang_esES',
-            'AuraDescription_Lang_esMX',
-            'AuraDescription_Lang_ruRU',
-            'AuraDescription_Lang_ptPT',
-            'AuraDescription_Lang_ptBR',
-            'AuraDescription_Lang_itIT',
-            'AuraDescription_Lang_Unk',
-            'AuraDescription_Lang_Mask',
-            //
-            //'RequiredAuraVision',
-        ];
-    }
-
-    private static function getManaAttributes()
-    {
-        return [
-            'ManaCost',
-            'ManaCostPerLevel',
-            'ManaPerSecond',
-            'ManaPerSecondPerLevel',
-        ];
-    }
-
-    private static function getTotemAttributes()
-    {
-        return [
-            'Totem_1',
-            'Totem_2',
-        ];
-    }
-
-    private static function getReagentAttributes()
-    {
-        return [
-            'Reagent_1',
-            'Reagent_2',
-            'Reagent_3',
-            'Reagent_4',
-            'Reagent_5',
-            'Reagent_6',
-            'Reagent_7',
-            'Reagent_8',
-        ];
-    }
-    private static function getReagentCountAttributes()
-    {
-        return [
-            'ReagentCount_1',
-            'ReagentCount_2',
-            'ReagentCount_3',
-            'ReagentCount_4',
-            'ReagentCount_5',
-            'ReagentCount_6',
-            'ReagentCount_7',
-            'ReagentCount_8',
-        ];
-    }
-    private static function getEquippedItemAttributes()
-    {
-        return [
-            'EquippedItemClass',
-            'EquippedItemSubclass',
-            'EquippedItemInvTypes',
-        ];
-    }
-    private static function getEffectAttributes()
-    {
-        return [
-            'Effect_1',
-            'Effect_2',
-            'Effect_3',
-            'EffectDieSides_1',
-            'EffectDieSides_2',
-            'EffectDieSides_3',
-            'EffectRealPointsPerLevel_1',
-            'EffectRealPointsPerLevel_2',
-            'EffectRealPointsPerLevel_3',
-            'EffectBasePoints_1',
-            'EffectBasePoints_2',
-            'EffectBasePoints_3',
-            'EffectMechanic_1',
-            'EffectMechanic_2',
-            'EffectMechanic_3',
-            //
-            'EffectRadiusIndex_1',
-            'EffectRadiusIndex_2',
-            'EffectRadiusIndex_3',
-            // 'EffectAura_1',
-            // 'EffectAura_2',
-            // 'EffectAura_3',
-            // 'EffectAuraPeriod_1',
-            // 'EffectAuraPeriod_2',
-            // 'EffectAuraPeriod_3',
-            'EffectMultipleValue_1',
-            'EffectMultipleValue_2',
-            'EffectMultipleValue_3',
-            'EffectChainTargets_1',
-            'EffectChainTargets_2',
-            'EffectChainTargets_3',
-            'EffectItemType_1',
-            'EffectItemType_2',
-            'EffectItemType_3',
-            'EffectMiscValue_1',
-            'EffectMiscValue_2',
-            'EffectMiscValue_3',
-            'EffectMiscValueB_1',
-            'EffectMiscValueB_2',
-            'EffectMiscValueB_3',
-            'EffectTriggerSpell_1',
-            'EffectTriggerSpell_2',
-            'EffectTriggerSpell_3',
-            'EffectPointsPerCombo_1',
-            'EffectPointsPerCombo_2',
-            'EffectPointsPerCombo_3',
-            'EffectSpellClassMaskA_1',
-            'EffectSpellClassMaskA_2',
-            'EffectSpellClassMaskA_3',
-            'EffectSpellClassMaskB_1',
-            'EffectSpellClassMaskB_2',
-            'EffectSpellClassMaskB_3',
-            'EffectSpellClassMaskC_1',
-            'EffectSpellClassMaskC_2',
-            'EffectSpellClassMaskC_3',
-            //
-            'EffectChainAmplitude_1',
-            'EffectChainAmplitude_2',
-            'EffectChainAmplitude_3',
-            //
-            'EffectBonusMultiplier_1', // 320_41
-            'EffectBonusMultiplier_2',
-            'EffectBonusMultiplier_3',
-
-        ];
-    }
-    private static function getImplicitTargetAttributes()
-    {
-        return [
-            'ImplicitTargetA_1',
-            'ImplicitTargetA_2',
-            'ImplicitTargetA_3',
-            'ImplicitTargetB_1',
-            'ImplicitTargetB_2',
-            'ImplicitTargetB_3',
-        ];
-    }
-    private static function getNameAndDescriptionAttributes()
-    {
-        return [
-            'Name_Lang_enUS',
-            'Name_Lang_enGB',
-            'Name_Lang_koKR',
-            'Name_Lang_frFR',
-            'Name_Lang_deDE',
-            'Name_Lang_enCN',
-            'Name_Lang_zhCN',
-            'Name_Lang_enTW',
-            'Name_Lang_zhTW',
-            'Name_Lang_esES',
-            'Name_Lang_esMX',
-            'Name_Lang_ruRU',
-            'Name_Lang_ptPT',
-            'Name_Lang_ptBR',
-            'Name_Lang_itIT',
-            'Name_Lang_Unk',
-            'Name_Lang_Mask',
-            'NameSubtext_Lang_enUS',
-            'NameSubtext_Lang_enGB',
-            'NameSubtext_Lang_koKR',
-            'NameSubtext_Lang_frFR',
-            'NameSubtext_Lang_deDE',
-            'NameSubtext_Lang_enCN',
-            'NameSubtext_Lang_zhCN',
-            'NameSubtext_Lang_enTW',
-            'NameSubtext_Lang_zhTW',
-            'NameSubtext_Lang_esES',
-            'NameSubtext_Lang_esMX',
-            'NameSubtext_Lang_ruRU',
-            'NameSubtext_Lang_ptPT',
-            'NameSubtext_Lang_ptBR',
-            'NameSubtext_Lang_itIT',
-            'NameSubtext_Lang_Unk',
-            'NameSubtext_Lang_Mask',
-            'Description_Lang_enUS',
-            'Description_Lang_enGB',
-            'Description_Lang_koKR',
-            'Description_Lang_frFR',
-            'Description_Lang_deDE',
-            'Description_Lang_enCN',
-            'Description_Lang_zhCN',
-            'Description_Lang_enTW',
-            'Description_Lang_zhTW',
-            'Description_Lang_esES',
-            'Description_Lang_esMX',
-            'Description_Lang_ruRU',
-            'Description_Lang_ptPT',
-            'Description_Lang_ptBR',
-            'Description_Lang_itIT',
-            'Description_Lang_Unk',
-            'Description_Lang_Mask',
-        ];
-    }
-    private static function getSpellClassAttributes()
-    {
-        return [
-            'SpellClassSet',
-            'SpellClassMask_1',
-            'SpellClassMask_2',
-            'SpellClassMask_3',
-        ];
-    }
-
-    private static function getRequiredAttributes()
-    {
-        return [
-            'RequiredAuraVision',
-            'RequiredTotemCategoryID_1',
-            'RequiredTotemCategoryID_2',
-            'RequiredAreasID',
-        ];
-    }
-
-    private static function getInterruptAttributes()
-    {
-        return [
-            'InterruptFlags',
-            'AuraInterruptFlags',
-            'ChannelInterruptFlags',
-        ];
-    }
-
-    private static function getOtherAttributes()
-    {
-        return [
-            'ShapeshiftMask',
-            'unk_320_2',
-            'ShapeshiftExclude',
-            'unk_320_3',
-            'CastingTimeIndex',
-            'ProcTypeMask',
-            'ProcChance',
-            'ProcCharges',
-            'ModalNextSpell',
-            'SpellVisualID_1',
-            'SpellVisualID_2',
-            'SpellIconID',
-            'ActiveIconID',
-            'ManaCostPct',
-            'DefenseType',
-            'PreventionType',
-            'StanceBarOrder',
-            'MinFactionID',
-            'MinReputation',
-            'SpellMissileID',
-            'PowerDisplayID',
-            'SpellDescriptionVariableID',
-        ];
-    }
+    // PUBLIC STATIC METHODS
 
     /**
      * {@inheritdoc}
@@ -971,7 +705,11 @@ class SpellDbc extends DbcActiveRecord
         return new SpellDbcQuery(get_called_class());
     }
 
-    public static function transformView(array $attributes) {
+    /**
+     * @param array $attributes
+     */
+    public static function viewColumn(array $attributes)
+    {
         $customAttributes = [];
 
         foreach ($attributes as $attribute) {
@@ -1040,12 +778,33 @@ class SpellDbc extends DbcActiveRecord
                     $customAttributes[] = DbcView::columnInline('EquippedItemClass', SpellDbc::getEquippedItemClassOptions(), ['onclick' => 'return false;']);
                     break;
                 case 'EquippedItemSubclass':
-                    $customAttributes[] = DbcView::columnInlineCustom('EquippedItemSubclass', function($model) {
+                    $customAttributes[] = DbcView::columnInlineCustom('EquippedItemSubclass', function ($model) {
                         return SpellDbc::getEquippedItemSubclassOptions($model, $model->EquippedItemClass);
                     }, ['onclick' => 'return false;']);
                     break;
                 case 'EquippedItemInvTypes':
                     $customAttributes[] = DbcView::columnInline('EquippedItemInvTypes', SpellDbc::getEquippedItemInvTypeOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'AttributesEx':
+                    $customAttributes[] = DbcView::columnInline('AttributesEx', SpellDbc::getSpellAttributesEx1Options(), ['onclick' => 'return false;']);
+                    break;
+                case 'AttributesEx2':
+                    $customAttributes[] = DbcView::columnInline('AttributesEx2', SpellDbc::getSpellAttributesEx2Options(), ['onclick' => 'return false;']);
+                    break;
+                case 'AttributesEx3':
+                    $customAttributes[] = DbcView::columnInline('AttributesEx3', SpellDbc::getSpellAttributesEx3Options(), ['onclick' => 'return false;']);
+                    break;
+                case 'AttributesEx4':
+                    $customAttributes[] = DbcView::columnInline('AttributesEx4', SpellDbc::getSpellAttributesEx4Options(), ['onclick' => 'return false;']);
+                    break;
+                case 'AttributesEx5':
+                    $customAttributes[] = DbcView::columnInline('AttributesEx5', SpellDbc::getSpellAttributesEx5Options(), ['onclick' => 'return false;']);
+                    break;
+                case 'AttributesEx6':
+                    $customAttributes[] = DbcView::columnInline('AttributesEx6', SpellDbc::getSpellAttributesEx6Options(), ['onclick' => 'return false;']);
+                    break;
+                case 'AttributesEx7':
+                    $customAttributes[] = DbcView::columnInline('AttributesEx7', SpellDbc::getSpellAttributesEx7Options(), ['onclick' => 'return false;']);
                     break;
                 case 'SpellClassSet':
                     $customAttributes[] = [
@@ -1065,6 +824,52 @@ class SpellDbc extends DbcActiveRecord
                 //         },
                 //     ];
                 //     break;
+                case 'DefenseType':
+                    $customAttributes[] = [
+                        'attribute' => 'DefenseType',
+                        'value' => function ($model) {
+                            /** @var SpellDbc $model */
+                            return $model->getCurrentDefenseTypeName();
+                        },
+                    ];
+                    break;
+                case 'PreventionType':
+                    $customAttributes[] = [
+                        'attribute' => 'PreventionType',
+                        'value' => function ($model) {
+                            /** @var SpellDbc $model */
+                            return $model->getCurrentPreventionTypeName();
+                        },
+                    ];
+                    break;
+                /*case 'Effect_1': // FIXME: 
+                    $customAttributes[] = DbcView::columnInline('Effect_1', SpellDbc::getSpellEffectOptions(), ['onclick' => 'return false;']);
+                    break;*/
+                /*case 'Effect_2': // FIXME: 
+                    $customAttributes[] = DbcView::columnInline('Effect_2', SpellDbc::getSpellEffectOptions(), ['onclick' => 'return false;']);
+                    break;*/
+                /*case 'Effect_3': // FIXME: 
+                    $customAttributes[] = DbcView::columnInline('Effect_3', SpellDbc::getSpellEffectOptions(), ['onclick' => 'return false;']);
+                    break;*/
+                case 'AuraInterruptFlags':
+                    $customAttributes[] = DbcView::columnInline('AuraInterruptFlags', SpellDbc::getSpellAuraInterruptFlagOptions(), ['onclick' => 'return false;']);
+                    break;
+                case 'Reagent_1':
+                case 'Reagent_2':
+                case 'Reagent_3':
+                case 'Reagent_4':
+                case 'Reagent_5':
+                case 'Reagent_6':
+                case 'Reagent_7':
+                case 'Reagent_8':
+                    $customAttributes[] = [
+                        'attribute' => $attribute,
+                        'value' => function ($model) use ($attribute) {
+                            /** @var SpellDbc $model */
+                            return $model->getCurrentReagentName($model->{$attribute});
+                        },
+                    ];
+                    break;
                 // Add more customizations for other attributes as needed
                 default:
                     $customAttributes[] = $attribute;
@@ -1075,5 +880,13 @@ class SpellDbc extends DbcActiveRecord
         return $customAttributes;
     }
 
+    /**
+     * @param array $attributes
+     */
+    public static function editColumn(array $attributes)
+    {
+        // TODO:
+        return $attributes;
+    }
 
 }

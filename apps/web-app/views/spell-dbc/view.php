@@ -1,7 +1,8 @@
 <?php
 
-use app\helpers\DbcView;
+use app\helpers\models\SpellDbcView;
 use app\models\SpellDbc;
+use yii\bootstrap5\ButtonDropdown;
 use yii\bootstrap5\Tabs;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
@@ -9,22 +10,47 @@ use yii\widgets\DetailView;
 /** @var yii\web\View $this */
 /** @var app\models\SpellDbc $model */
 
-$this->title = $model->Name_Lang_enUS;
+$this->title = $model->Name_Lang_esES;
 $this->params['breadcrumbs'][] = ['label' => 'Spells', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="spell-dbc-view">
 
+    <h1><?= Html::encode($model->Name_Lang_esES) ?></h1>
+
+    <div class="mb-3"></div>
+
     <?= Html::a('Update', ['update', 'id' => $model->ID], ['class' => 'btn btn-primary']) ?>
-    
-    <?= Html::a('Delete', ['delete', 'id' => $model->ID], [
-        'class' => 'btn btn-danger',
-        'data' => [
-            'confirm' => 'Are you sure you want to delete this item?',
-            'method' => 'post',
-        ],
-    ]) ?>
+
+    <?= ButtonDropdown::widget([
+            'label' => 'Actions',
+            'buttonOptions' => [
+                // 'class' => 'btn btn-primary',
+            ],
+            'dropdown' => [
+                'items' => [
+                    [
+                        'label' => 'Clone',
+                        'url' => ['spell-dbc/clone', 'id'=> $model->ID],
+                        'linkOptions' => ['class' => 'option', 'id' => 'clone'],
+                    ],
+                    '<div class="dropdown-divider"></div>', // Divider line between items
+                    [
+                        'label' => 'Delete',
+                        'url' => ['delete', 'id' => $model->ID],
+                        'linkOptions' => [
+                            'class' => 'dropdown-item text-danger',
+                            'data' => [
+                                'confirm' => 'Are you sure you want to delete this item?',
+                                'method' => 'post',
+                            ],
+                        ],
+                    ],
+                    // Add other options here
+                ],
+            ],
+        ]); ?>
 
     <div class="mb-3"></div>
 
@@ -35,18 +61,18 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => "Detail",
             'content' => DetailView::widget([
                 'model' => $model,
-                'attributes' => SpellDbc::transformView(SpellDbc::getDetailAttributes()),
+                'attributes' => SpellDbc::viewColumn(SpellDbcView::getDetailAttributes()),
             ]),
         ]
     ];
-    $attributeGroups = SpellDbc::getAttributeGroups();
+    $attributeGroups = SpellDbcView::getAttributeGroups();
     // Create tabs with DetailView for each attribute group
     foreach ($attributeGroups as $groupName => $attributes) {
         $tabs[] = [
             'label' => $groupName,
             'content' => DetailView::widget([
                 'model' => $model,
-                'attributes' => SpellDbc::transformView($attributes),
+                'attributes' => SpellDbc::viewColumn($attributes),
             ]),
         ];
     }

@@ -29,7 +29,7 @@ class DbcDefinition
             case "OldTalentTab.dbc":
                 return TalentTabDbc::class;
             default:
-                throw new \Exception("Definition not found for {$filename}");
+                return false;
         }
     }
 

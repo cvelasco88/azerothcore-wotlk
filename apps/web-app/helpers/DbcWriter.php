@@ -33,7 +33,7 @@ use Traversable;
  * $dbcWriter->writeRecord($myRecord);
  * $dbcWriter->close();
  * ```
- */
+  */
 class DbcWriter implements \IteratorAggregate, \Countable
 {
     protected const HEADER_LENGTH_DBC = 20;
@@ -58,6 +58,7 @@ class DbcWriter implements \IteratorAggregate, \Countable
     protected $locale;
     protected $stringBlockOffset;
     protected $targetClass;
+    protected $_language;
 
     /**
      * @param resource $storage
@@ -228,7 +229,7 @@ class DbcWriter implements \IteratorAggregate, \Countable
             $definition = $record->getDefinition();
         }
         $definitionKeys = array_keys($definition);
-        $values = $record->exportToDbc($definition);
+        $values = $record->exportToDbc($this, $definition);
 
         for ($i = 0; $i < $this->recordLength; $i++) {
             $columnDefinition = $definition[$definitionKeys[$i]]; // Get the attribute by its position
@@ -301,6 +302,19 @@ class DbcWriter implements \IteratorAggregate, \Countable
     {
         $this->dispose();
     }
+
+    public function setLanguage(string $language) {
+        if(!DbcLanguage::isValidLanguage($language)) {
+            throw new \InvalidArgumentException("Invalid language: $language");
+        }
+        $this->_language = $language;
+    }
+
+    public function getLanguage() {
+        return $this->_language;
+    }
+
+    // PRIVATE METHODS
 
     /**
      * @param string|null $value

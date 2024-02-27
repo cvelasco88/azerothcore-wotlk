@@ -16,6 +16,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php if ($dataProvider->totalCount > 0): ?>
         <?= ListView::widget([
+            'pager' => [
+                'class' => yii\bootstrap5\LinkPager::class,
+            ],
             'dataProvider' => $dataProvider,
             'itemView' => '_indexItem',
             'summary' => false,

@@ -4,6 +4,7 @@ namespace app\models\traits\spell;
 
 trait SpellAttrsEx7Trait
 {
+    const SPELL_ATTR7_NONE = 0x00000000;
     const SPELL_ATTR7_ALLOW_SPELL_REFLECTION = 0x00000001;
     const SPELL_ATTR7_NO_TARGET_DURATION_MOD = 0x00000002;
     const SPELL_ATTR7_DISABLE_AURA_WHILE_DEAD = 0x00000004;
@@ -45,6 +46,7 @@ trait SpellAttrsEx7Trait
     public static function getSpellAttributesEx7Options()
     {
         return [
+            self::SPELL_ATTR7_NONE => 'NONE',
             self::SPELL_ATTR7_ALLOW_SPELL_REFLECTION => 'ALLOW_SPELL_REFLECTION',
             self::SPELL_ATTR7_NO_TARGET_DURATION_MOD => 'NO_TARGET_DURATION_MOD',
             self::SPELL_ATTR7_DISABLE_AURA_WHILE_DEAD => 'DISABLE_AURA_WHILE_DEAD',

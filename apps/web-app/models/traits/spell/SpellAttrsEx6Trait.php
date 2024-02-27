@@ -4,6 +4,7 @@ namespace app\models\traits\spell;
 
 trait SpellAttrsEx6Trait
 {
+    const SPELL_ATTR6_NONE = 0x00000000;
     const SPELL_ATTR6_NO_COOLDOWN_ON_TOOLTIP = 0x00000001;
     const SPELL_ATTR6_DO_NOT_RESET_COOLDOWN_IN_ARENA = 0x00000002;
     const SPELL_ATTR6_NOT_AN_ATTACK = 0x00000004;
@@ -45,6 +46,7 @@ trait SpellAttrsEx6Trait
     public static function getSpellAttributesEx6Options()
     {
         return [
+            self::SPELL_ATTR6_NONE => 'NONE',
             self::SPELL_ATTR6_NO_COOLDOWN_ON_TOOLTIP => 'NO_COOLDOWN_ON_TOOLTIP',
             self::SPELL_ATTR6_DO_NOT_RESET_COOLDOWN_IN_ARENA => 'DO_NOT_RESET_COOLDOWN_IN_ARENA',
             self::SPELL_ATTR6_NOT_AN_ATTACK => 'NOT_AN_ATTACK',

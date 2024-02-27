@@ -1,5 +1,6 @@
 <?php
 /** @var yii\web\View $this */
+use app\helpers\DbcView;
 use app\models\SpellDbc;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -10,14 +11,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?= Html::a('Create SpellDbc', ['create'], ['class' => 'btn btn-success']) ?>
 
-<?= Html::a('Export', ['client-dbc/export', 'className' => SpellDbc::class], 
-[
-    'class' => 'btn btn-warning',
-    'data' => [
-        'confirm' => 'Are you sure you want to Export this data?',
-        'method' => 'post',
-    ],
-]) ?>
+<?= DbcView::exportButton(['client-dbc/export', 'className' => SpellDbc::class]) ?>
 
 <div class="mb-3"></div>
 
@@ -48,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         // ['class' => 'yii\grid\SerialColumn'],
         // array_keys((new SpellDbc())->attributes),
-        SpellDbc::transformView([
+        SpellDbc::viewColumn([
             'ID',
             'Name_Lang_esES',
             'Category',

@@ -4,6 +4,7 @@ namespace app\models\traits\spell;
 
 trait SpellAttrsEx3Trait
 {
+    const SPELL_ATTR3_NONE = 0x00000000;
     const SPELL_ATTR3_PVP_ENABLING = 0x00000001;
     const SPELL_ATTR3_NO_PROC_EQUIP_REQUIREMENT = 0x00000002;
     const SPELL_ATTR3_NO_CASTING_BAR_TEXT = 0x00000004;
@@ -45,6 +46,7 @@ trait SpellAttrsEx3Trait
     public static function getSpellAttributesEx3Options()
     {
         return [
+            self::SPELL_ATTR3_NONE => 'NONE',
             self::SPELL_ATTR3_PVP_ENABLING => 'PVP_ENABLING',
             self::SPELL_ATTR3_NO_PROC_EQUIP_REQUIREMENT => 'NO_PROC_EQUIP_REQUIREMENT',
             self::SPELL_ATTR3_NO_CASTING_BAR_TEXT => 'NO_CASTING_BAR_TEXT',

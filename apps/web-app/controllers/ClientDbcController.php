@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\helpers\DbcArrayDataProvider;
 use app\helpers\DbcDefinition;
+use app\helpers\DbcLanguage;
 use app\helpers\DbcRecord;
 use app\helpers\DbcReader;
 use app\helpers\DbcWriter;
@@ -87,6 +88,9 @@ class ClientDbcController extends Controller
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
         $targetClass = DbcDefinition::getTargetClass($fileName);
+        if(!$targetClass) {
+            throw new \Exception("Definition not found for {$fileName}");
+        }
 
         // Open the DBC file
         $storage = fopen($filePath, 'rb');
@@ -125,6 +129,9 @@ class ClientDbcController extends Controller
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
         $targetClass = DbcDefinition::getTargetClass($fileName);
+        if(!$targetClass) {
+            throw new \Exception("Definition not found for {$fileName}");
+        }
 
         // Open the DBC file
         $storage = fopen($filePath, 'rb');
@@ -193,7 +200,10 @@ class ClientDbcController extends Controller
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
         $targetClass = DbcDefinition::getTargetClass($fileName);
-
+        if(!$targetClass) {
+            throw new \Exception("Definition not found for {$fileName}");
+        }
+        
         // Open the DBC file
         $storage = fopen($filePath, 'rb');
         // Create a DbcReader instance
@@ -276,11 +286,15 @@ class ClientDbcController extends Controller
         $dataPath = Yii::getAlias('@app/data');
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
+        // Get language to export the DBC file with the appropriate locales
+        $dbcLang = DbcLanguage::getLanguageFromLocale(Yii::$app->language);
+
         // Open the DBC file
         $storage = fopen($filePath, 'wb');
 
         // Create a DbcWriter instance with calculated header attributes
         $dbcWriter = new DbcWriter($className, $storage);
+        $dbcWriter->setLanguage($dbcLang);
         // Close the DBC file
         // Note: closed on DbcWriter _destruct => fclose($storage);
 
@@ -293,8 +307,10 @@ class ClientDbcController extends Controller
 
         $dbcWriter->close();
 
-        // Redirect to the previous page
-        return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
+        if(!Yii::$app->request->isAjax) {
+            // Redirect to the previous page
+            return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
+        }        
     }
 
     // PRIVATE METHODS
