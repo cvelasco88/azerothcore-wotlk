@@ -87,6 +87,9 @@ class ClientDbcController extends Controller
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
         $targetClass = DbcDefinition::getTargetClass($fileName);
+        if(!$targetClass) {
+            throw new \Exception("Definition not found for {$fileName}");
+        }
 
         // Open the DBC file
         $storage = fopen($filePath, 'rb');
@@ -125,6 +128,9 @@ class ClientDbcController extends Controller
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
         $targetClass = DbcDefinition::getTargetClass($fileName);
+        if(!$targetClass) {
+            throw new \Exception("Definition not found for {$fileName}");
+        }
 
         // Open the DBC file
         $storage = fopen($filePath, 'rb');
@@ -193,7 +199,10 @@ class ClientDbcController extends Controller
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
         $targetClass = DbcDefinition::getTargetClass($fileName);
-
+        if(!$targetClass) {
+            throw new \Exception("Definition not found for {$fileName}");
+        }
+        
         // Open the DBC file
         $storage = fopen($filePath, 'rb');
         // Create a DbcReader instance

@@ -645,6 +645,23 @@ class SpellDbc extends DbcActiveRecord
         return $this->getSpellPreventionTypeName($type ?? $this->PreventionType);
     }
 
+    /**
+     * Get the human-readable prevention type name.
+     *
+     * @return string|null
+     */
+    public function getCurrentReagentName(?string $reagent)
+    {
+        $result = $reagent;
+        /* TODO: if(!is_null($reagent)) {
+            $item = ItemDbc::findOne(['name' => $reagent]);
+            if(isset($item)) {
+                $result = $item->name;
+            }
+        }*/
+        return $result;
+    }
+
     // PUBLIC STATIC METHODS
 
     /**
@@ -805,6 +822,22 @@ class SpellDbc extends DbcActiveRecord
                 case 'AuraInterruptFlags':
                     $customAttributes[] = DbcView::columnInline('AuraInterruptFlags', SpellDbc::getSpellAuraInterruptFlagOptions(), ['onclick' => 'return false;']);
                     break;
+                case 'Reagent_1':
+                case 'Reagent_2':
+                case 'Reagent_3':
+                case 'Reagent_4':
+                case 'Reagent_5':
+                case 'Reagent_6':
+                case 'Reagent_7':
+                case 'Reagent_8':
+                    $customAttributes[] = [
+                        'attribute' => $attribute,
+                        'value' => function ($model) use ($attribute) {
+                            /** @var SpellDbc $model */
+                            return $model->getCurrentReagentName($model->{$attribute});
+                        },
+                    ];
+                    break;
                 // Add more customizations for other attributes as needed
                 default:
                     $customAttributes[] = $attribute;
@@ -818,7 +851,8 @@ class SpellDbc extends DbcActiveRecord
     /**
      * @param array $attributes
      */
-    public static function editColumn(array $attributes) {
+    public static function editColumn(array $attributes)
+    {
         // TODO:
         return $attributes;
     }
