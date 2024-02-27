@@ -4,11 +4,14 @@
 /** @var string $content */
 
 use app\assets\AppAsset;
+use app\helpers\DbcLanguage;
 use app\widgets\Alert;
 use yii\bootstrap5\Breadcrumbs;
+use yii\bootstrap5\ButtonDropdown;
 use yii\bootstrap5\Html;
 use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
+use yii\helpers\Url;
 
 AppAsset::register($this);
 
@@ -43,6 +46,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
             ['label' => 'Client Files', 'url' => ['/client-dbc/index']],
             ['label' => 'About', 'url' => ['/site/about']],
             ['label' => 'Contact', 'url' => ['/site/contact']],
+            ['label' => Yii::t('app', 'locale'), 'url' => Url::current()],
             Yii::$app->user->isGuest
                 ? ['label' => 'Login', 'url' => ['/site/login']]
                 : '<li class="nav-item">'
@@ -55,6 +59,29 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
                     . '</li>'
         ]
     ]);
+
+    $dropdownItems = [];
+    // Loop through the languages
+    foreach (DbcLanguage::getLanguages() as $language => $languageName) {
+        // Generate the language selection link
+        $url = Url::current(['language' => DbcLanguage::getLocale($language)]);
+        $link = Html::a($languageName, $url);
+
+        // Add the link as a dropdown item
+        $dropdownItems[] = ['label' => $link, 'encode' => false];
+    }
+
+    // Render the dropdown
+    echo ButtonDropdown::widget([
+        'label' => DbcLanguage::getLanguageName(DbcLanguage::getLanguageFromLocale(Yii::$app->language)),
+        'buttonOptions' => [
+            'class' => 'btn btn-dark',
+        ],
+        'dropdown' => [
+            'items' => $dropdownItems,
+        ]            
+    ]);
+
     NavBar::end();
     ?>
 </header>
