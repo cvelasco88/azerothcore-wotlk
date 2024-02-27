@@ -7,23 +7,6 @@ use yii\helpers\Json;
 
 $this->title = 'Index Page';
 $this->params['breadcrumbs'][] = $this->title;
-
-// Load the talent_ids.json file
-$talentIdsJson = file_get_contents(Yii::getAlias('@app/data') . DIRECTORY_SEPARATOR . 'talent_ids.json');
-$talentIds = Json::decode($talentIdsJson);
-
-// Define a function to get the name based on ID
-function getNameById($id, $talentIds)
-{
-    foreach ($talentIds as $talent) {
-        if (strcmp($talent['id'], $id) == 0) {
-            return $talent['name'];
-        }
-    }
-    // If name is not found, return the ID
-    return $id;
-}
-
 ?>
 
 <?= Html::a('Create TalentDbc', ['create'], ['class' => 'btn btn-success']) ?>
@@ -54,14 +37,7 @@ function getNameById($id, $talentIds)
             ]
         ],        
         [
-            [
-                // 'attribute' => 'ID',
-                'label' => 'Talent Name',
-                'value' => function ($model) use ($talentIds) {
-                    /** @var TalentDbc $model */
-                    return getNameById($model->ID, $talentIds);
-                },
-            ],
+            'ID',
             'TabID',
             'TierID',
             'ColumnIndex',
