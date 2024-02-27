@@ -12,14 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?= Html::a('Create TalentTabDbc', ['create'], ['class' => 'btn btn-success']) ?>
 
-<?= Html::a('Export', ['client-dbc/export', 'className' => TalentTabDbc::class], 
-[
-    'class' => 'btn btn-warning',
-    'data' => [
-        'confirm' => 'Are you sure you want to Export this data?',
-        'method' => 'post',
-    ],
-]) ?>
+<?= DbcView::exportButton(['client-dbc/export', 'className' => TalentTabDbc::class]) ?>
 
 <div class="mb-3"></div>
 
