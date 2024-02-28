@@ -2,18 +2,19 @@
 
 namespace app\controllers;
 
+use app\helpers\DbcLanguage;
 use app\models\forms\SpellDbcForm;
 use app\models\SpellDbc;
 use app\models\search\SpellDbcSearch;
 use \Yii;
-use yii\data\ActiveDataProvider;
 use yii\web\NotFoundHttpException;
 
 class SpellDbcController extends \yii\web\Controller
 {
     public function actionIndex()
     {
-        $searchModel = new SpellDbcSearch();
+        $dbcLanguage = DbcLanguage::getLanguageFromLocale(Yii::$app->language);
+        $searchModel = new SpellDbcSearch($dbcLanguage);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

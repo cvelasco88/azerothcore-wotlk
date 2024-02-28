@@ -1,9 +1,13 @@
 <?php
 /** @var yii\web\View $this */
+use app\helpers\DbcLanguage;
 use app\helpers\DbcView;
 use app\models\SpellDbc;
 use yii\grid\GridView;
 use yii\helpers\Html;
+
+// this one has to match the Search model
+$nameLang = 'Name_Lang_' . DbcLanguage::getLanguageFromLocale(Yii::$app->language);
 
 $this->title = 'Index Page';
 $this->params['breadcrumbs'][] = $this->title;
@@ -44,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
         // array_keys((new SpellDbc())->attributes),
         SpellDbc::viewColumn([
             'ID',
-            'Name_Lang_esES',
+            $nameLang,
             'Category',
             'SpellClassSet',
             'SpellLevel',
