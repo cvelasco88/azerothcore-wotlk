@@ -4,6 +4,9 @@ namespace app\models\traits\spell;
 
 trait EquippedItemSubclassTrait
 {
+    // NO CLASS
+    const EQUIPED_ITEM_SUBCLASS_UNK_NONE = 0x00000000;
+
     // BAGS
     const EQUIPED_ITEM_SUBCLASS_BAGS_NONE = 0x00000000;
     const EQUIPED_ITEM_SUBCLASS_BAGS_BAG = 0x00000001;
@@ -146,7 +149,9 @@ trait EquippedItemSubclassTrait
         if(array_key_exists($equippedItemClass, $items)) {
             return $items[$equippedItemClass];
         }
-        return [];
+        return [
+            self::EQUIPED_ITEM_SUBCLASS_UNK_NONE => 'None',
+        ];
     }
 
     /**
