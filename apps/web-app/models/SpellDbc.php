@@ -27,6 +27,7 @@ use app\models\traits\spell\SpellAuraInterruptFlagsTrait;
 use app\models\traits\spell\SpellCategoryTrait;
 use app\models\traits\spell\SpellClassSetTrait;
 use app\models\traits\spell\SpellDefenseTypeTrait;
+use app\models\traits\spell\SpellEffectImplicitTargetTrait;
 use app\models\traits\spell\SpellEffectsTrait;
 use app\models\traits\spell\SpellPreventionTypeTrait;
 use app\models\traits\spell\TargetFlagTrait;
@@ -278,7 +279,7 @@ class SpellDbc extends DbcActiveRecord
         SpellAttrsTrait, SpellAttrsEx1Trait, SpellAttrsEx2Trait, SpellAttrsEx3Trait, SpellAttrsEx4Trait,
         SpellAttrsEx5Trait, SpellAttrsEx6Trait, SpellAttrsEx7Trait, MechanicTrait, ShapeshiftMaskTrait, InterruptFlagsTrait,
         SchoolMaskTrait, LangTrait, EquippedItemClassTrait, EquippedItemSubclassTrait, EquippedItemInvTypesTrait, SpellClassSetTrait,
-        SpellCategoryTrait, SpellDefenseTypeTrait, SpellPreventionTypeTrait, SpellEffectsTrait, SpellAuraInterruptFlagsTrait;
+        SpellCategoryTrait, SpellDefenseTypeTrait, SpellPreventionTypeTrait, SpellEffectsTrait, SpellAuraInterruptFlagsTrait, SpellEffectImplicitTargetTrait;
 
 
     /**
@@ -663,6 +664,16 @@ class SpellDbc extends DbcActiveRecord
         return $result;
     }
 
+    /**
+     * // TODO: make a method for each case?
+     * Get the human-readable EffectImplicitTarget name.
+     *
+     * @return string|null
+     */
+    public function getCurrentEffectImplicitTargetName(int $type = null)
+    {
+        return $this->getSpellEffectImplicitTargetName($type);
+    }
 
     /**
      * Exports values from the current ActiveRecord instance to DBC (Database Client Cache) format.
@@ -867,6 +878,20 @@ class SpellDbc extends DbcActiveRecord
                         'value' => function ($model) use ($attribute) {
                             /** @var SpellDbc $model */
                             return $model->getCurrentReagentName($model->{$attribute});
+                        },
+                    ];
+                    break;
+                case 'ImplicitTargetA_1':
+                case 'ImplicitTargetA_2':
+                case 'ImplicitTargetA_3':
+                case 'ImplicitTargetB_1':
+                case 'ImplicitTargetB_2':
+                case 'ImplicitTargetB_3':
+                    $customAttributes[] = [
+                        'attribute' => $attribute,
+                        'value' => function ($model) use ($attribute) {
+                            /** @var SpellDbc $model */
+                            return $model->getCurrentEffectImplicitTargetName($model->{$attribute});
                         },
                     ];
                     break;
