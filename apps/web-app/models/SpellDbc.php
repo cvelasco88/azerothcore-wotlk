@@ -30,6 +30,7 @@ use app\models\traits\spell\SpellDefenseTypeTrait;
 use app\models\traits\spell\SpellEffectImplicitTargetTrait;
 use app\models\traits\spell\SpellEffectsTrait;
 use app\models\traits\spell\SpellPreventionTypeTrait;
+use app\models\traits\spell\SpellProcFlagsTrait;
 use app\models\traits\spell\TargetFlagTrait;
 use app\models\traits\spell\TargetCreatureTypeTrait;
 use Yii;
@@ -279,7 +280,8 @@ class SpellDbc extends DbcActiveRecord
         SpellAttrsTrait, SpellAttrsEx1Trait, SpellAttrsEx2Trait, SpellAttrsEx3Trait, SpellAttrsEx4Trait,
         SpellAttrsEx5Trait, SpellAttrsEx6Trait, SpellAttrsEx7Trait, MechanicTrait, ShapeshiftMaskTrait, InterruptFlagsTrait,
         SchoolMaskTrait, LangTrait, EquippedItemClassTrait, EquippedItemSubclassTrait, EquippedItemInvTypesTrait, SpellClassSetTrait,
-        SpellCategoryTrait, SpellDefenseTypeTrait, SpellPreventionTypeTrait, SpellEffectsTrait, SpellAuraInterruptFlagsTrait, SpellEffectImplicitTargetTrait;
+        SpellCategoryTrait, SpellDefenseTypeTrait, SpellPreventionTypeTrait, SpellEffectsTrait, SpellAuraInterruptFlagsTrait, SpellEffectImplicitTargetTrait,
+        SpellProcFlagsTrait;
 
 
     /**
@@ -361,7 +363,7 @@ class SpellDbc extends DbcActiveRecord
             'InterruptFlags' => 'Interrupt Flags',
             'AuraInterruptFlags' => 'Aura Interrupt Flags',
             'ChannelInterruptFlags' => 'Channel Interrupt Flags',
-            'ProcTypeMask' => 'Proc Type Mask',
+            'ProcTypeMask' => 'Proc Type Mask', // ProcFlags
             'ProcChance' => 'Proc Chance',
             'ProcCharges' => 'Proc Charges',
             'MaxLevel' => 'Max Level',
@@ -894,6 +896,9 @@ class SpellDbc extends DbcActiveRecord
                             return $model->getCurrentEffectImplicitTargetName($model->{$attribute});
                         },
                     ];
+                    break;
+                case 'ProcTypeMask':
+                    $customAttributes[] = DbcView::columnInline('ProcTypeMask', SpellDbc::getSpellProcFlagOptions(), ['onclick' => 'return false;']);
                     break;
                 // Add more customizations for other attributes as needed
                 default:
