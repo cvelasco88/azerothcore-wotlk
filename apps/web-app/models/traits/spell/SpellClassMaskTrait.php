@@ -8,7 +8,8 @@ namespace app\models\traits\spell;
 trait SpellClassMaskTrait
 {
     const SPELL_FAMILY_GENERIC = 0;
-    const SPELL_FAMILY_UNK1 = 1;
+    const SPELL_FAMILY_UNK1 = 1; // events, holidays
+    // 2 - unused
     const SPELL_FAMILY_MAGE = 3;
     const SPELL_FAMILY_WARRIOR = 4;
     const SPELL_FAMILY_WARLOCK = 5;
@@ -18,7 +19,7 @@ trait SpellClassMaskTrait
     const SPELL_FAMILY_HUNTER = 9;
     const SPELL_FAMILY_PALADIN = 10;
     const SPELL_FAMILY_SHAMAN = 11;
-    const SPELL_FAMILY_UNK2 = 12;
+    const SPELL_FAMILY_UNK2 = 12; // 2 spells (silence resistance)
     const SPELL_FAMILY_POTION = 13;
     const SPELL_FAMILY_DEATHKNIGHT = 15;
     const SPELL_FAMILY_PET = 17;
