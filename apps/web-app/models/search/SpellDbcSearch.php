@@ -12,6 +12,12 @@ use app\models\SpellDbc;
 class SpellDbcSearch extends SpellDbc
 {
 
+    private string $nameLang;
+
+    public function __construct($dbcLanguage){
+        $this->nameLang = 'Name_Lang_' . $dbcLanguage;
+    }
+    
     /**
      * {@inheritdoc}
      */
@@ -19,7 +25,7 @@ class SpellDbcSearch extends SpellDbc
     {
         return [
             [['ID'], 'integer'],
-            [['Name_Lang_esES', 'Category', 'SpellClassSet', 'SpellLevel', 'RangeIndex'], 'safe'],
+            [[$this->nameLang, 'Category', 'SpellClassSet', 'SpellLevel', 'RangeIndex'], 'safe'],
         ];
     }
 
@@ -66,7 +72,7 @@ class SpellDbcSearch extends SpellDbc
             'RangeIndex' => $this->RangeIndex,
         ]);
 
-        $query->andFilterWhere(['like', 'Name_Lang_esES', $this->Name_Lang_esES])
+        $query->andFilterWhere(['like', $this->nameLang, $this->{$this->nameLang}])
             ->andFilterWhere(['like', 'Category', $this->Category]);
 
         return $dataProvider;

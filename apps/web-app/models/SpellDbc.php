@@ -25,10 +25,13 @@ use app\models\traits\spell\SpellAttrsEx7Trait;
 use app\models\traits\spell\MechanicTrait;
 use app\models\traits\spell\SpellAuraInterruptFlagsTrait;
 use app\models\traits\spell\SpellCategoryTrait;
+use app\models\traits\spell\SpellClassMaskTrait;
 use app\models\traits\spell\SpellClassSetTrait;
 use app\models\traits\spell\SpellDefenseTypeTrait;
+use app\models\traits\spell\SpellEffectImplicitTargetTrait;
 use app\models\traits\spell\SpellEffectsTrait;
 use app\models\traits\spell\SpellPreventionTypeTrait;
+use app\models\traits\spell\SpellProcFlagsTrait;
 use app\models\traits\spell\TargetFlagTrait;
 use app\models\traits\spell\TargetCreatureTypeTrait;
 use Yii;
@@ -278,7 +281,8 @@ class SpellDbc extends DbcActiveRecord
         SpellAttrsTrait, SpellAttrsEx1Trait, SpellAttrsEx2Trait, SpellAttrsEx3Trait, SpellAttrsEx4Trait,
         SpellAttrsEx5Trait, SpellAttrsEx6Trait, SpellAttrsEx7Trait, MechanicTrait, ShapeshiftMaskTrait, InterruptFlagsTrait,
         SchoolMaskTrait, LangTrait, EquippedItemClassTrait, EquippedItemSubclassTrait, EquippedItemInvTypesTrait, SpellClassSetTrait,
-        SpellCategoryTrait, SpellDefenseTypeTrait, SpellPreventionTypeTrait, SpellEffectsTrait, SpellAuraInterruptFlagsTrait;
+        SpellCategoryTrait, SpellDefenseTypeTrait, SpellPreventionTypeTrait, SpellEffectsTrait, SpellAuraInterruptFlagsTrait, SpellEffectImplicitTargetTrait,
+        SpellProcFlagsTrait, SpellClassMaskTrait;
 
 
     /**
@@ -360,7 +364,7 @@ class SpellDbc extends DbcActiveRecord
             'InterruptFlags' => 'Interrupt Flags',
             'AuraInterruptFlags' => 'Aura Interrupt Flags',
             'ChannelInterruptFlags' => 'Channel Interrupt Flags',
-            'ProcTypeMask' => 'Proc Type Mask',
+            'ProcTypeMask' => 'Proc Type Mask', // ProcFlags
             'ProcChance' => 'Proc Chance',
             'ProcCharges' => 'Proc Charges',
             'MaxLevel' => 'Max Level',
@@ -654,15 +658,36 @@ class SpellDbc extends DbcActiveRecord
     public function getCurrentReagentName(?string $reagent)
     {
         $result = $reagent;
-        /* TODO: if(!is_null($reagent)) {
-            $item = ItemDbc::findOne(['name' => $reagent]);
+        if(!is_null($reagent)) {
+            $item = ItemTemplate::findOne(['entry' => $reagent]);
             if(isset($item)) {
                 $result = $item->name;
             }
-        }*/
+        }
         return $result;
     }
 
+    /**
+     * // TODO: make a method for each case?
+     * Get the human-readable Effect name.
+     *
+     * @return string|null
+     */
+    public function getCurrentEffectName(int $type = null)
+    {
+        return $this->getSpellEffectName($type);
+    }
+
+    /**
+     * // TODO: make a method for each case?
+     * Get the human-readable EffectImplicitTarget name.
+     *
+     * @return string|null
+     */
+    public function getCurrentEffectImplicitTargetName(int $type = null)
+    {
+        return $this->getSpellEffectImplicitTargetName($type);
+    }
 
     /**
      * Exports values from the current ActiveRecord instance to DBC (Database Client Cache) format.
@@ -670,7 +695,8 @@ class SpellDbc extends DbcActiveRecord
      * @param array $definition The column definition for mapping exported values.
      * @return array The exported values.
      */
-    public function mapExportedDbcValues(DbcWriter $dbcWriter, array $data, array $definition) {
+    public function mapExportedDbcValues(DbcWriter $dbcWriter, array $data, array $definition)
+    {
         $dbcLanguage = $dbcWriter->getLanguage();
         if ($dbcLanguage) {
             // Define the translatables
@@ -842,15 +868,51 @@ class SpellDbc extends DbcActiveRecord
                         },
                     ];
                     break;
-                /*case 'Effect_1': // FIXME: 
-                    $customAttributes[] = DbcView::columnInline('Effect_1', SpellDbc::getSpellEffectOptions(), ['onclick' => 'return false;']);
-                    break;*/
-                /*case 'Effect_2': // FIXME: 
-                    $customAttributes[] = DbcView::columnInline('Effect_2', SpellDbc::getSpellEffectOptions(), ['onclick' => 'return false;']);
-                    break;*/
-                /*case 'Effect_3': // FIXME: 
-                    $customAttributes[] = DbcView::columnInline('Effect_3', SpellDbc::getSpellEffectOptions(), ['onclick' => 'return false;']);
-                    break;*/
+                case 'Effect_1':
+                case 'Effect_2':
+                case 'Effect_3':
+                    $customAttributes[] = [
+                        'attribute' => $attribute,
+                        'value' => function ($model) use ($attribute) {
+                            /** @var SpellDbc $model */
+                            return $model->getCurrentEffectName($model->{$attribute});
+                        },
+                    ];
+                    break;
+                case 'EffectMechanic_1':
+                case 'EffectMechanic_2':
+                case 'EffectMechanic_3':
+                    $customAttributes[] = [
+                        'attribute' => $attribute,
+                        'value' => function ($model) use ($attribute) {
+                            /** @var SpellDbc $model */
+                            return $model->getCurrentMechanicName($model->{$attribute});
+                        },
+                    ];
+                    break;
+
+                case 'EffectSpellClassMaskA_1':
+                case 'EffectSpellClassMaskA_2':
+                case 'EffectSpellClassMaskA_3':
+                case 'EffectSpellClassMaskB_1':
+                case 'EffectSpellClassMaskB_2':
+                case 'EffectSpellClassMaskB_3':
+                case 'EffectSpellClassMaskC_1':
+                case 'EffectSpellClassMaskC_2':
+                case 'EffectSpellClassMaskC_3':
+                case 'SpellClassMask_1': // FIXME: 
+                case 'SpellClassMask_2':
+                case 'SpellClassMask_3':
+                    $customAttributes[] = DbcView::columnInline($attribute, SpellDbc::getSpellClassMaskOptions(), ['onclick' => 'return false;']);
+
+                    /*$customAttributes[] = [
+                        'attribute' => $attribute,
+                        'value' => function ($model) use ($attribute) {
+                            /** @var SpellDbc $model */
+                            /*return $model->getSpellClassMaskOptions($model->{$attribute});
+                        },
+                    ];*/
+                    break;
                 case 'AuraInterruptFlags':
                     $customAttributes[] = DbcView::columnInline('AuraInterruptFlags', SpellDbc::getSpellAuraInterruptFlagOptions(), ['onclick' => 'return false;']);
                     break;
@@ -869,6 +931,23 @@ class SpellDbc extends DbcActiveRecord
                             return $model->getCurrentReagentName($model->{$attribute});
                         },
                     ];
+                    break;
+                case 'ImplicitTargetA_1':
+                case 'ImplicitTargetA_2':
+                case 'ImplicitTargetA_3':
+                case 'ImplicitTargetB_1':
+                case 'ImplicitTargetB_2':
+                case 'ImplicitTargetB_3':
+                    $customAttributes[] = [
+                        'attribute' => $attribute,
+                        'value' => function ($model) use ($attribute) {
+                            /** @var SpellDbc $model */
+                            return $model->getCurrentEffectImplicitTargetName($model->{$attribute});
+                        },
+                    ];
+                    break;
+                case 'ProcTypeMask':
+                    $customAttributes[] = DbcView::columnInline('ProcTypeMask', SpellDbc::getSpellProcFlagOptions(), ['onclick' => 'return false;']);
                     break;
                 // Add more customizations for other attributes as needed
                 default:
