@@ -658,12 +658,12 @@ class SpellDbc extends DbcActiveRecord
     public function getCurrentReagentName(?string $reagent)
     {
         $result = $reagent;
-        /* TODO: if(!is_null($reagent)) {
-            $item = ItemDbc::findOne(['name' => $reagent]);
+        if(!is_null($reagent)) {
+            $item = ItemTemplate::findOne(['entry' => $reagent]);
             if(isset($item)) {
                 $result = $item->name;
             }
-        }*/
+        }
         return $result;
     }
 
@@ -868,6 +868,7 @@ class SpellDbc extends DbcActiveRecord
                         },
                     ];
                     break;
+                /* TODO: missing documentation
                 case 'Effect_1':
                 case 'Effect_2':
                 case 'Effect_3':
@@ -875,10 +876,10 @@ class SpellDbc extends DbcActiveRecord
                         'attribute' => $attribute,
                         'value' => function ($model) use ($attribute) {
                             /** @var SpellDbc $model */
-                            return $model->getCurrentEffectName($model->{$attribute});
+                            /*return $model->getCurrentEffectName($model->{$attribute});
                         },
                     ];
-                    break;
+                    break;*/
                 case 'EffectMechanic_1':
                 case 'EffectMechanic_2':
                 case 'EffectMechanic_3':
