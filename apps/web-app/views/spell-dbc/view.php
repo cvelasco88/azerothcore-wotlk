@@ -19,54 +19,48 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="spell-dbc-view">
 
-    <h1><?= Html::encode($model->{$nameLang}) ?></h1>
+    <h1>
+        <?= Html::encode($model->{$nameLang}) ?>
+    </h1>
 
     <div class="mb-3"></div>
 
     <?= Html::a('Update', ['update', 'id' => $model->ID], ['class' => 'btn btn-primary']) ?>
 
     <?= ButtonDropdown::widget([
-            'label' => 'Actions',
-            'buttonOptions' => [
-                // 'class' => 'btn btn-primary',
-            ],
-            'dropdown' => [
-                'items' => [
-                    [
-                        'label' => 'Clone',
-                        'url' => ['spell-dbc/clone', 'id'=> $model->ID],
-                        'linkOptions' => ['class' => 'option', 'id' => 'clone'],
-                    ],
-                    '<div class="dropdown-divider"></div>', // Divider line between items
-                    [
-                        'label' => 'Delete',
-                        'url' => ['delete', 'id' => $model->ID],
-                        'linkOptions' => [
-                            'class' => 'dropdown-item text-danger',
-                            'data' => [
-                                'confirm' => 'Are you sure you want to delete this item?',
-                                'method' => 'post',
-                            ],
+        'label' => 'Actions',
+        'buttonOptions' => [
+            // 'class' => 'btn btn-primary',
+        ],
+        'dropdown' => [
+            'items' => [
+                [
+                    'label' => 'Clone',
+                    'url' => ['spell-dbc/clone', 'id' => $model->ID],
+                    'linkOptions' => ['class' => 'option', 'id' => 'clone'],
+                ],
+                '<div class="dropdown-divider"></div>', // Divider line between items
+                [
+                    'label' => 'Delete',
+                    'url' => ['delete', 'id' => $model->ID],
+                    'linkOptions' => [
+                        'class' => 'dropdown-item text-danger',
+                        'data' => [
+                            'confirm' => 'Are you sure you want to delete this item?',
+                            'method' => 'post',
                         ],
                     ],
-                    // Add other options here
                 ],
+                // Add other options here
             ],
-        ]); ?>
+        ],
+    ]); ?>
 
     <div class="mb-3"></div>
 
     <?php
-    
-    $tabs = [
-        [
-            'label' => "Detail",
-            'content' => DetailView::widget([
-                'model' => $model,
-                'attributes' => SpellDbc::viewColumn(SpellDbcView::getDetailAttributes()),
-            ]),
-        ]
-    ];
+
+    $tabs = [];
     $attributeGroups = SpellDbcView::getAttributeGroups();
     // Create tabs with DetailView for each attribute group
     foreach ($attributeGroups as $groupName => $attributes) {
@@ -78,6 +72,13 @@ $this->params['breadcrumbs'][] = $this->title;
             ]),
         ];
     }
+    $tabs[] = [
+        'label' => "Others",
+        'content' => DetailView::widget([
+            'model' => $model,
+            'attributes' => SpellDbc::viewColumn(SpellDbcView::getOtherAttributes()),
+        ]),
+    ];
 
     // Display tabs
     echo Tabs::widget([

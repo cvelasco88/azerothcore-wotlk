@@ -9,20 +9,10 @@ class SpellDbcView
 
     // PUBLIC STATIC METHODS
 
-    public static function getDetailAttributes()
-    {
-        $attributeGroups = self::getAttributeGroups();
-        $except = [];
-        foreach ($attributeGroups as $groupName => $attributes) {
-            $except = array_merge($except, $attributes);
-        }
-        $tmp = new SpellDbc();
-        return array_keys($tmp->getAttributes(null, $except));
-    }
-
     public static function getAttributeGroups()
     {
         $groups = [];
+        $groups["Details"] = self::getDetailAttributes();
         $groups["AttributesExt"] = self::getAttributesExtAttributes();
         $groups["Recovery"] = self::getRecoveryAttributes();
         $groups["Aura"] = self::getAuraAttributes();
@@ -36,11 +26,74 @@ class SpellDbcView
         $groups["SpellClass"] = self::getSpellClassAttributes();
         $groups["Required"] = self::getRequiredAttributes();
         $groups["Interrupt"] = self::getInterruptAttributes();
-        $groups["Other"] = self::getOtherAttributes();
+        // $groups["Other"] = self::getOtherAttributes();
         return $groups;
     }
 
+    public static function getOtherAttributes()
+    {
+        $attributeGroups = self::getAttributeGroups();
+        $except = [];
+        foreach ($attributeGroups as $groupName => $attributes) {
+            $except = array_merge($except, $attributes);
+        }
+        $tmp = new SpellDbc();
+        return array_keys($tmp->getAttributes(null, $except));
+        /*return [
+            'ShapeshiftMask',
+            'unk_320_2',
+            'ShapeshiftExclude',
+            'unk_320_3',
+            'CastingTimeIndex',
+            'ProcTypeMask',
+            'ProcChance',
+            'ProcCharges',
+            'ModalNextSpell',
+            'SpellVisualID_1',
+            'SpellVisualID_2',
+            'SpellIconID',
+            'ActiveIconID',
+            'ManaCostPct',
+            'DefenseType',
+            'PreventionType',
+            'StanceBarOrder',
+            'MinFactionID',
+            'MinReputation',
+            'SpellMissileID',
+            'PowerDisplayID',
+            'SpellDescriptionVariableID',
+        ];*/
+    }
+
     // PRIVATE STATIC METHODS
+
+    private static function getDetailAttributes()
+    {
+        return [
+            "ID",
+            "Category",
+            "DispelType",
+            "Mechanic",
+            "Attributes",
+            "Targets",
+            "TargetCreatureType",
+            "RequiresSpellFocus",
+            "FacingCasterFlags",
+            "MaxLevel",
+            "BaseLevel",
+            "SpellLevel",
+            "DurationIndex",
+            "PowerType",
+            "RangeIndex",
+            "Speed",
+            "SpellPriority",
+            "MaxTargetLevel",
+            "MaxTargets",
+            "SchoolMask",
+            "RuneCostID",
+            "SpellDifficultyID",
+        ];
+    }
 
     private static function getAttributesExtAttributes()
     {
@@ -86,7 +139,7 @@ class SpellDbcView
             'EffectAura_3',
             'EffectAuraPeriod_1',
             'EffectAuraPeriod_2',
-            'EffectAuraPeriod_3',            
+            'EffectAuraPeriod_3',
             //
             //'RequiredAuraVision',
         ];
@@ -324,31 +377,4 @@ class SpellDbcView
         ];
     }
 
-    private static function getOtherAttributes()
-    {
-        return [
-            'ShapeshiftMask',
-            'unk_320_2',
-            'ShapeshiftExclude',
-            'unk_320_3',
-            'CastingTimeIndex',
-            'ProcTypeMask',
-            'ProcChance',
-            'ProcCharges',
-            'ModalNextSpell',
-            'SpellVisualID_1',
-            'SpellVisualID_2',
-            'SpellIconID',
-            'ActiveIconID',
-            'ManaCostPct',
-            'DefenseType',
-            'PreventionType',
-            'StanceBarOrder',
-            'MinFactionID',
-            'MinReputation',
-            'SpellMissileID',
-            'PowerDisplayID',
-            'SpellDescriptionVariableID',
-        ];
-    }
 }
