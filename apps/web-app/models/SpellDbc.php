@@ -35,6 +35,7 @@ use app\models\traits\spell\SpellProcFlagsTrait;
 use app\models\traits\spell\TargetFlagTrait;
 use app\models\traits\spell\TargetCreatureTypeTrait;
 use Yii;
+use yii\db\ActiveQuery;
 
 /**
  * This is the model class for table "spell_dbc".
@@ -658,9 +659,9 @@ class SpellDbc extends DbcActiveRecord
     public function getCurrentReagentName(?string $reagent)
     {
         $result = $reagent;
-        if(!is_null($reagent)) {
+        if (!is_null($reagent)) {
             $item = ItemTemplate::findOne(['entry' => $reagent]);
-            if(isset($item)) {
+            if (isset($item)) {
                 $result = $item->name;
             }
         }
@@ -689,38 +690,46 @@ class SpellDbc extends DbcActiveRecord
         return $this->getSpellEffectImplicitTargetName($type);
     }
 
-    /**
-     * Exports values from the current ActiveRecord instance to DBC (Database Client Cache) format.
-     *
-     * @param array $definition The column definition for mapping exported values.
-     * @return array The exported values.
-     */
-    public function mapExportedDbcValues(DbcWriter $dbcWriter, array $data, array $definition)
-    {
-        $dbcLanguage = $dbcWriter->getLanguage();
-        if ($dbcLanguage) {
-            // Define the translatables
-            $translatables = ['Name_Lang_', 'NameSubtext_Lang_', 'Description_Lang_', 'AuraDescription_Lang_'];
-            // Iterate through the data
-            foreach ($data as $key => $value) {
-                // Check if the key matches any of the patterns in $translatables
-                foreach ($translatables as $match) {
-                    if (strpos($key, $match) === 0) {
-                        // Check if the key ends with the language code
-                        if (substr($key, -strlen($dbcLanguage)) !== $dbcLanguage) {
-                            // If not, set the value to null
-                            $data[$key] = null;
-                        }
-                        // Found a match, break the inner loop
-                        break;
-                    }
-                }
-            }
-        }
-        return parent::mapExportedDbcValues($dbcWriter, $data, $definition);
-    }
-
     // PUBLIC STATIC METHODS
+
+    /**
+     * Allows to modify the export query
+     *
+     * @param DbcWriter $dbcWriter
+     * @param ActiveQuery $query
+     * @return ActiveQuery
+     */
+    public static function exportQuery(DbcWriter $dbcWriter, ActiveQuery $query): ActiveQuery
+    {
+        // Get the language from the DbcWriter
+        $dbcLanguage = $dbcWriter->getLanguage();
+
+        // Define the translatables
+        $translatables = ['Name_Lang_', 'NameSubtext_Lang_', 'Description_Lang_', 'AuraDescription_Lang_'];
+
+        $attributes = (new static())->getAttributes();
+        // Iterate through translatable attributes and conditionally set them to null if language doesn't match
+        foreach ($attributes as $key => $value) {
+            foreach ($translatables as $translatable) {
+                if (strpos($key, $translatable) === 0) {
+                    // Check if the key ends with the language code
+                    if (substr($key, -strlen($dbcLanguage)) !== $dbcLanguage) {
+                        // If not, set the value to null
+                        $query->addSelect(null);
+                    } else {
+                        // Add the attribute to the select clause
+                        $query->addSelect($key);
+                    }
+                    // jump to next attribute
+                    break;
+                }                
+            }
+            // Add the attribute to the select clause
+            $query->addSelect($key);
+        }
+
+        return $query;
+    }
 
     /**
      * {@inheritdoc}
@@ -909,9 +918,9 @@ class SpellDbc extends DbcActiveRecord
                         'attribute' => $attribute,
                         'value' => function ($model) use ($attribute) {
                             /** @var SpellDbc $model */
-                            /*return $model->getSpellClassMaskOptions($model->{$attribute});
-                        },
-                    ];*/
+                    /*return $model->getSpellClassMaskOptions($model->{$attribute});
+                },
+            ];*/
                     break;
                 case 'AuraInterruptFlags':
                     $customAttributes[] = DbcView::columnInline('AuraInterruptFlags', SpellDbc::getSpellAuraInterruptFlagOptions(), ['onclick' => 'return false;']);

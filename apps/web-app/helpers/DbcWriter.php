@@ -61,6 +61,14 @@ class DbcWriter implements \IteratorAggregate, \Countable
     protected $_language;
 
     /**
+     * Internal value. Keeps pointing to the last string "ending" pointer when
+     * string is empty. When it's the first time as well it initialize the chr(0)
+     * if needed
+     */
+    protected $stringBlockLengthBeforeZero;
+
+
+    /**
      * @param resource $storage
      */
     public function __construct(string $targetClass, $storage, bool $ownsStorage = true, $format = DbcFileFormat::Dbc, array $config = [])
@@ -145,6 +153,7 @@ class DbcWriter implements \IteratorAggregate, \Countable
         $this->recordLength = count($definition);
         $this->perRecord = $this->recordLength * 4;
         $this->stringBlockLength = 0; // updated when written strings
+        $this->stringBlockLengthBeforeZero = 0;
 
         if ($this->format != DbcFileFormat::Dbc) {
             $this->tableHash = $config['tableHash'];
@@ -205,10 +214,13 @@ class DbcWriter implements \IteratorAggregate, \Countable
         // Process records in batches
         for ($offset = 0; $offset < $this->count; $offset += $batchSize) {
             // Retrieve records for the current batch
-            $records = $this->targetClass::find()
+            $query = $this->targetClass::find()
                 ->offset($offset)
-                ->limit($batchSize)
-                ->all();
+                ->limit($batchSize);
+
+            $this->targetClass::exportQuery($this, $query);
+
+            $records = $query->all();
 
             // Process records
             foreach ($records as $record) {
@@ -275,11 +287,19 @@ class DbcWriter implements \IteratorAggregate, \Countable
      */
     public function setStringValue(?string $value)
     {
-        $this->setUInt32Value($this->stringBlockLength);
-
-        // Update the string at the given offset with the new value
-        $this->setString($value);
-        $this->updateStringBlockLength();
+        if(is_null($value)) {
+            // re-use last 0 char
+            $this->setUInt32Value($this->stringBlockLengthBeforeZero);
+            // Update the string at the given offset with the new value
+            $this->setString($value);
+        } 
+        
+        if(is_null($value) || $this->stringBlockLengthBeforeZero == 0) {
+            $this->setUInt32Value($this->stringBlockLength);
+            // Update the string at the given offset with the new value
+            $this->setString($value);
+            $this->updateStringBlockLength();
+        }
     }
 
     public function __destruct()
@@ -328,11 +348,16 @@ class DbcWriter implements \IteratorAggregate, \Countable
             // Write the new string to the file
             fwrite($this->store, $value);
         }
-        // Write the null character to set the limit of the string
-        fwrite($this->store, chr(0));
 
-        // Calculate the offset based on the current position
-        $this->stringBlockLength = ftell($this->store) - $this->stringBlockOffset;
+        if(!is_null($value) || $this->stringBlockLengthBeforeZero == 0) {
+            // Calculate the offset based on the current position
+            $this->stringBlockLengthBeforeZero = ftell($this->store) - $this->stringBlockOffset;
+            // Write the null character to set the limit of the string
+            fwrite($this->store, chr(0));
+            // Calculate the offset based on the current position
+            $this->stringBlockLength = ftell($this->store) - $this->stringBlockOffset;
+        }
+
         fseek($this->store, $curPos, SEEK_SET);
     }
 

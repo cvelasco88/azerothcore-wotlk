@@ -4,6 +4,7 @@ namespace app\models\base;
 
 use app\helpers\DbcWriter;
 use Yii;
+use yii\db\ActiveQuery;
 
 /**
  * This is the base class for DBC (Database Client Cache) active records.
@@ -67,6 +68,8 @@ abstract class DbcActiveRecord extends \yii\db\ActiveRecord
         $data = $this->toArray($keys);
         return $this->mapExportedDbcValues($dbcWriter, $data, $definition);
     }
+    
+    // PROTECTED METHODS
 
     /**
      * Maps imported DBC values to attributes of the current ActiveRecord instance.
@@ -98,11 +101,23 @@ abstract class DbcActiveRecord extends \yii\db\ActiveRecord
         $values = [];
         foreach ($properties as $propertyName) {
             // Set the value from the property of the target object
-
-            // TODO: test if to use "??" or "?:"
-            // TODO: maybe is better to replace "null" by zero
+            // use "?:" to replace empty by "null"
             $values[] = $data[$propertyName] ?: null;
         }
         return $values;
+    }
+
+    // PUBLIC STATIC METHODS
+
+    /**
+     * Allows to modify the export query
+     *
+     * @param DbcWriter $dbcWriter
+     * @param ActiveQuery $query
+     * @return ActiveQuery
+     */
+    public static function exportQuery(DbcWriter $dbcWriter, ActiveQuery $query): ActiveQuery
+    {
+        return $query;
     }
 }
