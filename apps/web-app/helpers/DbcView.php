@@ -3,36 +3,9 @@
 namespace app\helpers;
 
 use yii\helpers\Html;
-use \Yii;
 
 class DbcView
 {
-    public static function exportButton(array $url) {
-
-        /* <?= Html::a('Export', ['client-dbc/export', 'className' => SpellDbc::class], 
-        [
-            'class' => 'btn btn-warning',
-            'data' => [
-                'confirm' => 'Are you sure you want to Export this data?',
-                'method' => 'post',
-            ],
-        ]) ?> */
-
-        $exportUrl = \yii\helpers\Url::to($url);
-
-        // Register the JavaScript file
-        $view = Yii::$app->getView();
-        $view->registerJsFile('@web/js/export-dbc-ajax-functions.js', ['depends' => [\yii\web\JqueryAsset::class]]);
-
-        return Html::button(
-            'Export', 
-            [
-                'class' => 'btn btn-warning',
-                'onclick' => 'exportData(this, "' . $exportUrl . '")',
-            ]
-        );
-    }
-
     /**
      * @param string $attribute
      * @param string $label

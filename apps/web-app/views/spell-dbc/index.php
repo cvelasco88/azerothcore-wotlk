@@ -1,7 +1,7 @@
 <?php
 /** @var yii\web\View $this */
+use app\widgets\DbcExportView;
 use app\helpers\DbcLanguage;
-use app\helpers\DbcView;
 use app\models\SpellDbc;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -15,18 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?= Html::a('Create SpellDbc', ['create'], ['class' => 'btn btn-success']) ?>
 
-<?= DbcView::exportButton(['client-dbc/export', 'className' => SpellDbc::class]) ?>
-
-<div class="export-progress hidden-progress">
-    <h2>Export Progress</h1>
-    <div class="progress">
-        <div class="progress-bar progress-bar-striped active" role="progressbar"
-            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-            <span class="sr-only">0% Complete</span>
-        </div>
-    </div>
-    <div class="status"></div>
-</div>
+<?= DbcExportView::widget(['url' => ['client-dbc/export', 'className' => SpellDbc::class]]) ?>
 
 <div class="mb-3"></div>
 

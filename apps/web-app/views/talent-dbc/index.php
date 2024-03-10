@@ -1,5 +1,6 @@
 <?php
 /** @var yii\web\View $this */
+use app\widgets\DbcExportView;
 use app\helpers\DbcView;
 use app\models\TalentDbc;
 use yii\grid\GridView;
@@ -11,18 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?= Html::a('Create TalentDbc', ['create'], ['class' => 'btn btn-success']) ?>
 
-<?= DbcView::exportButton(['client-dbc/export', 'className' => TalentDbc::class]) ?>
-
-<div class="export-progress hidden-progress">
-    <h2>Export Progress</h1>
-    <div class="progress">
-        <div class="progress-bar progress-bar-striped active" role="progressbar"
-            aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-            <span class="sr-only">0% Complete</span>
-        </div>
-    </div>
-    <div class="status"></div>
-</div>
+<?= DbcExportView::widget(['url' => ['client-dbc/export', 'className' => TalentDbc::class]]) ?>
 
 <div class="mb-3"></div>
 
@@ -39,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '{view} {update}',
             ]
-        ],        
+        ],
         [
             'ID',
             'TabID',

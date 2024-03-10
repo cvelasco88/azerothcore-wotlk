@@ -1,5 +1,6 @@
 <?php
 /** @var yii\web\View $this */
+use app\widgets\DbcExportView;
 use app\helpers\DbcView;
 use app\models\TalentTabDbc;
 use yii\grid\GridView;
@@ -7,12 +8,11 @@ use yii\helpers\Html;
 
 $this->title = 'Index Page';
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
 
 <?= Html::a('Create TalentTabDbc', ['create'], ['class' => 'btn btn-success']) ?>
 
-<?= DbcView::exportButton(['client-dbc/export', 'className' => TalentTabDbc::class]) ?>
+<?= DbcExportView::widget(['url' => ['client-dbc/export', 'className' => TalentTabDbc::class]]) ?>
 
 <div class="mb-3"></div>
 
