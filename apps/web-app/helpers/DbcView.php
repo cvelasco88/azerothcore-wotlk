@@ -3,6 +3,7 @@
 namespace app\helpers;
 
 use yii\helpers\Html;
+use \Yii;
 
 class DbcView
 {
@@ -19,36 +20,15 @@ class DbcView
 
         $exportUrl = \yii\helpers\Url::to($url);
 
+        // Register the JavaScript file
+        $view = Yii::$app->getView();
+        $view->registerJsFile('@web/js/export-dbc-ajax-functions.js', ['depends' => [\yii\web\JqueryAsset::class]]);
+
         return Html::button(
             'Export', 
             [
                 'class' => 'btn btn-warning',
-                'onclick' => '
-                    if (confirm("Are you sure you want to Export this data?")) {
-                        $.ajax({
-                            url: "' . $exportUrl . '",
-                            type: "POST", // Adjust the request method as needed
-                            beforeSend: function() {
-                                // Show loading spinner or some indication to the user
-                                // $("#loadingIndicator").show();
-                                console.log("Start export...");
-                            },
-                            success: function(response) {
-                                // Handle success response, if needed
-                                console.log("Operation completed successfully.");
-                            },
-                            error: function(xhr, status, error) {
-                                // Handle error, if any
-                                console.error("Error:", error);
-                            },
-                            complete: function() {
-                                // Hide loading spinner or indication when request is complete
-                                // $("#loadingIndicator").hide();
-                                console.log("Export finished");
-                            }
-                        });
-                    }
-                ',
+                'onclick' => 'exportData(this, "' . $exportUrl . '")',
             ]
         );
     }

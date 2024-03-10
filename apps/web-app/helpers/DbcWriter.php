@@ -4,6 +4,7 @@ namespace app\helpers;
 
 use app\models\base\DbcActiveRecord;
 use Traversable;
+use yii\web\ServerErrorHttpException;
 
 /**
  * DbcWriter is a utility class designed to facilitate the writing of DBC (Database Cache) files.
@@ -33,7 +34,7 @@ use Traversable;
  * $dbcWriter->writeRecord($myRecord);
  * $dbcWriter->close();
  * ```
-  */
+ */
 class DbcWriter implements \IteratorAggregate, \Countable
 {
     protected const HEADER_LENGTH_DBC = 20;
@@ -58,7 +59,10 @@ class DbcWriter implements \IteratorAggregate, \Countable
     protected $locale;
     protected $stringBlockOffset;
     protected $targetClass;
+    protected $magic;
     protected $_language;
+
+    private $stringBlockLengthBeforeZero;
 
     /**
      * @param resource $storage
@@ -74,7 +78,8 @@ class DbcWriter implements \IteratorAggregate, \Countable
         }
 
         $metaData = stream_get_meta_data($storage);
-        if (!$metaData['seekable'] || strpos($metaData['mode'], 'w') === false) {
+        $notWritable = (strpos($metaData['mode'], 'w') === false) && (strpos($metaData['mode'], 'a') === false);
+        if (!$metaData['seekable'] || $notWritable) {
             throw new \InvalidArgumentException("Storage stream must be seekable and writable.");
         }
 
@@ -83,20 +88,40 @@ class DbcWriter implements \IteratorAggregate, \Countable
         $this->ownsStream = $ownsStorage;
         $this->format = $format;
 
-        // Write the header
-        $this->writeHeader($config);
+        $this->magic = $this->init($config);
     }
+
+    // GETTERS & SETTERS
+
+    public function setLanguage(string $language)
+    {
+        if (!DbcLanguage::isValidLanguage($language)) {
+            throw new \InvalidArgumentException("Invalid language: $language");
+        }
+        $this->_language = $language;
+    }
+
+    public function getLanguage()
+    {
+        return $this->_language;
+    }
+
+    public function count(): int
+    {
+        return $this->count;
+    }
+
+    // PUBLIC METHODS
 
     /**
      * Writes initial values for count, record length, per record, and string block length.
      * @param array $config
      */
-    protected function writeHeader(array $config)
+    public function writeHeader(array $config = [])
     {
-        $magic = $this->initWriterHeader($config);
 
         // Write the first 4 bytes as an unsigned long
-        $this->setUInt32Value($magic);
+        $this->setUInt32Value($this->magic);
 
         $this->setUInt32Value($this->count);
         $this->setUInt32Value($this->recordLength);
@@ -113,65 +138,7 @@ class DbcWriter implements \IteratorAggregate, \Countable
             $this->setUInt32Value($this->locale);
             // Skip the next 4 bytes
             $this->setUInt32Value(0);
-        }        
-    }
-
-    /**
-     * Writes the header to the DBC file.
-     * @param array $config
-     * @return int
-     */
-    protected function initWriterHeader(array $config)
-    {
-        // Write the magic number depending on the format
-        switch ($this->format) {
-            case DbcFileFormat::Dbc:
-                $magic = self::HEADER_MAGIC_DBC;
-                $this->headerLength = self::HEADER_LENGTH_DBC;
-                break;
-            case DbcFileFormat::Db2:
-            case DbcFileFormat::AdbCache:
-                $magic = self::HEADER_MAGIC_DB2;
-                $this->headerLength = self::HEADER_LENGTH_DB2;
-                break;
-            default:
-                throw new \Exception("Invalid header format.");
         }
-
-        $target = new $this->targetClass();
-        $definition = $target->getDefinition();
-        // Set initial values for header fields
-        $this->count = $this->targetClass::find()->count();
-        $this->recordLength = count($definition);
-        $this->perRecord = $this->recordLength * 4;
-        $this->stringBlockLength = 0; // updated when written strings
-
-        if ($this->format != DbcFileFormat::Dbc) {
-            $this->tableHash = $config['tableHash'];
-            $this->build = $config['build'];
-            $this->lastWrittenTimestamp = $config['lastWrittenTimestamp'];
-            $this->minId = $config['minId'];
-            $this->maxId = $config['maxId'];
-            $this->locale = $config['locale'];
-
-            if ($this->maxId != 0) {
-                $this->idLookup = $this->headerLength;
-                $numRows = $this->maxId - $this->minId + 1;
-                $this->headerLength += $numRows * 6;
-            }
-        } else {
-            $this->tableHash = 0;
-            $this->build = -1;
-            $this->lastWrittenTimestamp = 0;
-            $this->minId = -1;
-            $this->maxId = -1;
-            $this->locale = 0;
-        }
-
-        // Calculate string block offset
-        $this->stringBlockOffset = $this->perRecord * $this->count + $this->headerLength;
-
-        return $magic;
     }
 
     public function getIterator(): Traversable
@@ -189,21 +156,20 @@ class DbcWriter implements \IteratorAggregate, \Countable
             ->one();
     }
 
-    public function count(): int
-    {
-        return $this->count;
-    }
-
     /**
+     * @param int|null $batch Null or value >= 0
      * @return DbcActiveRecord[]
      */
-    public function getRecords(): \Generator
+    public function getRecords($batch = null): \Generator
     {
         // Define batch size
-        $batchSize = 1000; // Adjust as needed            
+        $batchSize = 1000; // Adjust as needed
+
+        $batchOffset = $batchSize * ($batch ?? 0);
+        $maxItems = isset($batch) ? ($batchOffset + $batchSize) : $this->count;
 
         // Process records in batches
-        for ($offset = 0; $offset < $this->count; $offset += $batchSize) {
+        for ($offset = $batchOffset; $offset < $maxItems; $offset += $batchSize) {
             // Retrieve records for the current batch
             $records = $this->targetClass::find()
                 ->offset($offset)
@@ -275,11 +241,15 @@ class DbcWriter implements \IteratorAggregate, \Countable
      */
     public function setStringValue(?string $value)
     {
-        $this->setUInt32Value($this->stringBlockLength);
-
-        // Update the string at the given offset with the new value
-        $this->setString($value);
-        $this->updateStringBlockLength();
+        if (isset($value) || $this->stringBlockLengthBeforeZero == 0) {
+            $this->setUInt32Value($this->stringBlockLength);
+            // Update the string at the given offset with the new value
+            $this->setString($value);
+            $this->updateStringBlockLength();
+        } else {
+            // re-use last 0 char
+            $this->setUInt32Value($this->stringBlockLengthBeforeZero);
+        }
     }
 
     public function __destruct()
@@ -303,15 +273,97 @@ class DbcWriter implements \IteratorAggregate, \Countable
         $this->dispose();
     }
 
-    public function setLanguage(string $language) {
-        if(!DbcLanguage::isValidLanguage($language)) {
-            throw new \InvalidArgumentException("Invalid language: $language");
+    /**
+     * Closes the DBC file.
+     */
+    public function restoreState($body)
+    {
+        $stringBlockLength = $body['stringBlockLength'] ?? null;
+        $stringBlockLengthBeforeZero = $body['stringBlockLengthBeforeZero'] ?? null;
+        $cursor = $body['cursor'] ?? null;
+
+        if (is_null($stringBlockLength) || is_null($stringBlockLengthBeforeZero) || is_null($cursor)) {
+            // Handle error
+            throw new ServerErrorHttpException('Contextual string writer cursors cannot be null');
         }
-        $this->_language = $language;
+
+        $this->stringBlockLengthBeforeZero = $stringBlockLength;
+        $this->stringBlockLength = $stringBlockLengthBeforeZero;
+        fseek($this->store, $cursor, SEEK_SET);
     }
 
-    public function getLanguage() {
-        return $this->_language;
+    /**
+     * pre: stream not closed
+     * Include the state on the returned data
+     */
+    public function saveState($data): array
+    {
+        return [
+            'stringBlockLength' => $this->stringBlockLength,
+            'stringBlockLengthBeforeZero' => $this->stringBlockLengthBeforeZero,
+            'cursor' => ftell($this->store),
+        ] + $data;
+    }
+
+    // PROTECTED METHODS
+
+    /**
+     * Writes the header to the DBC file.
+     * @param array $config
+     * @return int
+     */
+    protected function init(array $config)
+    {
+        // Write the magic number depending on the format
+        switch ($this->format) {
+            case DbcFileFormat::Dbc:
+                $magic = self::HEADER_MAGIC_DBC;
+                $this->headerLength = self::HEADER_LENGTH_DBC;
+                break;
+            case DbcFileFormat::Db2:
+            case DbcFileFormat::AdbCache:
+                $magic = self::HEADER_MAGIC_DB2;
+                $this->headerLength = self::HEADER_LENGTH_DB2;
+                break;
+            default:
+                throw new \Exception("Invalid header format.");
+        }
+
+        $target = new $this->targetClass();
+        $definition = $target->getDefinition();
+        // Set initial values for header fields
+        $this->count = $this->targetClass::find()->count();
+        $this->recordLength = count($definition);
+        $this->perRecord = $this->recordLength * 4;
+        $this->stringBlockLength = 0; // updated when written strings
+        $this->stringBlockLengthBeforeZero = 0;
+
+        if ($this->format != DbcFileFormat::Dbc) {
+            $this->tableHash = $config['tableHash'];
+            $this->build = $config['build'];
+            $this->lastWrittenTimestamp = $config['lastWrittenTimestamp'];
+            $this->minId = $config['minId'];
+            $this->maxId = $config['maxId'];
+            $this->locale = $config['locale'];
+
+            if ($this->maxId != 0) {
+                $this->idLookup = $this->headerLength;
+                $numRows = $this->maxId - $this->minId + 1;
+                $this->headerLength += $numRows * 6;
+            }
+        } else {
+            $this->tableHash = 0;
+            $this->build = -1;
+            $this->lastWrittenTimestamp = 0;
+            $this->minId = -1;
+            $this->maxId = -1;
+            $this->locale = 0;
+        }
+
+        // Calculate string block offset
+        $this->stringBlockOffset = $this->perRecord * $this->count + $this->headerLength;
+
+        return $magic;
     }
 
     // PRIVATE METHODS
@@ -324,15 +376,22 @@ class DbcWriter implements \IteratorAggregate, \Countable
         $curPos = ftell($this->store);
         fseek($this->store, $this->stringBlockOffset + $this->stringBlockLength, SEEK_SET);
 
-        if(!is_null($value)) {
+        if (!is_null($value)) {
             // Write the new string to the file
             fwrite($this->store, $value);
         }
         // Write the null character to set the limit of the string
         fwrite($this->store, chr(0));
 
-        // Calculate the offset based on the current position
-        $this->stringBlockLength = ftell($this->store) - $this->stringBlockOffset;
+        if (!is_null($value) || $this->stringBlockLengthBeforeZero == 0) {
+            // Calculate the offset based on the current position
+            $this->stringBlockLengthBeforeZero = ftell($this->store) - $this->stringBlockOffset;
+            // Write the null character to set the limit of the string
+            fwrite($this->store, chr(0));
+            // Calculate the offset based on the current position
+            $this->stringBlockLength = ftell($this->store) - $this->stringBlockOffset;
+        }
+
         fseek($this->store, $curPos, SEEK_SET);
     }
 
