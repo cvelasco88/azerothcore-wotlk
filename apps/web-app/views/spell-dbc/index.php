@@ -9,7 +9,7 @@ use yii\helpers\Html;
 // this one has to match the Search model
 $nameLang = 'Name_Lang_' . DbcLanguage::getLanguageFromLocale(Yii::$app->language);
 
-$this->title = 'Index Page';
+$this->title = 'SpellDbc Index';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 

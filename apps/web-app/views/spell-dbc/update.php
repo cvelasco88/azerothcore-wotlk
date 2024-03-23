@@ -8,8 +8,8 @@ use yii\widgets\ActiveForm;
 /** @var app\models\SpellDbc $model */
 /** @var ActiveForm $form */
 
-$this->title = $model->Name_Lang_esES;
-$this->params['breadcrumbs'][] = ['label' => 'Spells', 'url' => ['index']];
+$this->title = 'Update: ' . $model->Name_Lang_esES;
+$this->params['breadcrumbs'][] = ['label' => 'SpellDbc Index', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="spell-dbc-update">

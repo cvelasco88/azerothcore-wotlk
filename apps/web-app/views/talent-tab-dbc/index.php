@@ -6,7 +6,7 @@ use app\models\TalentTabDbc;
 use yii\grid\GridView;
 use yii\helpers\Html;
 
-$this->title = 'Index Page';
+$this->title = 'TalentTabDbc Index';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 

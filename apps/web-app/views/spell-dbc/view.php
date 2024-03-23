@@ -12,8 +12,8 @@ use yii\widgets\DetailView;
 /** @var app\models\SpellDbc $model */
 
 $nameLang = 'Name_Lang_' . DbcLanguage::getLanguageFromLocale(Yii::$app->language);
-$this->title = $model->{$nameLang};
-$this->params['breadcrumbs'][] = ['label' => 'Spells', 'url' => ['index']];
+$this->title = 'View: ' . $model->{$nameLang};
+$this->params['breadcrumbs'][] = ['label' => 'SpellDbc Index', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

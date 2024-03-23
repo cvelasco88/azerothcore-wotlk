@@ -163,7 +163,7 @@ class DbcWriter implements \IteratorAggregate, \Countable
     public function getRecords($batch = null): \Generator
     {
         // Define batch size
-        $batchSize = 1000; // Adjust as needed
+        $batchSize = 500; // Adjust as needed
 
         $batchOffset = $batchSize * ($batch ?? 0);
         $maxItems = isset($batch) ? ($batchOffset + $batchSize) : $this->count;

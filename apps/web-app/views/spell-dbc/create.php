@@ -7,6 +7,10 @@ use yii\widgets\ActiveForm;
 /** @var yii\web\View $this */
 /** @var app\models\SpellDbc $model */
 /** @var ActiveForm $form */
+
+$this->title = 'Create';
+$this->params['breadcrumbs'][] = ['label' => 'SpellDbc Index', 'url' => ['index']];
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="spell-dbc-create">
 

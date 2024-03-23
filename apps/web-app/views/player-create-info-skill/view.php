@@ -10,8 +10,8 @@ use yii\widgets\DetailView;
 /** @var app\models\PlayerCreateInfoSkill $model */
 /** @var ActiveForm $form */
 
-$this->title = 'Create Player Create Info Skill';
-$this->params['breadcrumbs'][] = ['label' => 'Index Page', 'url' => ['index']];
+$this->title = 'View';
+$this->params['breadcrumbs'][] = ['label' => 'Player Create Info Skill Index', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

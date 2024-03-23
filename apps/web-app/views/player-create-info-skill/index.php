@@ -5,7 +5,7 @@ use app\models\PlayerCreateInfoSkill;
 use yii\grid\GridView;
 use yii\helpers\Html;
 
-$this->title = 'Index Page';
+$this->title = 'Player Create Info Skill Index';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 

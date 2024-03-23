@@ -6,11 +6,28 @@ use app\models\forms\TalentTabDbcForm;
 use app\models\TalentTabDbc;
 use app\models\search\TalentTabDbcSearch;
 use Yii;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
 class TalentTabDbcController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view', 'update', 'create', 'delete'],
+                        'roles' => ['@'],
+                    ]
+                ],
+            ],
+        ];
+    }
+
     public function actionIndex()
     {
         $searchModel = new TalentTabDbcSearch();

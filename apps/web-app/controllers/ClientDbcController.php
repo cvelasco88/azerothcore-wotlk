@@ -28,13 +28,13 @@ class ClientDbcController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['validate', 'import'],
+                'only' => ['index', 'view', 'validate', 'import', 'export'],
                 'rules' => [
                     [
-                        'actions' => ['validate', 'import'],
+                        'actions' => ['index', 'view', 'validate', 'import', 'export'],
                         'allow' => true,
                         'roles' => ['@'],
-                    ],
+                    ]
                 ],
             ],
             'verbs' => [
@@ -46,6 +46,7 @@ class ClientDbcController extends Controller
             ],
         ];
     }
+
 
     /**
      * {@inheritdoc}

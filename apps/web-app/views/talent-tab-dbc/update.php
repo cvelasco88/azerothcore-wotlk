@@ -8,8 +8,8 @@ use yii\widgets\ActiveForm;
 /** @var app\models\TalentTabDbc $model */
 /** @var ActiveForm $form */
 
-$this->title = 'Update TalentTabDbc';
-$this->params['breadcrumbs'][] = ['label' => 'Index Page', 'url' => ['index']];
+$this->title = 'Update: ' . $model->ID;
+$this->params['breadcrumbs'][] = ['label' => 'TalentTabDbc Index', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="talent-tab-dbc-update">

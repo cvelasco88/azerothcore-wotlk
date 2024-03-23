@@ -8,8 +8,8 @@ use yii\widgets\ActiveForm;
 /** @var app\models\TalentTabDbc $model */
 /** @var ActiveForm $form */
 
-$this->title = 'Create TalentTabDbc';
-$this->params['breadcrumbs'][] = ['label' => 'Index Page', 'url' => ['index']];
+$this->title = 'Create';
+$this->params['breadcrumbs'][] = ['label' => 'TalentTabDbc Index', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="talent-tab-dbc-create">

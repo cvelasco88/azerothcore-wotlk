@@ -6,10 +6,27 @@ use app\models\forms\PlayerCreateInfoSkillForm;
 use app\models\PlayerCreateInfoSkill;
 use app\models\search\PlayerCreateInfoSkillSearch;
 use \Yii;
+use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 
 class PlayerCreateInfoSkillController extends \yii\web\Controller
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view', 'update', 'create', 'delete'],
+                        'roles' => ['@'],
+                    ]
+                ],
+            ],
+        ];
+    }
+
     public function actionIndex()
     {
         $searchModel = new PlayerCreateInfoSkillSearch();
@@ -65,7 +82,6 @@ class PlayerCreateInfoSkillController extends \yii\web\Controller
             'formModel' => $formModel,
         ]);
     }
-
 
     /**
      * Deletes an existing PlayerCreateInfoSkill model.
