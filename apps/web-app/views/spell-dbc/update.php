@@ -29,29 +29,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php $form = ActiveForm::begin(); ?>
 
     <?php
-    $attributeGroups = SpellDbcView::getAttributeGroups(); /*[
-        "Details" => "edit/_form_general.php",
-        "AttributesExt" => "edit/_form_attributes_ext.php",
-        "Recovery" => "edit/_form_recovery.php",
-        "Aura" => "edit/_form_aura.php",
-        "Mana" => "edit/_form_mana.php",
-        "Totem" => "edit/_form_totem.php",
-        "Reagent" => "edit/_form_reagent.php",
-        "EquippedItem" => "edit/_form_equipped_item.php",
-        "Effect" => "edit/_form_effects.php",
-        "ImplicitTarget" => "edit/_form_implicit_target.php",
-        "Translations" => "edit/_form_translations.php",
-        "SpellClass" => "edit/_form_spell_class.php",
-        "Required" => "edit/_form_required.php",
-        "Interrupt" => "edit/_form_interrupt.php",
-        "Other" => "edit/_form_others.php",
-    ];*/
+    $attributeGroups = SpellDbcView::getAttributeGroups();
     $tabs = [];
     // Create tabs with DetailView for each attribute group
     foreach ($attributeGroups as $groupName => $attributes) {
         $tabs[] = [
             'label' => $groupName,
-            'content' => $this->render("edit/_form_partial.php", [
+            'content' => $this->render("_form_partial.php", [
                 'form' => $form,
                 'formModel' => $formModel,
                 'model' => $model,

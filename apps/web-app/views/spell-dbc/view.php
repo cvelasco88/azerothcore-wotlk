@@ -59,32 +59,13 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="mb-3"></div>
 
     <?php
-
+    $attributeGroups = SpellDbcView::getAttributeGroups(); 
     $tabs = [];
-
-    $attributeGroups = SpellDbcView::getAttributeGroups(); /*[
-        "Details" => "view/_view_general.php",
-        "AttributesExt" => "view/_view_attributes_ext.php",
-        "Recovery" => "view/_view_recovery.php",
-        "Aura" => "view/_view_aura.php",
-        "Mana" => "view/_view_mana.php",
-        "Totem" => "view/_view_totem.php",
-        "Reagent" => "view/_view_reagent.php",
-        "EquippedItem" => "view/_view_equipped_item.php",
-        "Effect" => "view/_view_effects.php",
-        "ImplicitTarget" => "view/_view_implicit_target.php",
-        "Translations" => "view/_view_translations.php",
-        "SpellClass" => "view/_view_spell_class.php",
-        "Required" => "view/_view_required.php",
-        "Interrupt" => "view/_view_interrupt.php",
-        "Other" => "view/_view_others.php",
-    ];*/
- 
     // Create tabs with DetailView for each attribute group
     foreach ($attributeGroups as $groupName => $attributes) {
         $tabs[] = [
             'label' => $groupName,
-            'content' => $this->render("view/_view_partial.php", [
+            'content' => $this->render("_view_partial.php", [
                 'model' => $model, 
                 'attributes' => $attributes
             ]),
