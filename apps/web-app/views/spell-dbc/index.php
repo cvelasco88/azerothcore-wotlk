@@ -1,5 +1,6 @@
 <?php
 /** @var yii\web\View $this */
+use app\helpers\custom\SpellDbcView;
 use app\widgets\DbcExportView;
 use app\helpers\DbcLanguage;
 use app\models\SpellDbc;
@@ -46,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         // ['class' => 'yii\grid\SerialColumn'],
         // array_keys((new SpellDbc())->attributes),
-        SpellDbc::viewColumn([
+        SpellDbcView::viewColumns([
             'ID',
             $nameLang,
             'Category',

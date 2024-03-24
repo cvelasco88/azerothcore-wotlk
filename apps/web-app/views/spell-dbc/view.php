@@ -1,7 +1,7 @@
 <?php
 
 use app\helpers\DbcLanguage;
-use app\helpers\models\SpellDbcView;
+use app\helpers\custom\SpellDbcView;
 use app\models\SpellDbc;
 use yii\bootstrap5\ButtonDropdown;
 use yii\bootstrap5\Tabs;
@@ -61,24 +61,35 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php
 
     $tabs = [];
-    $attributeGroups = SpellDbcView::getAttributeGroups();
+
+    $attributeGroups = SpellDbcView::getAttributeGroups(); /*[
+        "Details" => "view/_view_general.php",
+        "AttributesExt" => "view/_view_attributes_ext.php",
+        "Recovery" => "view/_view_recovery.php",
+        "Aura" => "view/_view_aura.php",
+        "Mana" => "view/_view_mana.php",
+        "Totem" => "view/_view_totem.php",
+        "Reagent" => "view/_view_reagent.php",
+        "EquippedItem" => "view/_view_equipped_item.php",
+        "Effect" => "view/_view_effects.php",
+        "ImplicitTarget" => "view/_view_implicit_target.php",
+        "Translations" => "view/_view_translations.php",
+        "SpellClass" => "view/_view_spell_class.php",
+        "Required" => "view/_view_required.php",
+        "Interrupt" => "view/_view_interrupt.php",
+        "Other" => "view/_view_others.php",
+    ];*/
+ 
     // Create tabs with DetailView for each attribute group
     foreach ($attributeGroups as $groupName => $attributes) {
         $tabs[] = [
             'label' => $groupName,
-            'content' => DetailView::widget([
-                'model' => $model,
-                'attributes' => SpellDbc::viewColumn($attributes),
+            'content' => $this->render("view/_view_partial.php", [
+                'model' => $model, 
+                'attributes' => $attributes
             ]),
         ];
     }
-    $tabs[] = [
-        'label' => "Others",
-        'content' => DetailView::widget([
-            'model' => $model,
-            'attributes' => SpellDbc::viewColumn(SpellDbcView::getOtherAttributes()),
-        ]),
-    ];
 
     // Display tabs
     echo Tabs::widget([
