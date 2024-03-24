@@ -12,7 +12,10 @@ class SpellDbcView
 
     // PUBLIC STATIC METHODS
 
-    public static function getAttributeGroups()
+    /**
+     * @param bool $skipOther Used to avoid recursivity when getting "Other"
+     */
+    public static function getAttributeGroups(bool $skipOther = false)
     {
         $groups = [];
         $groups["Details"] = self::getDetailAttributes();
@@ -29,13 +32,15 @@ class SpellDbcView
         $groups["SpellClass"] = self::getSpellClassAttributes();
         $groups["Required"] = self::getRequiredAttributes();
         $groups["Interrupt"] = self::getInterruptAttributes();
-        // $groups["Other"] = self::getOtherAttributes();
+        if(!$skipOther) {
+            $groups["Other"] = self::getOtherAttributes();
+        }
         return $groups;
     }
 
     public static function getOtherAttributes()
     {
-        $attributeGroups = self::getAttributeGroups();
+        $attributeGroups = self::getAttributeGroups(true);
         $except = [];
         foreach ($attributeGroups as $groupName => $attributes) {
             $except = array_merge($except, $attributes);
@@ -645,6 +650,24 @@ class SpellDbcView
                     $input = $form->field($model, $attribute)->textInput(['readonly' => true]); 
                 }
                 break;
+            case 'Category':
+                $values = SpellDbc::getSpellCategoryOptions();
+                $input = $form->field($model, $attribute)->dropDownList(
+                    $values, // Array of values to display
+                )->label($attribute);
+                break;
+            case 'DispelType':
+                $values = SpellDbc::getDispelTypeOptions();
+                $input = $form->field($model, $attribute)->dropDownList(
+                    $values, // Array of values to display
+                )->label($attribute);
+                break;
+            case 'Mechanic':
+                $values = SpellDbc::getMechanicOptions();
+                $input = $form->field($model, $attribute)->dropDownList(
+                    $values, // Array of values to display
+                )->label($attribute);
+                break;
             case 'Attributes':
                 $input = $form->field($formModel, $attribute)->checkboxList(SpellDbc::getSpellAttributesOptions()); 
                 break;
@@ -654,6 +677,245 @@ class SpellDbcView
             case 'TargetCreatureType':
                 $input = $form->field($formModel, $attribute)->checkboxList(SpellDbc::getTargetCreatureTypeOptions()); 
                 break;
+            case 'AttributesEx':
+                $input = $form->field($formModel, $attribute)->checkboxList(SpellDbc::getSpellAttributesEx1Options()); 
+                break;
+            case 'AttributesEx2':
+                $input = $form->field($formModel, $attribute)->checkboxList(SpellDbc::getSpellAttributesEx2Options()); 
+                break;
+            case 'AttributesEx3':
+                $input = $form->field($formModel, $attribute)->checkboxList(SpellDbc::getSpellAttributesEx3Options()); 
+                break;
+            case 'AttributesEx4':
+                $input = $form->field($formModel, $attribute)->checkboxList(SpellDbc::getSpellAttributesEx4Options()); 
+                break;
+            case 'AttributesEx5':
+                $input = $form->field($formModel, $attribute)->checkboxList(SpellDbc::getSpellAttributesEx5Options()); 
+                break;
+            case 'AttributesEx6':
+                $input = $form->field($formModel, $attribute)->checkboxList(SpellDbc::getSpellAttributesEx6Options()); 
+                break;
+            case 'AttributesEx7':
+                $input = $form->field($formModel, $attribute)->checkboxList(SpellDbc::getSpellAttributesEx7Options()); 
+                break;
+            
+            // ////
+            // case 'PowerType':
+            //     $values = SpellDbc::getPowerTypeOptions();
+            //     $input = $form->field($model, $attribute)->dropDownList(
+            //         $values, // Array of values to display
+            //     )->label($attribute);
+            //     break;
+
+            // switch ($attribute) {
+                
+            //     case 'DispelType':
+            //         $customAttribute = [
+            //             'attribute' => 'DispelType',
+            //             'value' => function ($model) {
+            //                 /** @var SpellDbc $model */
+            //                 return $model->getCurrentDispelTypeName();
+            //             },
+            //         ];
+            //         break;
+            //     case 'Mechanic':
+            //         $customAttribute = [
+            //             'attribute' => 'Mechanic',
+            //             'value' => function ($model) {
+            //                 /** @var SpellDbc $model */
+            //                 return $model->getCurrentMechanicName();
+            //             },
+            //         ];
+            //         break;
+            //     case 'Targets':
+            //         $customAttribute = DbcView::columnInline('Targets', SpellDbc::getTargetFlagOptions(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'TargetCreatureType':
+            //         $customAttribute = DbcView::columnInline('TargetCreatureType', SpellDbc::getTargetCreatureTypeOptions(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'Attributes':
+            //         $customAttribute = DbcView::columnInline('Attributes', SpellDbc::getSpellAttributesOptions(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'ShapeshiftMask':
+            //         $customAttribute = DbcView::columnInline('ShapeshiftMask', SpellDbc::getSpellShapeshiftMaskOptions(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'ShapeshiftExclude':
+            //         $customAttribute = DbcView::columnInline('ShapeshiftExclude', SpellDbc::getSpellShapeshiftMaskOptions(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'InterruptFlags':
+            //         $customAttribute = DbcView::columnInline('InterruptFlags', SpellDbc::getSpellInterruptFlagOptions(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'SchoolMask':
+            //         $customAttribute = DbcView::columnInline('SchoolMask', SpellDbc::getSchoolMaskOptions(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'Name_Lang_Mask':
+            //         $customAttribute = DbcView::columnInline('Name_Lang_Mask', SpellDbc::getLanguageOptions(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'NameSubtext_Lang_Mask':
+            //         $customAttribute = DbcView::columnInline('NameSubtext_Lang_Mask', SpellDbc::getLanguageOptions(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'Description_Lang_Mask':
+            //         $customAttribute = DbcView::columnInline('Description_Lang_Mask', SpellDbc::getLanguageOptions(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'AuraDescription_Lang_Mask':
+            //         $customAttribute = DbcView::columnInline('AuraDescription_Lang_Mask', SpellDbc::getLanguageOptions(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'EquippedItemClass':
+            //         $customAttribute = DbcView::columnInline('EquippedItemClass', SpellDbc::getEquippedItemClassOptions(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'EquippedItemSubclass':
+            //         $customAttribute = DbcView::columnInlineCustom('EquippedItemSubclass', function ($model) {
+            //             return SpellDbc::getEquippedItemSubclassOptions($model, $model->EquippedItemClass);
+            //         }, ['onclick' => 'return false;']);
+            //         break;
+            //     case 'EquippedItemInvTypes':
+            //         $customAttribute = DbcView::columnInline('EquippedItemInvTypes', SpellDbc::getEquippedItemInvTypeOptions(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'AttributesEx':
+            //         $customAttribute = DbcView::columnInline('AttributesEx', SpellDbc::getSpellAttributesEx1Options(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'AttributesEx2':
+            //         $customAttribute = DbcView::columnInline('AttributesEx2', SpellDbc::getSpellAttributesEx2Options(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'AttributesEx3':
+            //         $customAttribute = DbcView::columnInline('AttributesEx3', SpellDbc::getSpellAttributesEx3Options(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'AttributesEx4':
+            //         $customAttribute = DbcView::columnInline('AttributesEx4', SpellDbc::getSpellAttributesEx4Options(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'AttributesEx5':
+            //         $customAttribute = DbcView::columnInline('AttributesEx5', SpellDbc::getSpellAttributesEx5Options(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'AttributesEx6':
+            //         $customAttribute = DbcView::columnInline('AttributesEx6', SpellDbc::getSpellAttributesEx6Options(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'AttributesEx7':
+            //         $customAttribute = DbcView::columnInline('AttributesEx7', SpellDbc::getSpellAttributesEx7Options(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'SpellClassSet':
+            //         $customAttribute = [
+            //             'attribute' => 'SpellClassSet',
+            //             'value' => function ($model) {
+            //                 /** @var SpellDbc $model */
+            //                 return $model->getCurrentSpellClassSetName();
+            //             },
+            //         ];
+            //         break;
+            //     // case 'Category':
+            //     //     $customAttribute = [
+            //     //         'attribute' => 'Category',
+            //     //         'value' => function ($model) {
+            //     //             /** @var SpellDbc $model */
+            //     //             return $model->getCurrentCategoryName();
+            //     //         },
+            //     //     ];
+            //     //     break;
+            //     case 'DefenseType':
+            //         $customAttribute = [
+            //             'attribute' => 'DefenseType',
+            //             'value' => function ($model) {
+            //                 /** @var SpellDbc $model */
+            //                 return $model->getCurrentDefenseTypeName();
+            //             },
+            //         ];
+            //         break;
+            //     case 'PreventionType':
+            //         $customAttribute = [
+            //             'attribute' => 'PreventionType',
+            //             'value' => function ($model) {
+            //                 /** @var SpellDbc $model */
+            //                 return $model->getCurrentPreventionTypeName();
+            //             },
+            //         ];
+            //         break;
+            //     case 'Effect_1':
+            //     case 'Effect_2':
+            //     case 'Effect_3':
+            //         $customAttribute = [
+            //             'attribute' => $attribute,
+            //             'value' => function ($model) use ($attribute) {
+            //                 /** @var SpellDbc $model */
+            //                 return $model->getCurrentEffectName($model->{$attribute});
+            //             },
+            //         ];
+            //         break;
+            //     case 'EffectMechanic_1':
+            //     case 'EffectMechanic_2':
+            //     case 'EffectMechanic_3':
+            //         $customAttribute = [
+            //             'attribute' => $attribute,
+            //             'value' => function ($model) use ($attribute) {
+            //                 /** @var SpellDbc $model */
+            //                 return $model->getCurrentMechanicName($model->{$attribute});
+            //             },
+            //         ];
+            //         break;
+    
+            //     case 'EffectSpellClassMaskA_1':
+            //     case 'EffectSpellClassMaskA_2':
+            //     case 'EffectSpellClassMaskA_3':
+            //     case 'EffectSpellClassMaskB_1':
+            //     case 'EffectSpellClassMaskB_2':
+            //     case 'EffectSpellClassMaskB_3':
+            //     case 'EffectSpellClassMaskC_1':
+            //     case 'EffectSpellClassMaskC_2':
+            //     case 'EffectSpellClassMaskC_3':
+            //     case 'SpellClassMask_1': // FIXME: 
+            //     case 'SpellClassMask_2':
+            //     case 'SpellClassMask_3':
+            //         $customAttribute = DbcView::columnInline($attribute, SpellDbc::getSpellClassMaskOptions(), ['onclick' => 'return false;']);
+    
+            //         /*$customAttribute = [
+            //             'attribute' => $attribute,
+            //             'value' => function ($model) use ($attribute) {
+            //                 /** @var SpellDbc $model */
+            //                 /*return $model->getSpellClassMaskOptions($model->{$attribute});
+            //             },
+            //         ];*/
+            //         break;
+            //     case 'AuraInterruptFlags':
+            //         $customAttribute = DbcView::columnInline('AuraInterruptFlags', SpellDbc::getSpellAuraInterruptFlagOptions(), ['onclick' => 'return false;']);
+            //         break;
+            //     case 'Reagent_1':
+            //     case 'Reagent_2':
+            //     case 'Reagent_3':
+            //     case 'Reagent_4':
+            //     case 'Reagent_5':
+            //     case 'Reagent_6':
+            //     case 'Reagent_7':
+            //     case 'Reagent_8':
+            //         $customAttribute = [
+            //             'attribute' => $attribute,
+            //             'value' => function ($model) use ($attribute) {
+            //                 /** @var SpellDbc $model */
+            //                 return $model->getCurrentReagentName($model->{$attribute});
+            //             },
+            //         ];
+            //         break;
+            //     case 'ImplicitTargetA_1':
+            //     case 'ImplicitTargetA_2':
+            //     case 'ImplicitTargetA_3':
+            //     case 'ImplicitTargetB_1':
+            //     case 'ImplicitTargetB_2':
+            //     case 'ImplicitTargetB_3':
+            //         $customAttribute = [
+            //             'attribute' => $attribute,
+            //             'value' => function ($model) use ($attribute) {
+            //                 /** @var SpellDbc $model */
+            //                 return $model->getCurrentEffectImplicitTargetName($model->{$attribute});
+            //             },
+            //         ];
+            //         break;
+            //     case 'ProcTypeMask':
+            //         $customAttribute = DbcView::columnInline('ProcTypeMask', SpellDbc::getSpellProcFlagOptions(), ['onclick' => 'return false;']);
+            //         break;
+            //     // Add more customizations for other attributes as needed
+            //     default:
+            //         $customAttribute = $attribute;
+            //         break;
+            // }
+
+            ////
             default:
                 $input = $form->field($model, $attribute);
         }
