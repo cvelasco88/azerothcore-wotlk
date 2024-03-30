@@ -21,6 +21,7 @@ class AppAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
         'css/site.css',
+        'css/app.css',
     ];
     public $js = [
         // Note: Not necessary if it's registered from the needed view

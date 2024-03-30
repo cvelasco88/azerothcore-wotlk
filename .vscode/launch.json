@@ -38,7 +38,11 @@
                 "debuggerPath": "/usr/bin/gdb",
                 "pipeProgram": "docker compose",
                 "pipeArgs": [
-                    "exec", "-T", "ac-worldserver", "sh", "-c"
+                    "exec",
+                    "-T",
+                    "ac-worldserver",
+                    "sh",
+                    "-c"
                 ],
                 "pipeCwd": "${workspaceFolder}"
             },
@@ -63,6 +67,14 @@
                 "MIMode": "gdb",
                 "miDebuggerPath": "C:\\MinGw\\bin\\gdb.exe"
             }
+        },
+        {
+            "type": "cmake",
+            "request": "launch",
+            "name": "Debug portfile(s)",
+            "cmakeDebugType": "external",
+            "pipeName": "/tmp/vcpkg_ext_portfile_dbg",
+            "preLaunchTask": "Debug vcpkg commands"
         }
     ]
 }

@@ -9,8 +9,8 @@ use yii\widgets\DetailView;
 /** @var app\models\TalentDbc $model */
 /** @var ActiveForm $form */
 
-$this->title = 'View TalentDbc: ' . $model->ID;
-$this->params['breadcrumbs'][] = ['label' => 'Index Page', 'url' => ['index']];
+$this->title = 'View: ' . $model->ID;
+$this->params['breadcrumbs'][] = ['label' => 'TalentDbc Index', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

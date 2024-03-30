@@ -1,17 +1,18 @@
 <?php
 /** @var yii\web\View $this */
+use app\widgets\DbcExportView;
 use app\helpers\DbcView;
 use app\models\TalentDbc;
 use yii\grid\GridView;
 use yii\helpers\Html;
 
-$this->title = 'Index Page';
+$this->title = 'TalentDbc Index';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <?= Html::a('Create TalentDbc', ['create'], ['class' => 'btn btn-success']) ?>
 
-<?= DbcView::exportButton(['client-dbc/export', 'className' => TalentDbc::class]) ?>
+<?= DbcExportView::widget(['url' => ['client-dbc/export', 'className' => TalentDbc::class]]) ?>
 
 <div class="mb-3"></div>
 
@@ -28,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'class' => 'yii\grid\ActionColumn',
                 'template' => '{view} {update}',
             ]
-        ],        
+        ],
         [
             'ID',
             'TabID',

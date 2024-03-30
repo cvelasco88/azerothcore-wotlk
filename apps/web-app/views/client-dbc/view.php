@@ -17,12 +17,6 @@ $this->registerJsVar('totalRecords', $totalRecords);
 $this->registerJsFile('@web/js/client-dbc-ajax-functions.js', ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 
-<style>
-    .hidden-progress {
-        display: none;
-    }
-</style>
-
 <div class="client-dbc-view">
     <h1>
         <?= Html::encode($this->title) ?>

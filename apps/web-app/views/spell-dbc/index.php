@@ -1,7 +1,8 @@
 <?php
 /** @var yii\web\View $this */
+use app\helpers\custom\SpellDbcView;
+use app\widgets\DbcExportView;
 use app\helpers\DbcLanguage;
-use app\helpers\DbcView;
 use app\models\SpellDbc;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -9,13 +10,13 @@ use yii\helpers\Html;
 // this one has to match the Search model
 $nameLang = 'Name_Lang_' . DbcLanguage::getLanguageFromLocale(Yii::$app->language);
 
-$this->title = 'Index Page';
+$this->title = 'SpellDbc Index';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <?= Html::a('Create SpellDbc', ['create'], ['class' => 'btn btn-success']) ?>
 
-<?= DbcView::exportButton(['client-dbc/export', 'className' => SpellDbc::class]) ?>
+<?= DbcExportView::widget(['url' => ['client-dbc/export', 'className' => SpellDbc::class]]) ?>
 
 <div class="mb-3"></div>
 
@@ -46,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         // ['class' => 'yii\grid\SerialColumn'],
         // array_keys((new SpellDbc())->attributes),
-        SpellDbc::viewColumn([
+        SpellDbcView::viewColumns([
             'ID',
             $nameLang,
             'Category',

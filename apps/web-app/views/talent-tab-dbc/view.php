@@ -14,8 +14,8 @@ use yii\web\View;
 /** @var app\models\TalentTabDbc $model */
 /** @var ActiveForm $form */
 
-$this->title = 'View TalentTabDbc: ' . $model->ID;
-$this->params['breadcrumbs'][] = ['label' => 'Index Page', 'url' => ['index']];
+$this->title = 'View: ' . $model->ID;
+$this->params['breadcrumbs'][] = ['label' => 'TalentTabDbc Index', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 
 $script = <<< JS

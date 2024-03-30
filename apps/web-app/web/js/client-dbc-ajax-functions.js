@@ -1,3 +1,7 @@
+/**
+ * client-dbc-ajax-functions
+ */
+
 var fileName = window.fileName;
 var batchSize = window.batchSize;
 var totalRecords = window.totalRecords;

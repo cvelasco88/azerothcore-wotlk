@@ -8,8 +8,8 @@ use yii\widgets\ActiveForm;
 /** @var app\models\PlayerCreateInfoSkill $model */
 /** @var ActiveForm $form */
 
-$this->title = 'Create Player Create Info Skill';
-$this->params['breadcrumbs'][] = ['label' => 'Index Page', 'url' => ['index']];
+$this->title = 'Update';
+$this->params['breadcrumbs'][] = ['label' => 'Player Create Info Skill Index', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="player-create-info-skill-update">

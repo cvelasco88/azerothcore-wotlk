@@ -28,13 +28,13 @@ class ClientDbcController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['validate', 'import'],
+                'only' => ['index', 'view', 'validate', 'import', 'export'],
                 'rules' => [
                     [
-                        'actions' => ['validate', 'import'],
+                        'actions' => ['index', 'view', 'validate', 'import', 'export'],
                         'allow' => true,
                         'roles' => ['@'],
-                    ],
+                    ]
                 ],
             ],
             'verbs' => [
@@ -46,6 +46,7 @@ class ClientDbcController extends Controller
             ],
         ];
     }
+
 
     /**
      * {@inheritdoc}
@@ -88,7 +89,7 @@ class ClientDbcController extends Controller
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
         $targetClass = DbcDefinition::getTargetClass($fileName);
-        if(!$targetClass) {
+        if (!$targetClass) {
             throw new \Exception("Definition not found for {$fileName}");
         }
 
@@ -129,7 +130,7 @@ class ClientDbcController extends Controller
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
         $targetClass = DbcDefinition::getTargetClass($fileName);
-        if(!$targetClass) {
+        if (!$targetClass) {
             throw new \Exception("Definition not found for {$fileName}");
         }
 
@@ -170,7 +171,7 @@ class ClientDbcController extends Controller
                         $item = $oldItem;
                     }
 
-                    if(!$item->validate()) {
+                    if (!$item->validate()) {
                         throw new ServerErrorHttpException('Validation with errors: ' . json_encode([
                             'index' => $index,
                             'PK' => $condition,
@@ -200,10 +201,10 @@ class ClientDbcController extends Controller
         $filePath = $dataPath . DIRECTORY_SEPARATOR . $fileName;
 
         $targetClass = DbcDefinition::getTargetClass($fileName);
-        if(!$targetClass) {
+        if (!$targetClass) {
             throw new \Exception("Definition not found for {$fileName}");
         }
-        
+
         // Open the DBC file
         $storage = fopen($filePath, 'rb');
         // Create a DbcReader instance
@@ -261,7 +262,6 @@ class ClientDbcController extends Controller
                         // Return the error response
                         throw new ServerErrorHttpException(json_encode($response));
                     }
-                    unset($item);
                 }
             }
         );
@@ -272,7 +272,7 @@ class ClientDbcController extends Controller
         return json_encode(['success' => true]);
     }
 
-    public function actionExport(string $className)
+    public function actionExport(string $className, int $batch = null)
     {
         if (!is_subclass_of($className, DbcActiveRecord::class)) {
             throw new \InvalidArgumentException("$className must inherit from DbcActiveRecord");
@@ -290,27 +290,48 @@ class ClientDbcController extends Controller
         $dbcLang = DbcLanguage::getLanguageFromLocale(Yii::$app->language);
 
         // Open the DBC file
-        $storage = fopen($filePath, 'wb');
+        if (!$batch) {
+            $storage = fopen($filePath, 'wb');
+        } else {
+            $storage = fopen($filePath, 'a+');
+            // Check if file opened successfully
+            if ($storage === false) {
+                // Handle error
+                throw new ServerErrorHttpException('Failed to open file for reading and writing.');
+            }
+        }
 
         // Create a DbcWriter instance with calculated header attributes
         $dbcWriter = new DbcWriter($className, $storage);
         $dbcWriter->setLanguage($dbcLang);
+        if (!$batch) {
+            // Write the header
+            $dbcWriter->writeHeader();
+        } else {
+            // restore state
+            $dbcWriter->restoreState(Yii::$app->request->getBodyParams());
+        }
         // Close the DBC file
         // Note: closed on DbcWriter _destruct => fclose($storage);
 
         $definition = $target->getDefinition();
 
-        foreach ($dbcWriter->getRecords() as $record) {
+        $exportCount = 0;
+        foreach ($dbcWriter->getRecords($batch) as $record) {
             // Write each record using the DbcWriter
             $dbcWriter->writeRecord($record, $definition);
+            $exportCount++;
         }
 
-        $dbcWriter->close();
-
-        if(!Yii::$app->request->isAjax) {
+        if (!Yii::$app->request->isAjax) {
             // Redirect to the previous page
             return $this->redirect(Yii::$app->request->referrer ?: Yii::$app->homeUrl);
-        }        
+        }
+
+        return json_encode($dbcWriter->saveState([
+            'exportCount' => $exportCount,
+            'totalCount' => $dbcWriter->count()
+        ]));
     }
 
     // PRIVATE METHODS

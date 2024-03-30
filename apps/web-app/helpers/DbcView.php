@@ -6,53 +6,6 @@ use yii\helpers\Html;
 
 class DbcView
 {
-    public static function exportButton(array $url) {
-
-        /* <?= Html::a('Export', ['client-dbc/export', 'className' => SpellDbc::class], 
-        [
-            'class' => 'btn btn-warning',
-            'data' => [
-                'confirm' => 'Are you sure you want to Export this data?',
-                'method' => 'post',
-            ],
-        ]) ?> */
-
-        $exportUrl = \yii\helpers\Url::to($url);
-
-        return Html::button(
-            'Export', 
-            [
-                'class' => 'btn btn-warning',
-                'onclick' => '
-                    if (confirm("Are you sure you want to Export this data?")) {
-                        $.ajax({
-                            url: "' . $exportUrl . '",
-                            type: "POST", // Adjust the request method as needed
-                            beforeSend: function() {
-                                // Show loading spinner or some indication to the user
-                                // $("#loadingIndicator").show();
-                                console.log("Start export...");
-                            },
-                            success: function(response) {
-                                // Handle success response, if needed
-                                console.log("Operation completed successfully.");
-                            },
-                            error: function(xhr, status, error) {
-                                // Handle error, if any
-                                console.error("Error:", error);
-                            },
-                            complete: function() {
-                                // Hide loading spinner or indication when request is complete
-                                // $("#loadingIndicator").hide();
-                                console.log("Export finished");
-                            }
-                        });
-                    }
-                ',
-            ]
-        );
-    }
-
     /**
      * @param string $attribute
      * @param string $label

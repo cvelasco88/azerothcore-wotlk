@@ -7,10 +7,27 @@ use app\models\forms\SpellDbcForm;
 use app\models\SpellDbc;
 use app\models\search\SpellDbcSearch;
 use \Yii;
+use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 
 class SpellDbcController extends \yii\web\Controller
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['index', 'view', 'update', 'create', 'delete', 'clone'],
+                        'roles' => ['@'],
+                    ]
+                ],
+            ],
+        ];
+    }
+
     public function actionIndex()
     {
         $dbcLanguage = DbcLanguage::getLanguageFromLocale(Yii::$app->language);
@@ -70,6 +87,25 @@ class SpellDbcController extends \yii\web\Controller
             'model' => $model,
             'formModel' => $formModel,
         ]);
+    }
+
+    /**
+     * Deletes an existing PlayerCreateInfoSkill model.
+     * @param integer $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionDelete($id)
+    {
+        $model = $this->findModel($id);
+
+        if ($model->delete()) {
+            Yii::$app->session->setFlash('success', 'Record deleted successfully.');
+        } else {
+            Yii::$app->session->setFlash('error', 'Error deleting the record.');
+        }
+
+        return $this->redirect(['index']);
     }
 
     public function actionClone($id)

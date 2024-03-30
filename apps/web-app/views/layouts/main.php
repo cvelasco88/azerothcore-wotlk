@@ -71,6 +71,9 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
         $dropdownItems[] = ['label' => $link, 'encode' => false];
     }
 
+    // Flex item to take up remaining space
+    echo '<div class="flex-grow-1"></div>';
+    
     // Render the dropdown
     echo ButtonDropdown::widget([
         'label' => DbcLanguage::getLanguageName(DbcLanguage::getLanguageFromLocale(Yii::$app->language)),
@@ -99,8 +102,16 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 <footer id="footer" class="mt-auto py-3 bg-light">
     <div class="container">
         <div class="row text-muted">
-            <div class="col-md-6 text-center text-md-start">&copy; Carlos Velasco <?= date('Y') ?></div>
-            <div class="col-md-6 text-center text-md-end"><?= Yii::powered() ?></div>
+            <div class="col-md-6 text-center text-md-start">
+                &copy; <?= Yii::$app->name ?> <?= date('Y') ?><br>
+                <small>Este contenido está licenciado bajo <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Atribución 4.0 Internacional</a>.</small><br>
+                <small>Algunos derechos reservados por <?= Yii::$app->name ?></small>
+            </div>
+
+            <div class="col-md-6 text-center text-md-end">
+                <div><?= Yii::powered() ?></div>
+                <small>por <author>Carlos Velasco</author></small>
+            </div>
         </div>
     </div>
 </footer>
