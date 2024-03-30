@@ -98,6 +98,8 @@ Documentación oficial de [Gii](https://www.yiiframework.com/doc/guide/2.0/es/st
 
 Notas
 -------
+`Youtube:` [Video Proyecto](https://youtube.com/playlist?list=PLFspZSSp99nhIJk8M5I3SS_Le9vt9KqMe&si=mDRtYrPSfPs_AMY_)
+
 `Youtube:` [https://www.youtube.com/@cvelasco88](https://www.youtube.com/@cvelasco88)
 
 ## Licencia
