@@ -626,8 +626,7 @@ class SpellDbc extends DbcActiveRecord
      */
     public function getCurrentCategoryName(int $type = null)
     {
-        return sprintf('(%s) => %s', $this->Category, $this->getSpellCategoryName($type ?? $this->Category));
-        // return $this->getSpellCategoryName($type ?? $this->Category);
+        return $this->getSpellCategoryName($type ?? $this->Category);
     }
 
     /**

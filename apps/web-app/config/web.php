@@ -1,5 +1,5 @@
 <?php
-use app\helpers\DbcLanguage;
+use app\components\LanguageSelector;
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';

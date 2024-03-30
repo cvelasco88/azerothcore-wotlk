@@ -1,3 +1,8 @@
+/**
+ * @web/js/export-dbc-ajax-functions.js
+ */
+
+
 function exportData(button, url) {
     if (confirm("Are you sure you want to Export this data?")) {
         $(button).prop('disabled', true);

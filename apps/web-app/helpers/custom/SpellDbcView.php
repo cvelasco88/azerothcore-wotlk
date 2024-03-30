@@ -400,7 +400,7 @@ class SpellDbcView
      * @param string $attribute
      */
     public static function viewColumn(string $attribute)
-    {
+    {        
         switch ($attribute) {
             case 'PowerType':
                 $customAttribute = [
@@ -411,13 +411,24 @@ class SpellDbcView
                     },
                 ];
                 break;
+            case 'Category':
+                $customAttribute = [
+                    'attribute' => 'Category',
+                    'value' => function ($model) {
+                        /** @var SpellDbc $model */
+                        return '<span title="Value: ' . $model->Category . '">' . $model->getCurrentCategoryName() . '</span>';
+                    },
+                    'format' => 'raw',
+                ];
+                break;
             case 'DispelType':
                 $customAttribute = [
                     'attribute' => 'DispelType',
                     'value' => function ($model) {
                         /** @var SpellDbc $model */
-                        return $model->getCurrentDispelTypeName();
+                        return '<span title="Value: ' . $model->DispelType . '">' . $model->getCurrentDispelTypeName() . '</span>';
                     },
+                    'format' => 'raw',
                 ];
                 break;
             case 'Mechanic':
@@ -503,15 +514,6 @@ class SpellDbcView
                     },
                 ];
                 break;
-            // case 'Category':
-            //     $customAttribute = [
-            //         'attribute' => 'Category',
-            //         'value' => function ($model) {
-            //             /** @var SpellDbc $model */
-            //             return $model->getCurrentCategoryName();
-            //         },
-            //     ];
-            //     break;
             case 'DefenseType':
                 $customAttribute = [
                     'attribute' => 'DefenseType',

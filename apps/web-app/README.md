@@ -2,232 +2,111 @@
     <a href="https://github.com/yiisoft" target="_blank">
         <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
     </a>
-    <h1 align="center">Yii 2 Basic Project Template</h1>
+    <h1 align="center">Yii 2 - Azeroth Core</h1>
     <br>
 </p>
 
-Yii 2 Basic Project Template is a skeleton [Yii 2](https://www.yiiframework.com/) application best for
-rapidly creating small projects.
 
-The template contains the basic features including user login/logout and a contact page.
-It includes all commonly used configurations that would allow you to focus on adding new
-features to your application.
+Este proyecto permite trabajar con la base de datos de AzerothCore, importar y exportar datos, así como crear y editar los existentes en la base de datos.
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/yiisoft/yii2-app-basic.svg)](https://packagist.org/packages/yiisoft/yii2-app-basic)
-[![Total Downloads](https://img.shields.io/packagist/dt/yiisoft/yii2-app-basic.svg)](https://packagist.org/packages/yiisoft/yii2-app-basic)
-[![build](https://github.com/yiisoft/yii2-app-basic/workflows/build/badge.svg)](https://github.com/yiisoft/yii2-app-basic/actions?query=workflow%3Abuild)
+El proyecto pretende ser el punto de partida del que expandir nuevas funcionalidades de manera senzilla, sirviendo como ejemplo con los modelos y controladores existentes.
 
-DIRECTORY STRUCTURE
--------------------
-
-      assets/             contains assets definition
-      commands/           contains console commands (controllers)
-      config/             contains application configurations
-      controllers/        contains Web controller classes
-      mail/               contains view files for e-mails
-      models/             contains model classes
-      runtime/            contains files generated during runtime
-      tests/              contains various tests for the basic application
-      vendor/             contains dependent 3rd-party packages
-      views/              contains view files for the Web application
-      web/                contains the entry script and Web resources
-
-
-
-REQUIREMENTS
-------------
-
-The minimum requirement by this project template that your Web server supports PHP 7.4.
-
-
-INSTALLATION
-------------
-
-### Install via Composer
-
-If you do not have [Composer](https://getcomposer.org/), you may install it by following the instructions
-at [getcomposer.org](https://getcomposer.org/doc/00-intro.md#installation-nix).
-
-You can then install this project template using the following command:
-
-~~~
-composer create-project --prefer-dist yiisoft/yii2-app-basic basic
-~~~
-
-Now you should be able to access the application through the following URL, assuming `basic` is the directory
-directly under the Web root.
-
-~~~
-http://localhost/basic/web/
-~~~
-
-### Install from an Archive File
-
-Extract the archive file downloaded from [yiiframework.com](https://www.yiiframework.com/download/) to
-a directory named `basic` that is directly under the Web root.
-
-Set cookie validation key in `config/web.php` file to some random secret string:
-
-```php
-'request' => [
-    // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-    'cookieValidationKey' => '<secret random string goes here>',
-],
-```
-
-You can then access the application through the following URL:
-
-~~~
-http://localhost/basic/web/
-~~~
-
-
-### Install with Docker
-
-Update your vendor packages
-
-    docker-compose run --rm php composer update --prefer-dist
-    
-Run the installation triggers (creating cookie validation code)
-
-    docker-compose run --rm php composer install    
-    
-Start the container
-
-    docker-compose up -d
-    
-You can then access the application through the following URL:
-
-    http://127.0.0.1:8000
-
-**NOTES:** 
-- Minimum required Docker engine version `17.04` for development (see [Performance tuning for volume mounts](https://docs.docker.com/docker-for-mac/osxfs-caching/))
-- The default configuration uses a host-volume in your home directory `.docker-composer` for composer caches
-
-
-CONFIGURATION
--------------
-
-### Database
-
-Edit the file `config/db.php` with real data, for example:
-
-```php
-return [
-    'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=yii2basic',
-    'username' => 'root',
-    'password' => '1234',
-    'charset' => 'utf8',
-];
-```
-
-**NOTES:**
-- Yii won't create the database for you, this has to be done manually before you can access it.
-- Check and edit the other files in the `config/` directory to customize your application as required.
-- Refer to the README in the `tests` directory for information specific to basic application tests.
-
-
-TESTING
+Contenido
 -------
 
-Tests are located in `tests` directory. They are developed with [Codeception PHP Testing Framework](https://codeception.com/).
-By default, there are 3 test suites:
+    docker              Cambios en docker-compose
+    web                 Apartados y funcionalidades de la web
+    gii                 Generación de modelos, controladores y vistas
+    idiomas             Cambios para dar soporte a los idiomas
+    importar            Como importar datos a partir de archivo DBC
+    exportar            Como exportar datos a archivo DBC
+    problemas           Problemas actuales
+    notas               Información adicional
+    license             Licencia y atribución
+      
 
-- `unit`
-- `functional`
-- `acceptance`
-
-Tests can be executed by running
-
-```
-vendor/bin/codecept run
-```
-
-The command above will execute unit and functional tests. Unit tests are testing the system components, while functional
-tests are for testing user interaction. Acceptance tests are disabled by default as they require additional setup since
-they perform testing in real browser. 
+Docker
+-------
+Se ha modificado el archivo de `docker-compose.yml` para incluir un contenedor backend basado en Yii2 y un contenedor para phpMyAdmin
 
 
-### Running  acceptance tests
+Web
+-------
+Contiene en la pàgina principal con los elementos más relevantes accesibles directamente.
+En la cabecera podemos regresar a la `Home` para ver el listado de elementos existentes, podemos visualizar los archivos dbc para importar y, el selector de idioma.
 
-To execute acceptance tests do the following:  
-
-1. Rename `tests/acceptance.suite.yml.example` to `tests/acceptance.suite.yml` to enable suite configuration
-
-2. Replace `codeception/base` package in `composer.json` with `codeception/codeception` to install full-featured
-   version of Codeception
-
-3. Update dependencies with Composer 
-
-    ```
-    composer update  
-    ```
-
-4. Download [Selenium Server](https://www.seleniumhq.org/download/) and launch it:
-
-    ```
-    java -jar ~/selenium-server-standalone-x.xx.x.jar
-    ```
-
-    In case of using Selenium Server 3.0 with Firefox browser since v48 or Google Chrome since v53 you must download [GeckoDriver](https://github.com/mozilla/geckodriver/releases) or [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) and launch Selenium with it:
-
-    ```
-    # for Firefox
-    java -jar -Dwebdriver.gecko.driver=~/geckodriver ~/selenium-server-standalone-3.xx.x.jar
-    
-    # for Google Chrome
-    java -jar -Dwebdriver.chrome.driver=~/chromedriver ~/selenium-server-standalone-3.xx.x.jar
-    ``` 
-    
-    As an alternative way you can use already configured Docker container with older versions of Selenium and Firefox:
-    
-    ```
-    docker run --net=host selenium/standalone-firefox:2.53.0
-    ```
-
-5. (Optional) Create `yii2basic_test` database and update it by applying migrations if you have them.
-
-   ```
-   tests/bin/yii migrate
-   ```
-
-   The database configuration can be found at `config/test_db.php`.
+- El listado de elementos existentes son índices de elementos que se pueden consultar de la base de datos grácias a que se han generado los modelos de Yii2 para tal finalidad
+- En Client Files aparecen los archivos `.dbc` existentes que hay en una carpeta específica del proyecto. Los elementos importables apa
 
 
-6. Start web server:
+Gii
+-------
+Esta funcionalidad es un módulo/extensión de Yii2 y permite crear modelos en base a las tablas de la base de datos.
+Utilizando estos modelos podemos visualizar, crear, modificar o eliminar registros de sus correspondientes tablas de la base de datos.
+Grácias a tener estos modelos, podemos realizar una lectura de archivos `.dbc` y cargar sus datos para así hacer una importació o, una lectura de datos de la base de datos y mediante estos modelos y una clase auxiliar la exportación a archivo `.dbc`.
 
-    ```
-    tests/bin/yii serve
-    ```
 
-7. Now you can run all available tests
+Idiomas
+-------
+En base a los idiomas existentes en las tablas generadas para el mundo de AzerothCore se pueden extrapolar los idiomas soportados.
+Mediante una senzilla implementación en `LanguageSelector` y la utilización de cookies se puede utilizar en el sistema el idioma deseado.
+Una vez selecionado un idioma esto repercute en el sistema de traducción de Yii2 (ver documentación oficial) y en la visualización de datos que dependan del idioma como "nombre", "descripción", etc. así como en la exportación de datos.
+En el proyecto existen generados archivos para cada uno de los idiomas en la ruta `@app/messages`. Esto puede ser verificado por uno de los valores mostrados en la cabezera de la web que muestra el idioma via traducción.
 
-   ```
-   # run all available tests
-   vendor/bin/codecept run
+Existen varios metodos en la clase `DbcLanguage` para obtener los idiomas utilizables y conversiones entre valores. Por ejemplo para la nomenclatura utilizada por el videjuego y la requerida en la pàgina web.
 
-   # run acceptance tests
-   vendor/bin/codecept run acceptance
 
-   # run only unit and functional tests
-   vendor/bin/codecept run unit,functional
-   ```
+Importar
+-------
+Para importar datos se necesita que el archivo esté localizado en el directorio `@app/data`. Cuando se accede a la opción de `Client Files` se listan todos los archivos dipositados en esta carpeta. De los listados, solo se muestran como enlace (para realizar la lectura del archivo) aquellos que esten definidos en el archivo `DbcDefinition`.
+En esta clase se realiza la correlación entre nombre de archivo y modelo Yii2 a utilizar.
+El controlador encargado de la importación es el `ClientDbcController` y la clase encargada de realizar el procesado del archivo es `DbcReader`. En estos se pueden acabar de realizar ajustes para que encaje con el resultado deseado.
 
-### Code coverage support
+Cuando visualizamos uno de estos archivos podemos hacer una previsualización de los datos utilizando paginación y, grácias a esto solo se realiza la lectura de aquellos registros que se vayan a mostrar, optimizando en gran medida el procesado del archivo.
 
-By default, code coverage is disabled in `codeception.yml` configuration file, you should uncomment needed rows to be able
-to collect code coverage. You can run your tests and collect coverage with the following command:
+En esta vista de previsualización se puede realizar una validación prévia de los datos o una importación de estos, ambos por grupos (batches) de registros de manera que sea soportable para el sistema, realizando un consumo de memoria razonable para dicho fin.
+Durante la validación o importación aparece una barra de progreso que refleja la cantidad y porcentaje de elementos procesados. La logica JS de estas acciones estan en el archivo `client-dbc-ajax-functions`.
 
-```
-#collect coverage for all tests
-vendor/bin/codecept run --coverage --coverage-html --coverage-xml
 
-#collect coverage only for unit tests
-vendor/bin/codecept run unit --coverage --coverage-html --coverage-xml
+Exportar
+-------
+Para exportar datos hay que acceder a uno de los listados (índices) de registros disponibles. En la vista del listado de elementos existe un botón de exportar con el texto "Export", creado a partir de un widget mediante la clase `DbcExportView`.
 
-#collect coverage for unit and functional tests
-vendor/bin/codecept run functional,unit --coverage --coverage-html --coverage-xml
-```
+Si se presiona el botón aparece un mensaje de confirmación que si se acepta comenzará el proceso de crear un nuevo archivo en el directorio `@app/data`. 
 
-You can see code coverage output under the `tests/_output` directory.
+Es necesario tener definido la correlación entre clase y nombre de archivo a generar para que se pueda realizar la exportación, de otro modo se producirá un error. El nombre de archivo a guardar ha de estar definido en la clase `DbcDefinition`.
+
+El controlador encargado de la exportación es el `ClientDbcController` y la clase encargada de realizar el procesado del archivo es `DbcWriter`. En estos se pueden acabar de realizar ajustes para que encaje con el resultado deseado.
+
+Durante la exportación el idioma seleccionado puede afectar a los datos exportados. En casos en los que existan campos con traducciones como "nombre", "descripción", etc. el idioma dejará valor únicamente al que corresponda con el idioma utilizado y el resto de valores traducibles se ignorarán (exportados como valor Nulo).
+
+Durante la exportación aparece una barra de progreso que refleja la cantidad y porcentaje de elementos procesados. La logica JS de estas acciones estan en la clase `DbcExportView` y el archivo `client-dbc-ajax-functions`.
+
+
+Problemas
+-------
+El orden de las columnas de en las tablas generadas por AzerothCore no coincide con el real. El archivo `Spell.dbc`, del paquete de idiomas de `Español (España)` al ser importado hace que los valores de nombres y descripciones esten en las de otro idioma.
+Esto se puede resolver teniendo en la base de datos el orden de las columnas del mismo modo que son utilizados en el juego real y, generando los modelos mediante Gii para que todo coincida con lo esperado al procesar el archivos. Del mismo modo la implementación del `DbcReader` y `DbcWriter` permiten realizar ciertos ajustes, pero en casos con grandes volumenes de datos como `SpellDbc` implica un mayor consumo de memoria, mayor complejidad y perdida de rendimiento.
+
+
+Enlaces
+-------
+
+Documentación original de [Yii 2 README](README_Yii2.md)
+
+Documentación oficial de [Gii](https://www.yiiframework.com/doc/guide/2.0/es/start-gii)
+
+Notas
+-------
+`Youtube:` [https://www.youtube.com/@cvelasco88](https://www.youtube.com/@cvelasco88)
+
+## Licencia
+
+Este proyecto está licenciado bajo la [Licencia Creative Commons Atribución 4.0 Internacional](https://creativecommons.org/licenses/by/4.0/).
+
+### Atribución
+
+Si haces un fork o utilizas este proyecto como base para tu propio trabajo, debes mantener la siguiente información:
+
+- Autor original: [Carlos Velasco](https://github.com/cvelasco88)
+- Repositorio fuente: [https://github.com/cvelasco88/azerothcore-wotlk](https://github.com/cvelasco88/azerothcore-wotlk)

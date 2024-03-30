@@ -2,6 +2,7 @@
 
 namespace app\helpers;
 use app\models\ItemDbc;
+use app\models\PlayerCreateInfoSkill;
 use app\models\SpellDbc;
 use app\models\TalentDbc;
 use app\models\TalentTabDbc;
@@ -21,6 +22,8 @@ class DbcDefinition
         switch ($filename) {
             case "Item.dbc":
                 return ItemDbc::class;
+            case "PlayerCreateInfoSkill.dbc":
+                return PlayerCreateInfoSkill::class;
             case "Spell.dbc":
                 return SpellDbc::class;
             case "Talent.dbc":
@@ -43,6 +46,8 @@ class DbcDefinition
         switch ($targetClass) {
             case ItemDbc::class:
                 return "Item.dbc";
+            case PlayerCreateInfoSkill::class:
+                return "PlayerCreateInfoSkill.dbc";
             case SpellDbc::class:
                 return "Spell.dbc";
             case TalentDbc::class:

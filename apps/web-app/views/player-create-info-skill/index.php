@@ -2,6 +2,7 @@
 /** @var yii\web\View $this */
 use app\helpers\DbcView;
 use app\models\PlayerCreateInfoSkill;
+use app\widgets\DbcExportView;
 use yii\grid\GridView;
 use yii\helpers\Html;
 
@@ -10,6 +11,8 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <?php echo Html::a('Create Player Create Info Skill', ['create'], ['class' => 'btn btn-success']); ?>
+
+<?= DbcExportView::widget(['url' => ['client-dbc/export', 'className' => PlayerCreateInfoSkill::class]]) ?>
 
 <div class="mb-3"></div>
 

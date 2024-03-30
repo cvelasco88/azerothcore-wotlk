@@ -1,6 +1,7 @@
 <?php
 
 use yii\bootstrap4\Html;
+use yii\helpers\Markdown;
 
 /** @var yii\web\View $this */
 
@@ -24,10 +25,10 @@ $this->title = 'My Yii Application';
                     ['label' => 'TalentTabDbc', 'url' => ['/talent-tab-dbc/index']],
                 ];
                 ?>
-
-                <ul class="navbar-nav">
+                <h1>Indexes</h1>
+                <ul class="list-group">
                     <?php foreach ($menuItems as $item): ?>
-                        <li class="nav-item">
+                        <li class="list-group-item">
                             <?= Html::a($item['label'], $item['url'], $item['linkOptions'] ?? []) ?>
                         </li>
                     <?php endforeach; ?>
@@ -35,14 +36,12 @@ $this->title = 'My Yii Application';
 
             </div>
             <div class="col-xs-12">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-outline-secondary" href="https://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
+                <?php
+                $filepath = Yii::getAlias('@app') . DIRECTORY_SEPARATOR . 'README.md';
+                $markdownContent = file_get_contents($filepath);
+                $myHtml = Markdown::process($markdownContent);
+                echo $myHtml;
+                ?>
             </div>
         </div>
 

@@ -21,9 +21,9 @@ class SpellDbcForm extends Model
     public function rules()
     {
         return [
-            [['Attributes', 'Targets', 'TargetCreatureType', 'AttributesEx', 'AttributesEx1', 'AttributesEx2', 'AttributesEx3', 'AttributesEx4', 'AttributesEx5', 'AttributesEx6', 'AttributesEx7'], 'required'],
-            [['Attributes', 'Targets', 'TargetCreatureType', 'AttributesEx', 'AttributesEx1', 'AttributesEx2', 'AttributesEx3', 'AttributesEx4', 'AttributesEx5', 'AttributesEx6', 'AttributesEx7'], 'each', 'rule' => ['integer']],
-            [['Attributes', 'Targets', 'TargetCreatureType', 'AttributesEx', 'AttributesEx1', 'AttributesEx2', 'AttributesEx3', 'AttributesEx4', 'AttributesEx5', 'AttributesEx6', 'AttributesEx7'], 'validateCheckboxList'],
+            [['Attributes', 'Targets', 'TargetCreatureType', 'AttributesEx', 'AttributesEx2', 'AttributesEx3', 'AttributesEx4', 'AttributesEx5', 'AttributesEx6', 'AttributesEx7'], 'required'],
+            [['Attributes', 'Targets', 'TargetCreatureType', 'AttributesEx', 'AttributesEx2', 'AttributesEx3', 'AttributesEx4', 'AttributesEx5', 'AttributesEx6', 'AttributesEx7'], 'each', 'rule' => ['integer']],
+            [['Attributes', 'Targets', 'TargetCreatureType', 'AttributesEx', 'AttributesEx2', 'AttributesEx3', 'AttributesEx4', 'AttributesEx5', 'AttributesEx6', 'AttributesEx7'], 'validateCheckboxList'],
         ];
     }
 
